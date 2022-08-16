@@ -22,11 +22,11 @@ typedef std::vector<std::vector<std::vector<std::vector<double>>>> matrix4D;
 int main()
 {
     // Load network
-    std::string networkWeights = "/home/f_pietrobon/thesis/Application_OCR/models/Frozen_graph_test_0.25.pb";
+    std::string networkWeights = "/home/f_pietrobon/thesis/MRZ_Antitampering/models/Frozen_graph_test_0.25.pb";
 
     cv::dnn::Net network = cv::dnn::readNetFromTensorflow(networkWeights);
 
-    cv::Mat document = cv::imread("/home/f_pietrobon/thesis/Application_OCR/AFG_AO_01001_FRONT.JPG", cv::IMREAD_COLOR);
+    cv::Mat document = cv::imread("/home/f_pietrobon/thesis/MRZ_Antitampering/AFG_AO_01001_FRONT.JPG", cv::IMREAD_COLOR);
     cv::resize(document, document, cv::Size(FEATURE_WIDTH, FEATURE_HEIGHT), 0, 0, cv::INTER_CUBIC); 
 
     // network prediction
