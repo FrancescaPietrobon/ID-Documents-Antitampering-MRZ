@@ -77,8 +77,8 @@ void Anchors::printAnchors(matrix3D A, matrix3D B)
 matrix2D Anchors::resizeAnchors(matrix3D A)
 {
   matrix2D A_resized;
-  for(int i = 0; i < A.size(); ++i)
-    for(int j = 0; j < A[i].size(); ++j)
+  for(size_t i = 0; i < A.size(); ++i)
+    for(size_t j = 0; j < A[i].size(); ++j)
       A_resized.push_back(A[i][j]);
 
   return A_resized;
@@ -90,9 +90,9 @@ matrix3D Anchors::concatenate(matrix3D A, matrix3D B)
   matrix3D concatenation = A;
   std::vector<double> anchor;
   
-  for(int i = 0; i < A.size(); ++i)
+  for(size_t i = 0; i < A.size(); ++i)
   {
-    for(int j = 0; j < A[i].size(); ++j)
+    for(size_t j = 0; j < A[i].size(); ++j)
     {
       anchor = {B[i][j][0], B[i][j][1], A[i][j][0], A[i][j][1]};
       concatenation[i][j] = anchor;

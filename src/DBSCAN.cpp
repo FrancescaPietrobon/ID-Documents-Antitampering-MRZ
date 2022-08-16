@@ -41,7 +41,7 @@ DBSCAN::DBSCAN(int n_, double eps_, int minPts_, std::vector<Point> points_):
 void DBSCAN::run()
 {
     checkNearPoints();
-    for(size_t i=0; i < size; i++)
+    for(int i=0; i < size; i++)
     {
         if(points[i].getCluster() != NOT_CLASSIFIED)
             continue;
@@ -61,8 +61,8 @@ void DBSCAN::run()
 
 void DBSCAN::checkNearPoints()
 {
-    for(size_t i = 0; i < size; i++)
-        for(size_t j = 0; j < size; j++)
+    for(int i = 0; i < size; i++)
+        for(int j = 0; j < size; j++)
         {
             if(i == j)
                 continue;
