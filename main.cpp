@@ -19,6 +19,30 @@ typedef std::vector<std::vector<std::vector<double>>> matrix3D;
 typedef std::vector<std::vector<std::vector<std::vector<double>>>> matrix4D;
 
 
+matrix2D extractPredCVMat(cv::Mat boxPrediction)
+{
+    matrix2D boxPred;
+    std::vector<double> box;
+    cv::Vec<int,4> idx;
+    double val;
+
+    for(int i = 0; i < boxPrediction.size[3]; ++i)
+    {
+        for(int j = 0; j < boxPrediction.size[1]; ++j)
+        {
+            idx = {0, j, 0, i};
+            val = boxPrediction.at<double>(idx);
+            //std::cout << val << " ";
+            box.push_back(val);
+        }
+        //std::cout << " " << std::endl;
+        boxPred.push_back(box);
+        box.clear();
+        
+    }
+    return boxPred;
+}
+
 int main()
 {
     // Load network
@@ -49,8 +73,16 @@ int main()
     std::cout << "Class pred:\t";
     std::cout << classPrediction.size[0] << " x " << classPrediction.size[1] << " x " << classPrediction.size[2] << " x " << classPrediction.size[3] << std::endl;
 
-    Anchors anchors;
-    anchors.anchorsGenerator();
+    matrix2D boxPred = extractPredCVMat(boxPrediction);
+    std::cout << "New box pred:\t";
+    std::cout << boxPred.size() << " x " << boxPred[0].size() << std::endl;
+
+    matrix2D classPred = extractPredCVMat(classPrediction);
+    std::cout << "New class pred:\t";
+    std::cout << classPred.size() << " x " << classPred[0].size() << std::endl;
+    
+    //Anchors anchors;
+    //anchors.anchorsGenerator();
 
     // NON MAX SUPPRESSION WITH cv::NMSBoxes()
 
