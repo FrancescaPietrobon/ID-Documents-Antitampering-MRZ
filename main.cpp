@@ -60,7 +60,7 @@ int main()
 
     cv::Mat prediction = network.forward();
     cv::Range boxRange(0, 4);
-    cv::Range classRange(4, NUM_CLASSES + 4);
+    cv::Range classRange(4, NUM_CLASSES + 5);
     cv::Range all(cv::Range::all());
     std::vector<cv::Range> boxRanges = {all, boxRange, all, all};
     std::vector<cv::Range> classRanges = {all, classRange, all, all};
@@ -80,7 +80,7 @@ int main()
     matrix2D classPred = extractPredCVMat(classPrediction);
     std::cout << "New class pred:\t";
     std::cout << classPred.size() << " x " << classPred[0].size() << std::endl;
-    
+
     //Anchors anchors;
     //anchors.anchorsGenerator();
 
