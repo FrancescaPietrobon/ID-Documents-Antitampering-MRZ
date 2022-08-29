@@ -1,4 +1,4 @@
-#include "DBSCAN.h"
+#include "../include/DBSCAN.h"
 
 double Point::distance(const Point & point)
 {
