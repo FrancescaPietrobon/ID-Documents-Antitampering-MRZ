@@ -18,8 +18,6 @@ typedef std::vector<std::vector<float>> matrix2D;
 typedef std::vector<std::vector<std::vector<float>>> matrix3D;
 typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 
-typedef std::deque<std::deque<float>> deque2D;
-
 matrix2D extractPredCVMat(cv::Mat boxPrediction)
 {
     matrix2D boxPred;
