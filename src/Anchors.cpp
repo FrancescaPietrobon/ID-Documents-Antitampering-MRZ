@@ -3,10 +3,10 @@
 
 Anchors::Anchors()
 {
-    for(double area: areas_dims)
+    for(float area: areas_dims)
         areas.push_back(std::pow(area, 2));
 
-    for(double stride: strides_range)
+    for(float stride: strides_range)
         strides.push_back(std::pow(2, stride));
 
     Anchors::computeDims(); 
@@ -15,12 +15,12 @@ Anchors::Anchors()
 
 void Anchors::computeDims()
 {
-    std::vector<double> dim_scaled;
+    std::vector<float> dim_scaled;
 
     float anchor_height, anchor_width;
-    for(double area: areas)
+    for(float area: areas)
     {
-        for(double ratio: aspect_ratios)
+        for(float ratio: aspect_ratios)
         {
             anchor_height = std::sqrt(area / ratio);
             anchor_width = area / anchor_height;
@@ -28,7 +28,7 @@ void Anchors::computeDims()
             dims.push_back(anchor_width);
             dims.push_back(anchor_height);
 
-            for(double scale: scales)
+            for(float scale: scales)
             {
                 dim_scaled = {dims[0] * scale, dims[1] * scale};
                 //std::cout << "dim_scaled[0]: " << dim_scaled[0] << " dim_scaled[1]: " << dim_scaled[1] << std::endl;
@@ -45,7 +45,7 @@ void Anchors::computeDims()
 
 matrix3D Anchors::meshgrid(int level)
 {
-  std::vector<double> point;
+  std::vector<float> point;
   matrix2D grid;
   matrix3D grid_rep;
 
@@ -53,7 +53,7 @@ matrix3D Anchors::meshgrid(int level)
   {
     for(int j = 0; j < FEATURE_WIDTH / std::pow(2, level); ++j)
     {
-      point = {(j + 0.25)*std::pow(2, level), (i + 0.25)*std::pow(2, level)};
+      point = {static_cast<float>(j + 0.25) * static_cast<float>(std::pow(2, level)), static_cast<float>(i + 0.25) * static_cast<float>(std::pow(2, level))};
       //std::cout << point[0] << " " << point[1] << std::endl;
       for(int k = 0; k < 15; ++k)
         grid.push_back(point);
@@ -88,7 +88,7 @@ matrix2D Anchors::resizeAnchors(matrix3D A)
 matrix3D Anchors::concatenate(matrix3D A, matrix3D B)
 {
   matrix3D concatenation = A;
-  std::vector<double> anchor;
+  std::vector<float> anchor;
   
   for(size_t i = 0; i < A.size(); ++i)
   {
@@ -121,7 +121,7 @@ void Anchors::printAnchorShapesTransf(matrix3D grid, matrix3D area_exp, matrix3D
 }
 
 
-void Anchors::anchorsGenerator()
+matrix2D Anchors::anchorsGenerator()
 {
     matrix2D all_anchors;
 
@@ -149,6 +149,7 @@ void Anchors::anchorsGenerator()
     }
     
     std::cout << "All anchors: \t"  << all_anchors.size() << " x " << all_anchors[0].size() << std::endl;
+    return all_anchors;
 }
 
 
@@ -157,7 +158,7 @@ void Anchors::anchorsGenerator()
 
 void Anchors::meshgrid_opencv(cv::Mat &X, cv::Mat &Y)
 {
-    std::vector<double> t_x, t_y;
+    std::vector<float> t_x, t_y;
     for(int i = 0; i < FEATURE_WIDTH / std::pow(2,3); i++) t_x.push_back(i + 0.5);
     for(int j = 0; j < FEATURE_HEIGHT / std::pow(2,3); j++) t_y.push_back(j + 0.5);
 
@@ -173,7 +174,7 @@ void Anchors::meshgrid_opencv(cv::Mat &X, cv::Mat &Y)
 
 void Anchors::meshgrid_old(matrix3D &X, matrix3D &Y, int level)
 {
-  std::vector<double> t_x, t_y;
+  std::vector<float> t_x, t_y;
   matrix2D X2, Y2;
 
   for(int i = 0; i < FEATURE_WIDTH / std::pow(2, level); i++)
