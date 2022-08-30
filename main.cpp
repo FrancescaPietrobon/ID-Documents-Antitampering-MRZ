@@ -18,7 +18,8 @@ typedef std::vector<std::vector<float>> matrix2D;
 typedef std::vector<std::vector<std::vector<float>>> matrix3D;
 typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 
-matrix2D extractPredCVMat(cv::Mat boxPrediction)
+/*
+matrix2D extractPredCVMatWrongOrder(cv::Mat boxPrediction)
 {
     matrix2D boxPred;
     std::vector<float> box;
@@ -36,6 +37,39 @@ matrix2D extractPredCVMat(cv::Mat boxPrediction)
     }
     return boxPred;
 }
+*/
+
+
+matrix2D extractPredCVMat(cv::Mat boxPrediction)
+{
+    // To extract the values in the right order (like in Python)
+
+    matrix2D boxPred;
+    std::vector<float> box;
+    cv::Vec<int,4> idx;
+    int j = 0;
+    int i = 0;
+    int count = 0;
+
+    while(count < boxPrediction.size[1] * boxPrediction.size[3])
+    {
+        if(j >= boxPrediction.size[3])
+        {
+            i += 1;
+            j = 0;
+        }
+        idx = {0, i, 0, j};
+        box.push_back(boxPrediction.at<float>(idx));
+        count += 1;
+        j += 1;
+        if(count % boxPrediction.size[1] == 0)
+        {
+            boxPred.push_back(box);
+            box.clear();
+        }
+    }
+    return boxPred;
+}
 
 
 void printPredCVMat(matrix2D boxPrediction)
@@ -44,12 +78,16 @@ void printPredCVMat(matrix2D boxPrediction)
     {
         for(size_t j = 0; j < boxPrediction.begin()->size(); ++j)
         {
+            //if(i < 20)
             //if(i > 200140)
-            if(i < 5)
+            //if(i == 200135)
+            if(i < 20)
                 std::cout << boxPrediction[i][j] << " ";
         }
+        //if(i < 20)
         //if(i > 200140)
-        if(i < 5)
+        //if(i == 200135)
+        if(i < 20)
             std::cout << " " << std::endl;
     }
 }
@@ -133,13 +171,12 @@ void NonMaxSuppression(matrix2D boxes, float threshold, matrix2D)
 
 int main()
 {
-    // Load network
-    std::string networkWeights = "/home/f_pietrobon/thesis/MRZ_Antitampering/models/Frozen_graph_test_0.25_cleaned.pb";
+    // Load network 
+    std::string networkWeights = "/home/f_pietrobon/thesis/MRZ_Antitampering/models/Frozen_graph_test_lr_3_4_ep_3.pb";
     cv::dnn::Net network = cv::dnn::readNetFromTensorflow(networkWeights);
     
     cv::Mat document = cv::imread("/home/f_pietrobon/thesis/MRZ_Antitampering/AFG_AO_01001_FRONT.JPG", cv::IMREAD_COLOR);
    
-    //cv::cvtColor(document, document, cv::COLOR_BGR2RGB);
     cv::fastNlMeansDenoising(document, document, 10);
     cv::resize(document, document, cv::Size(800, 800), 0, 0, cv::INTER_CUBIC);
     
@@ -159,8 +196,8 @@ int main()
 
     cv::Mat boxPrediction = prediction(boxRanges);
     std::cout << "Box pred:\t";
-    std::cout << boxPrediction.size[0] << " x " << boxPrediction.size[1] << " x " << boxPrediction.size[2] << " x " << boxPrediction.size[3] << std::endl;
-    
+    std::cout << boxPrediction.size[0] << " x " << boxPrediction.size[1] << " x " << boxPrediction.size[2] << " x " << boxPrediction.size[3] << std::endl;    
+
     cv::Mat classPrediction = prediction(classRanges);
     std::cout << "Class pred:\t";
     std::cout << classPrediction.size[0] << " x " << classPrediction.size[1] << " x " << classPrediction.size[2] << " x " << classPrediction.size[3] << std::endl;
@@ -175,7 +212,6 @@ int main()
     std::cout << "New class pred:\t";
     std::cout << classPred.size() << " x " << classPred.begin()->size() << std::endl;
     
-
     applySigmoid(classPred);
     std::cout << "Sig class pred:\t";
     std::cout << classPred.size() << " x " << classPred.begin()->size() << std::endl;
@@ -184,6 +220,17 @@ int main()
     matrix2D anchorBoxes = anchors.anchorsGenerator();
 
     matrix2D centers = computeCenters(boxPred, anchorBoxes);
+
+    //std::cout << "Box predicted:" << std::endl;
+    //printPredCVMat(boxPred);
+
+    //std::cout << "Class predicted post sigmoid:" << std::endl;
+    //printPredCVMat(classPred);
+
+    // OK, SAME AS PYTHON!
+    //std::cout << "Anchors:" << std::endl;
+    //printPredCVMat(anchorBoxes);
+
     
 
     // NON MAX SUPPRESSION WITH cv::NMSBoxes()
