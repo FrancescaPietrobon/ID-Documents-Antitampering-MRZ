@@ -68,8 +68,8 @@ matrix3D Anchors::meshgrid(int level)
 
 void Anchors::printAnchors(matrix3D A, matrix3D B)
 {
-  for(int j = 0; j < A.size(); ++j)
-    for(int i = 0; i < A[j].size(); ++i)
+  for(size_t j = 0; j < A.size(); ++j)
+    for(size_t i = 0; i < A[j].size(); ++i)
       std::cout << "h" << i << " = " << A[j][i][0] << "\t w" << i << " = " << A[j][i][1] << "\t x" << i << " = " << B[j][i][0] << "\t y" << i << " = " << B[j][i][1] << std::endl;
 }
 
@@ -148,7 +148,6 @@ matrix2D Anchors::anchorsGenerator()
     
     }
     
-    std::cout << "All anchors: \t"  << all_anchors.size() << " x " << all_anchors[0].size() << std::endl;
     return all_anchors;
 }
 
