@@ -53,7 +53,7 @@ matrix3D Anchors::meshgrid(int level)
   {
     for(int j = 0; j < FEATURE_WIDTH / std::pow(2, level); ++j)
     {
-      point = {static_cast<float>(j + 0.25) * static_cast<float>(std::pow(2, level)), static_cast<float>(i + 0.25) * static_cast<float>(std::pow(2, level))};
+      point = {static_cast<float>(j + RX_Y_PLUS) * static_cast<float>(std::pow(2, level)), static_cast<float>(i + RX_Y_PLUS) * static_cast<float>(std::pow(2, level))};
       //std::cout << point[0] << " " << point[1] << std::endl;
       for(int k = 0; k < 15; ++k)
         grid.push_back(point);

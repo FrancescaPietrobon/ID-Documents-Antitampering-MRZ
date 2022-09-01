@@ -13,6 +13,9 @@
 #define FEATURE_WIDTH 800
 #define FEATURE_HEIGHT 800
 #define NUM_CLASSES 64
+#define THRESHOLD_IOU 0.08
+#define THRESHOLD_NMS 0.01
+#define DENOISE_PARAM 10
 
 typedef std::vector<std::vector<float>> matrix2D;
 typedef std::vector<std::vector<std::vector<float>>> matrix3D;
@@ -163,17 +166,17 @@ void extractImageWithPrediction(cv::Mat img, matrix2D boxes, matrix2D pred, floa
 int main()
 {
     // Load network 
-    std::string networkWeights = "/home/f_pietrobon/thesis/MRZ_Antitampering/models/Frozen_graph_test_lr_5_4_ep_3_nms.pb";
+    std::string networkWeights = "/home/f_pietrobon/thesis/MRZ_Antitampering/models/Frozen_graph_prova.pb";
     cv::dnn::Net network = cv::dnn::readNetFromTensorflow(networkWeights);
     
     cv::Mat document = cv::imread("/home/f_pietrobon/thesis/MRZ_Antitampering/BGR_AO_02001_FRONT.jpeg", cv::IMREAD_COLOR);
    
-    // Image preprocessing
-    cv::fastNlMeansDenoising(document, document, 10);
-    cv::resize(document, document, cv::Size(800, 800), 0, 0, cv::INTER_CUBIC);
+    // Preprocessing
+    cv::fastNlMeansDenoising(document, document, DENOISE_PARAM);
+    cv::resize(document, document, cv::Size(FEATURE_WIDTH, FEATURE_HEIGHT), 0, 0, cv::INTER_CUBIC);
     
     // Predict
-    cv::Mat blob = cv::dnn::blobFromImage(document, 1.0, cv::Size(800, 800), cv::Scalar(0,0,0), true, false);
+    cv::Mat blob = cv::dnn::blobFromImage(document, 1.0, cv::Size(FEATURE_WIDTH, FEATURE_HEIGHT), cv::Scalar(103.939, 116.779, 123.68), true, false);
     network.setInput(blob);
     cv::Mat prediction = network.forward();
     
@@ -202,7 +205,7 @@ int main()
     //printPredCVMat(corners);
 
     // Save the image with the predicted boxes
-    extractImageWithPrediction(document, corners, classPred, 0.5, 0.1);
+    extractImageWithPrediction(document, corners, classPred, THRESHOLD_IOU, THRESHOLD_NMS);
   
 
     // Uncomment to see the time needed to load the network

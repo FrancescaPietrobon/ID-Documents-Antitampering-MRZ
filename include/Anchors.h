@@ -9,6 +9,7 @@
 
 #define FEATURE_WIDTH 800
 #define FEATURE_HEIGHT 800
+#define RX_Y_PLUS 0.5
 
 typedef std::vector<std::vector<float>> matrix2D;
 typedef std::vector<std::vector<std::vector<float>>> matrix3D;
