@@ -1,10 +1,11 @@
 #ifndef _CHARACTERS_H_
 #define _CHARACTERS_H_
 
-#include <map>
+#include <unordered_map>
 #include <string>
+#include <algorithm>
 
-std::map<unsigned, std::string> dictionary =   {{0, "0",},
+std::unordered_map<unsigned, std::string> dictionary =   {{0, "0",},
                                                 {1, "1",},
                                                 {2, "2",},
                                                 {3, "3",},
@@ -69,6 +70,19 @@ std::map<unsigned, std::string> dictionary =   {{0, "0",},
                                                 {62, "-",},
                                                 {63, "/",},
                                                 {64, "<",}};
+
+template<typename K, typename V>
+std::unordered_map<V, K> inverse_map(std::unordered_map<K, V> &map)
+{
+    std::unordered_map<V, K> inv;
+    std::for_each(map.begin(), map.end(),
+                [&inv] (const std::pair<K, V> &p) {
+                    inv.insert(std::make_pair(p.second, p.first));
+                });
+    return inv;
+}
+
+std::unordered_map<std::string, unsigned> inverse_dictionary = inverse_map(dictionary);
 
 
 class Box{

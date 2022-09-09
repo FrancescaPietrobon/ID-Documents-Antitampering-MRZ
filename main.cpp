@@ -6,9 +6,12 @@
 #include <opencv2/dnn/dnn.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#include "include/Document.h"
+#include "include/Boxes.h"
 #include "include/DBSCAN.h"
 #include "include/Characters.h"
 #include "include/Anchors.h"
+#include "include/pugixml.hpp"
 
 #define FEATURE_WIDTH 800
 #define FEATURE_HEIGHT 800
@@ -117,6 +120,7 @@ void savePredictionImage(cv::Mat img, matrix2D boxes, std::vector<float> classes
     cv::imwrite(img_name, new_image);
 }
 
+
 void extractImageWithPrediction(cv::Mat img, matrix2D boxes, matrix2D pred, float threshold, float threshold_nms)
 {
     std::vector<float> indices_max;
@@ -163,13 +167,107 @@ void extractImageWithPrediction(cv::Mat img, matrix2D boxes, matrix2D pred, floa
 }
 
 
-int main()
+void printXMLBoxes(const char* XMLPath)
 {
-    // Load network 
-    std::string networkWeights = "/home/f_pietrobon/thesis/MRZ_Antitampering/models/Frozen_graph_prova.pb";
-    cv::dnn::Net network = cv::dnn::readNetFromTensorflow(networkWeights);
+    pugi::xml_document doc;
+    doc.load_file(XMLPath);
+    pugi::xml_node tools = doc.child("annotation");
+
+    for (pugi::xml_node object: tools.children("object"))
+    {
+        std::cout << "Object " << object.child_value("name");
+        pugi::xml_node box = object.child("bndbox");
+        std::cout << " : xmin " << box.child_value("xmin");
+        std::cout << ", ymin " << box.child_value("ymin");
+        std::cout << ", xmax " << box.child_value("xmax");
+        std::cout << ", ymax " << box.child_value("ymax") << std::endl;
+    }
+}
+
+
+std::pair<matrix2D, std::vector<float>> extractBoxes(const char* XMLPath)
+{
+    matrix2D boxes;
+    std::vector<float> single_box;
+    std::vector<float> classes;
+    float xmin, ymin, xmax, ymax;
+    std::string label;
+    unsigned label_idx;
+
+    pugi::xml_document doc;
+    doc.load_file(XMLPath);
+
+    pugi::xml_node tools = doc.child("annotation");
+    for (pugi::xml_node object: tools.children("object"))
+    {
+        label = std::string(object.child_value("name"));
+        label_idx = inverse_dictionary[label];
+        classes.push_back(label_idx);
+
+        pugi::xml_node box = object.child("bndbox");
+        xmin = std::atof(box.child_value("xmin"));
+        ymin = std::atof(box.child_value("ymin"));
+        xmax = std::atof(box.child_value("xmax"));
+        ymax = std::atof(box.child_value("ymax"));
+        single_box = {xmin, ymin, xmax, ymax};
+        boxes.push_back(single_box);
+    }
+
+    std::pair<matrix2D, std::vector<float>> result(boxes, classes);
+
+    return result;
+
+}
+
+
+void NEWpredictFromModel(std::string networkPath, std::string imagePath)
+{
+    cv::dnn::Net network = cv::dnn::readNetFromTensorflow(networkPath);
+
+    Document document(imagePath);
+    document.preprocessing();
     
-    cv::Mat document = cv::imread("/home/f_pietrobon/thesis/MRZ_Antitampering/BGR_AO_02001_FRONT.jpeg", cv::IMREAD_COLOR);
+    // Predict
+    network.setInput(document.GetBlob());
+    cv::Mat prediction = network.forward();
+    
+    // Split box and classes
+    cv::Range boxRange(0, 4);
+    cv::Range classRange(4, NUM_CLASSES + 5);
+    cv::Range all(cv::Range::all());
+    std::vector<cv::Range> boxRanges = {all, boxRange, all, all};
+    std::vector<cv::Range> classRanges = {all, classRange, all, all};
+    cv::Mat boxPrediction = prediction(boxRanges);
+    cv::Mat classPrediction = prediction(classRanges);
+
+    Boxes boxesPred(boxPrediction);
+
+    // Save prediction for box and classes in the right format
+    // matrix2D boxPred = extractPredCVMat(boxesPred.getPred());
+    // boxesPred.setPredReshaped(boxPred);
+
+    matrix2D classPred = extractPredCVMat(classPrediction);
+    
+    applySigmoid(classPred);
+
+    // Compute anchors
+    Anchors anchors;
+    matrix2D anchorBoxes = anchors.anchorsGenerator();
+
+    // Compute the right boxes
+    matrix2D centers = computeCenters(boxesPred.getPredReshaped(), anchorBoxes);
+    boxesPred.computeCorners(centers);
+    //printPredCVMat(corners);
+
+    // Save the image with the predicted boxes
+    extractImageWithPrediction(document.GetDocument(), boxesPred.getCorners(), classPred, THRESHOLD_IOU, THRESHOLD_NMS); // FORSE DEVE ESSERE BLOB NON DOCUMENT
+}
+
+
+void predictFromModel(std::string networkPath, std::string imagePath)
+{
+    cv::dnn::Net network = cv::dnn::readNetFromTensorflow(networkPath);
+    cv::Mat document = cv::imread(imagePath, cv::IMREAD_COLOR);
    
     // Preprocessing
     cv::fastNlMeansDenoising(document, document, DENOISE_PARAM);
@@ -205,15 +303,46 @@ int main()
     //printPredCVMat(corners);
 
     // Save the image with the predicted boxes
-    extractImageWithPrediction(document, corners, classPred, THRESHOLD_IOU, THRESHOLD_NMS);
-  
+    extractImageWithPrediction(document, corners, classPred, THRESHOLD_IOU, THRESHOLD_NMS); // FORSE DEVE ESSERE BLOB NON DOCUMENT
+}
 
-    // Uncomment to see the time needed to load the network
-    //auto start_network = std::chrono::high_resolution_clock::now();
-    //cv::Mat detections = network.forward();
-    //auto stop_network = std::chrono::high_resolution_clock::now();
-    //auto duration_network = std::chrono::duration_cast<std::chrono::milliseconds>(stop_network - start_network);
-    //std::cout << "Time taken to predict: " << duration_network.count() << " milliseconds" << std::endl;
 
+
+void predictFromXML(const char* XMLPath, std::string imagePath)
+{
+    cv::Mat document_init = cv::imread(imagePath, cv::IMREAD_COLOR);
+    cv::Mat document;
+
+    // Preprocessing
+    cv::fastNlMeansDenoising(document_init, document, DENOISE_PARAM);
+    cv::resize(document, document, cv::Size(FEATURE_WIDTH, FEATURE_HEIGHT), 0, 0, cv::INTER_CUBIC);
+    
+    // Predict
+    cv::Mat blob = cv::dnn::blobFromImage(document, 1.0, cv::Size(FEATURE_WIDTH, FEATURE_HEIGHT), cv::Scalar(103.939, 116.779, 123.68), true, false);
+
+    std::pair<matrix2D, std::vector<float>> result = extractBoxes(XMLPath);
+
+
+
+    savePredictionImage(document, result.first, result.second, "../pred_xml.jpg");
+}
+
+
+
+
+
+int main()
+{
+    std::string networkPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/models/Frozen_graph_prova.pb";
+    std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.jpeg";
+    
+    const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.xml";
+
+    printXMLBoxes(XMLPath);
+
+    //predictFromXML(XMLPath, imagePath);
+
+    predictFromModel(networkPath, imagePath);
+    
     return 0;
 }

@@ -22,9 +22,12 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 
+add_library(Document src/Document.cpp)
+add_library(Boxes src/Boxes.cpp)
 add_library(DBSCAN src/DBSCAN.cpp)
 add_library(Characters src/Characters.cpp)
 add_library(Anchors src/Anchors.cpp)
+add_library(pugixml include/pugixml.cpp)
 
 find_package(OpenCV REQUIRED)
 
@@ -33,6 +36,9 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 add_executable(OCR main.cpp)
 
 target_link_libraries(OCR ${OpenCV_LIBS})
+target_link_libraries(OCR Document)
+target_link_libraries(OCR Boxes)
 target_link_libraries(OCR DBSCAN)
 target_link_libraries(OCR Characters)
 target_link_libraries(OCR Anchors)
+target_link_libraries(OCR pugixml)
