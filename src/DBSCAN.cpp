@@ -1,5 +1,13 @@
 #include "../include/DBSCAN.h"
 
+DBSCAN::DBSCAN(int n_, double eps_, int minPts_, std::vector<Point> points_):
+    n(n_), eps(eps_), minPts(minPts_), points(points_)
+    {
+        adjPoints.resize(size);
+        clusterIdx = -1;
+    }
+
+    
 double Point::distance(const Point & point)
 {
     return std::sqrt((x - point.x) * (x - point.x) +
@@ -28,14 +36,6 @@ void Point::setCluster(int cl)
 {
     cluster = cl;
 }
-
-
-DBSCAN::DBSCAN(int n_, double eps_, int minPts_, std::vector<Point> points_):
-    n(n_), eps(eps_), minPts(minPts_), points(points_)
-    {
-        adjPoints.resize(size);
-        clusterIdx = -1;
-    }
 
     
 void DBSCAN::run()

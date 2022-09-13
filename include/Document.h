@@ -18,16 +18,22 @@ typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 class Document
 {
     public:
-        Document(std::string);
+        Document(const std::string);
         void preprocessing();
-        cv::Mat GetBlob();
-        cv::Mat GetDocument();
+        cv::Mat getBlob();
+        cv::Mat getDocument();
+        float getXAlter();
+        float getYAlter();
         
 
     private:
         cv::Mat inputImage;
         cv::Mat imagePreprocessed;
         cv::Mat blob;
+        float img_w;
+        float img_h;
+        float xAlter;
+        float yAlter;
         std::string imagePath;
 
 

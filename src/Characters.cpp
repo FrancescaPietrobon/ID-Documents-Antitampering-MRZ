@@ -1,7 +1,14 @@
 #include "../include/Characters.h"
 
+template<typename K, typename V>
+std::unordered_map<V, K> inverse_map(std::unordered_map<K, V> &map)
+{
+    std::unordered_map<V, K> inv;
+    std::for_each(map.begin(), map.end(),
+                [&inv] (const std::pair<K, V> &p) {
+                    inv.insert(std::make_pair(p.second, p.first));
+                });
+    return inv;
+}
 
-
-Box::Box(unsigned x_, unsigned y_, unsigned h_, unsigned w_, unsigned label_):
-    x(x_), y(y_), h(h_), w(w_), label(label_) {letter = dictionary[label_];}
-
+std::unordered_map<std::string, unsigned> inverse_dictionary = inverse_map(dictionary);

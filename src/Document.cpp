@@ -1,9 +1,17 @@
 #include "../include/Document.h"
 
-Document::Document(std::string path):
+Document::Document(const std::string path):
     imagePath(path)
     {
         inputImage = cv::imread(imagePath, cv::IMREAD_COLOR);
+        img_w = inputImage.size[1];
+        img_h = inputImage.size[0];
+        xAlter = FEATURE_WIDTH / img_w;
+        yAlter = FEATURE_HEIGHT / img_h;
+
+        preprocessing();
+        blob = cv::dnn::blobFromImage(imagePreprocessed, 1.0, cv::Size(FEATURE_WIDTH, FEATURE_HEIGHT), cv::Scalar(103.939, 116.779, 123.68), true, false);
+    
     }
 
 void Document::preprocessing()
@@ -14,12 +22,22 @@ void Document::preprocessing()
 }
 
 
-cv::Mat Document::GetBlob()
+cv::Mat Document::getBlob()
 {
     return blob;
 }
 
-cv::Mat Document::GetDocument()
+cv::Mat Document::getDocument()
 {
     return imagePreprocessed;
+}
+
+float Document::getXAlter()
+{
+    return xAlter;
+}
+
+float Document::getYAlter()
+{
+    return yAlter;
 }

@@ -1,9 +1,9 @@
 #include "../include/Boxes.h"
 
-Boxes::Boxes(cv::Mat boxesPred):
-    pred(boxesPred)
+Boxes::Boxes(Document doc, cv::Mat boxesPred):
+    document(doc), pred(boxesPred)
 {
-    predReshaped = extractPredCVMat(pred);
+    predMatrix = extractPredCVMat(pred);
 }
 
 
@@ -12,9 +12,9 @@ cv::Mat Boxes::getPred()
     return pred;
 }
 
-matrix2D Boxes::getPredReshaped()
+matrix2D Boxes::getPredMatrix()
 {
-    return predReshaped;
+    return predMatrix;
 }
 
 matrix2D Boxes::getCorners()
@@ -22,9 +22,9 @@ matrix2D Boxes::getCorners()
     return corners;
 }
 
-matrix2D Boxes::setPredReshaped(matrix2D predictions)
+void Boxes::setpredMatrix(matrix2D predictions)
 {
-    predReshaped = predictions;
+    predMatrix = predictions;
 }
 
 void Boxes::computeCorners(matrix2D boxes)
@@ -66,4 +66,17 @@ matrix2D Boxes::extractPredCVMat(cv::Mat boxPrediction)
         }
     }
     return boxPred;
+}
+
+
+void Boxes::printPredCVMat()
+{
+    for(size_t i = 0; i < predMatrix.size(); ++i)
+    {
+        for(size_t j = 0; j < predMatrix.begin()->size(); ++j)
+            if(i < 20)
+                std::cout << predMatrix[i][j] << " ";
+        if(i < 20)
+            std::cout << " " << std::endl;
+    }
 }
