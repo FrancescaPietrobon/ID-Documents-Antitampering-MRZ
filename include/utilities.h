@@ -1,5 +1,5 @@
-#ifndef _UTILITIES_H_
-#define _UTILITIES_H_
+#ifndef UTILITIES_H
+#define UTILITIES_H
 
 #include <iostream>
 #include <vector>

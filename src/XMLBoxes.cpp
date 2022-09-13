@@ -1,11 +1,4 @@
 #include "../include/XMLBoxes.h"
-#include "../include/utilities.h"
-#include "../include/pugixml.hpp"
-
-
-XMLBoxes::XMLBoxes(Document doc, const char* xml):
-    document(doc), XMLPath(xml){}
-
 
 void XMLBoxes::predictFromXML()
 {

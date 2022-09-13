@@ -1,21 +1,22 @@
-#ifndef _XML_BOXES_H_
-#define _XML_BOXES_H_
+#ifndef XML_BOXES_H
+#define XML_BOXES_H
 
 #include <iostream>
 #include <vector>
 #include <opencv2/opencv.hpp>
 #include <opencv2/dnn/dnn.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include "Document.h"
+#include "pugixml.hpp"
+#include "utilities.h"
+#include "Boxes.h"
 
 typedef std::vector<std::vector<float>> matrix2D;
 typedef std::vector<std::vector<std::vector<float>>> matrix3D;
 typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 
-class XMLBoxes
+class XMLBoxes: public Boxes
 {
     private:
-        Document document;
         const char* XMLPath;
         matrix2D boxes;
         matrix2D boxesReshaped;
@@ -25,7 +26,8 @@ class XMLBoxes
         unsigned label_idx;
 
     public:
-        XMLBoxes(Document, const char*);
+        XMLBoxes(Document doc, const char* xml):
+            Boxes(doc), XMLPath(xml){}
         std::pair<matrix2D, std::vector<float>> extractBoxes();
         void predictFromXML();
         void printXMLBoxes();

@@ -6,13 +6,13 @@
 #include <opencv2/dnn/dnn.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include "include/Document.h"
-#include "include/Boxes.h"
+#include "include/pugixml.hpp"
+#include "include/utilities.h"
+#include "include/ModelBoxes.h"
 #include "include/XMLBoxes.h"
 #include "include/DBSCAN.h"
 #include "include/Anchors.h"
-#include "include/utilities.h"
-#include "include/pugixml.hpp"
+#include "src/Characters.cpp"
 
 #define FEATURE_WIDTH 800
 #define FEATURE_HEIGHT 800
@@ -43,7 +43,7 @@ void predictFromModel(Document document, std::string networkPath)
     cv::Mat boxPrediction = prediction(boxRanges);
     cv::Mat classPrediction = prediction(classRanges);
 
-    Boxes boxesPred(document, boxPrediction);
+    ModelBoxes boxesPred(document, boxPrediction);
 
     // Save prediction for box and classes in the right format
     // matrix2D boxPred = extractPredCVMat(boxesPred.getPred());
@@ -82,7 +82,7 @@ int main()
     xmlBoxes.predictFromXML();
     //xmlBoxes.printXMLBoxes();
 
-    //predictFromModel(document, networkPath);
+    predictFromModel(document, networkPath);
     
     return 0;
 }

@@ -1,5 +1,5 @@
-#ifndef _ANCHORS_H_
-#define _ANCHORS_H_
+#ifndef ANCHORS_H
+#define ANCHORS_H
 
 #include <iostream>
 #include <vector>

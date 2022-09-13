@@ -1,5 +1,5 @@
-#ifndef _BOXES_H_
-#define _BOXES_H_
+#ifndef BOXES_H
+#define BOXES_H
 
 #include <iostream>
 #include <vector>
@@ -17,23 +17,12 @@ typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 
 class Boxes
 {
-    private:
+    protected:
         Document document;
-        cv::Mat pred;
-        double xAlter;
-        double yAlter;
-        matrix2D predMatrix;
-        matrix2D corners;
-        matrix2D extractPredCVMat(cv::Mat);
+        
 
     public:
-        Boxes(Document, cv::Mat);
-        cv::Mat getPred();
-        matrix2D getPredMatrix();
-        matrix2D getCorners();
-        void setpredMatrix(matrix2D);
-        void computeCorners(matrix2D);
-        void printPredCVMat();
+        explicit Boxes(Document);
 
 };
 

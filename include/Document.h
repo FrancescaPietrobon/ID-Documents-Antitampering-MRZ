@@ -1,5 +1,5 @@
-#ifndef _DOCUMENT_H_
-#define _DOCUMENT_H_
+#ifndef DOCUMENT_H
+#define DOCUMENT_H
 
 #include <iostream>
 #include <vector>
