@@ -18,18 +18,11 @@ class XMLBoxes: public Boxes
 {
     private:
         const char* XMLPath;
-        matrix2D boxes;
-        matrix2D boxesReshaped;
-        std::vector<float> classes;
-        float xmin, ymin, xmax, ymax;
-        std::string label;
-        unsigned label_idx;
 
     public:
         XMLBoxes(Document doc, const char* xml):
             Boxes(doc), XMLPath(xml){}
-        std::pair<matrix2D, std::vector<float>> extractBoxes();
-        void predictFromXML();
+        void extractBoxes();
         void printXMLBoxes();
 };
 

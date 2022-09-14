@@ -7,9 +7,11 @@
 #include <opencv2/dnn/dnn.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include "Boxes.h"
+#include "utilities.h"
 
 #define FEATURE_WIDTH 800
 #define FEATURE_HEIGHT 800
+#define NUM_CLASSES 64
 
 typedef std::vector<std::vector<float>> matrix2D;
 typedef std::vector<std::vector<std::vector<float>>> matrix3D;
@@ -18,25 +20,25 @@ typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 class ModelBoxes: public Boxes
 {
     private:
-        cv::Mat pred;
-        double xAlter;
-        double yAlter;
-        matrix2D predMatrix;
-        matrix2D corners;
+        cv::Mat predictions;
+        cv::Mat boxPredCVMat;
+        cv::Mat classPredCVMat;
+        matrix2D boxPred;
+        matrix2D classPred;
+        matrix2D boxesPreNMS;
         matrix2D extractPredCVMat(cv::Mat);
+        void applySigmoid(matrix2D &);
 
     public:
-        ModelBoxes(Document doc, cv::Mat boxesPred):
-            Boxes(doc), pred(boxesPred)
-            {
-                predMatrix = extractPredCVMat(pred);
-            }
-        cv::Mat getPred();
-        matrix2D getPredMatrix();
-        matrix2D getCorners();
-        void setpredMatrix(matrix2D);
-        void computeCorners(matrix2D);
+        ModelBoxes(Document doc, cv::Mat pred);
+        matrix2D getBoxPred();
+        matrix2D getClassPred();
+        matrix2D getBoxesPreNMS();
+        matrix2D getBoxesReshaped();
+        void computeBoxes(matrix2D);
+        void computeNMS(float threshold, float threshold_nms);
         void printPredCVMat();
+        void reshapeBoxes();
 
 };
 

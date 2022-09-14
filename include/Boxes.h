@@ -19,10 +19,14 @@ class Boxes
 {
     protected:
         Document document;
-        
+        matrix2D boxes;
+        matrix2D boxesReshaped;
+        std::vector<float> classes;
 
     public:
         explicit Boxes(Document);
+        matrix2D getBoxes();
+        std::vector<float> getClasses();
 
 };
 

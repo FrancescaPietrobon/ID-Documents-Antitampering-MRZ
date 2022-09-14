@@ -22,10 +22,10 @@ class Document
         void preprocessing();
         cv::Mat getBlob();
         cv::Mat getDocument();
+        cv::Mat getInputImage();
         float getXAlter();
         float getYAlter();
         
-
     private:
         cv::Mat inputImage;
         cv::Mat imagePreprocessed;
@@ -35,8 +35,6 @@ class Document
         float xAlter;
         float yAlter;
         std::string imagePath;
-
-
 
 };
 

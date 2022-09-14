@@ -1,15 +1,6 @@
 #include "../include/XMLBoxes.h"
 
-void XMLBoxes::predictFromXML()
-{
-
-    std::pair<matrix2D, std::vector<float>> result = extractBoxes();
-
-    savePredictionImage(document.getDocument(), result.first, result.second, "../pred_xml.jpg");
-}
-
-
-std::pair<matrix2D, std::vector<float>> XMLBoxes::extractBoxes()
+void XMLBoxes::extractBoxes()
 {
     std::vector<float> singleBox, singleBoxReshaped;
     float xmin, ymin, xmax, ymax;
@@ -19,8 +10,7 @@ std::pair<matrix2D, std::vector<float>> XMLBoxes::extractBoxes()
     pugi::xml_document doc;
     doc.load_file(XMLPath);
 
-    extern std::unordered_map<std::string, unsigned> inverse_dictionary; // = inverse_map(dictionary);
-    //extern std::unordered_map<unsigned, std::string> dictionary;
+    extern std::unordered_map<std::string, unsigned> inverse_dictionary;
 
     pugi::xml_node tools = doc.child("annotation");
     for (pugi::xml_node object: tools.children("object"))
@@ -40,10 +30,6 @@ std::pair<matrix2D, std::vector<float>> XMLBoxes::extractBoxes()
         boxes.push_back(singleBox);
         boxesReshaped.push_back(singleBoxReshaped);
     }
-    
-    std::pair<matrix2D, std::vector<float>> result(boxesReshaped, classes);
-
-    return result;
 }
 
 
