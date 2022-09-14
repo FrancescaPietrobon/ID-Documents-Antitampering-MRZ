@@ -1,5 +1,5 @@
-#ifndef _DBSCAN_H_
-#define _DBSCAN_H_
+#ifndef DBSCAN_H
+#define DBSCAN_H
 
 #include <cmath>
 #include <vector>
