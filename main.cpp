@@ -14,22 +14,52 @@
 #include "include/Anchors.h"
 #include "src/Characters.cpp"
 
+#define NUM_CLASSES 64
+
+// Image preprocessing params:
 #define FEATURE_WIDTH 800
 #define FEATURE_HEIGHT 800
-#define NUM_CLASSES 64
+#define DENOISE_PARAM 10
+
+// NMS params:
 #define THRESHOLD_IOU 0.08
 #define THRESHOLD_NMS 0.01
-#define DENOISE_PARAM 10
+
+// DBSCAN params:
+#define N 10
+#define EPS 0.1
+#define MIN_PTS 4
 
 typedef std::vector<std::vector<float>> matrix2D;
 typedef std::vector<std::vector<std::vector<float>>> matrix3D;
 typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 
 
-std::pair<matrix2D, std::vector<float>> predictFromModel(std::string imagePath, std::string networkPath)
+std::vector<myPoint> computePoints(std::pair<matrix2D, std::vector<float>> boxes_labels)
 {
-    Document document(imagePath);
+    matrix2D boxes = boxes_labels.first;
+    std::vector<float> labels = boxes_labels.second;
 
+    std::vector<myPoint> points;
+    float h, w, c_x, c_y;
+    for(size_t i = 0; i < boxes.size(); ++i)
+    {
+        w = boxes[i][2] - boxes[i][0];
+        h = boxes[i][3] - boxes[i][1];
+
+        c_x = boxes[i][0] + w / 2;
+        c_y = boxes[i][1] + h / 2;
+
+        myPoint point(c_x, c_y, w, h, labels[i]);
+        points.push_back(point);
+    }
+
+    return points;
+}
+
+
+std::pair<matrix2D, std::vector<float>> predictFromModel(Document document, std::string networkPath)
+{
     // Predict
     cv::dnn::Net network = cv::dnn::readNetFromTensorflow(networkPath);
     network.setInput(document.getBlob());
@@ -47,22 +77,18 @@ std::pair<matrix2D, std::vector<float>> predictFromModel(std::string imagePath, 
     boxes.computeNMS(THRESHOLD_IOU, THRESHOLD_NMS);
 
     boxes.reshapeBoxes();
-    savePredictionImage(document.getInputImage(), boxes.getBoxes(), boxes.getClasses(), "../pred_model.jpg");
-
+    
     std::pair<matrix2D, std::vector<float>> result(boxes.getBoxes(), boxes.getClasses());
 
     return result;
 }
 
 
-std::pair<matrix2D, std::vector<float>> predictFromXML(std::string imagePath, const char* XMLPath)
+std::pair<matrix2D, std::vector<float>> predictFromXML(Document document, const char* XMLPath)
 {
-    Document document(imagePath);
-
     XMLBoxes xmlBoxes(document, XMLPath);
 
     xmlBoxes.extractBoxes();
-    savePredictionImage(document.getInputImage(), xmlBoxes.getBoxes(), xmlBoxes.getClasses(), "../pred_xml.jpg");
 
     std::pair<matrix2D, std::vector<float>> result(xmlBoxes.getBoxes(), xmlBoxes.getClasses());
 
@@ -72,14 +98,25 @@ std::pair<matrix2D, std::vector<float>> predictFromXML(std::string imagePath, co
 
 int main()
 {
-    std::string networkPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/models/Frozen_graph_prova.pb";
     std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.jpeg";
-    
-    const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.xml";
-    
-    std::pair<matrix2D, std::vector<float>> XMLResult = predictFromXML(imagePath, XMLPath);
 
-    std::pair<matrix2D, std::vector<float>> modelResult = predictFromModel(imagePath, networkPath);
+    Document document(imagePath);
     
+    // Predict from model
+    //std::string networkPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/models/Frozen_graph_prova.pb";
+    //std::pair<matrix2D, std::vector<float>> modelResult = predictFromModel(document, networkPath);
+    //savePredictionImage(document.getInputImage(), modelResult.first, modelResult.second, "../pred_model.jpg");
+
+    // Predict from XML boxes
+    const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.xml";
+    std::pair<matrix2D, std::vector<float>> XMLResult = predictFromXML(document, XMLPath);
+    savePredictionImage(document.getInputImage(), XMLResult.first, XMLResult.second, "../pred_xml.jpg");
+    
+    std::vector<myPoint> points = computePoints(XMLResult);
+    saveCentersPredictionImage(document.getInputImage(), points, "../centers_xml.jpg");
+
+    myDBSCAN dbScan(N, EPS, MIN_PTS, points);
+    dbScan.run();
+
     return 0;
 }

@@ -7,39 +7,47 @@
 const int NOISE = -2;
 const int NOT_CLASSIFIED = -1;
 
-class Point{
+class myPoint{
     private:
-        double x, y;
-        int countPts, cluster;
+        float x_center;
+        float y_center;
+        float box_width;
+        float box_height;
+        float label;
+        int countPts;
+        int cluster;
     public:
-        double distance(const Point &);
+        myPoint(float c_x, float c_y, float w, float h, float label);
+        float getX();
+        float getY();
+        float getLabel();
         int getCountPts();
-        void setCountPts(int);
         int getCluster();
+        void setCountPts(int);
         void setCluster(int);
+        float distance(myPoint);
+        
+};
 
-    };
 
-class DBSCAN
+class myDBSCAN
 {
     private:
-        int n, minPts;
+        int n;
+        int minPts;
         double eps;
-        
-        const int size = points.size();
-        std::vector<std::vector<int>> adjPoints;
-        std::vector<bool> visited;
-        std::vector<std::vector<int>> cluster;
+        std::vector<myPoint> points;
+        const int size = points.size(); 
+        std::vector<std::vector<int>> adjPoints; //???
         int clusterIdx;
-    public:
-        std::vector<Point> points;
-        DBSCAN(int n, double eps, int minPts, std::vector<Point> points);
-        void checkNearPoints();
-        void run();
-        void dfs (int, int);
-        std::vector<std::vector<int> > getCluster();
-        bool isCoreObject(int);
+        std::vector<std::vector<int>> cluster;
 
+    public:
+        myDBSCAN(int n, double eps, int minPts, std::vector<myPoint> points);
+        void run();
+        void checkNearPoints();
+        bool isCoreObject(int idx);
+        void dfs(int now, int c);
 
 };
 

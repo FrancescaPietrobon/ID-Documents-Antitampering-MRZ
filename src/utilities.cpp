@@ -20,6 +20,19 @@ void savePredictionImage(cv::Mat img, matrix2D boxes, std::vector<float> classes
 }
 
 
+void saveCentersPredictionImage(cv::Mat img, std::vector<myPoint> centers, std::string img_name)
+{
+    cv::Mat new_image = img;
+    int thickness = 3;
+    int lineType = cv::LINE_8;
+
+    for(size_t i = 0; i < centers.size(); ++i)
+        cv::circle(new_image, cv::Point(centers[i].getX(), centers[i].getY()), 0, cv::Scalar(0,0,255), thickness, lineType);
+    
+    cv::imwrite(img_name, new_image);
+}
+
+
 matrix2D computeCenters(matrix2D boxes, matrix2D anchorBoxes)
 {
     matrix2D center = boxes;
