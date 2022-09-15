@@ -13,6 +13,7 @@
 #include "include/DBSCAN.h"
 #include "include/Anchors.h"
 #include "src/Characters.cpp"
+#include "include/Fields.h"
 
 #define NUM_CLASSES 64
 
@@ -26,13 +27,20 @@
 #define THRESHOLD_NMS 0.01
 
 // DBSCAN params:
-#define N 10
-#define EPS 0.1
-#define MIN_PTS 4
+#define EPS 15 //top 15 o 11
+#define MIN_PTS 1
 
 typedef std::vector<std::vector<float>> matrix2D;
 typedef std::vector<std::vector<std::vector<float>>> matrix3D;
 typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
+
+
+void printAggregatedPoints(Document document, myDBSCAN dbscan)
+{
+    Fields fields(dbscan.getPoints(), dbscan.getClusterIdx());
+
+}
+
 
 
 std::vector<myPoint> computePoints(std::pair<matrix2D, std::vector<float>> boxes_labels)
@@ -50,7 +58,7 @@ std::vector<myPoint> computePoints(std::pair<matrix2D, std::vector<float>> boxes
         c_x = boxes[i][0] + w / 2;
         c_y = boxes[i][1] + h / 2;
 
-        myPoint point(c_x, c_y, w, h, labels[i]);
+        myPoint point(c_x, c_y, w, h, labels[i], NOT_CLASSIFIED);
         points.push_back(point);
     }
 
@@ -98,7 +106,8 @@ std::pair<matrix2D, std::vector<float>> predictFromXML(Document document, const 
 
 int main()
 {
-    std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.jpeg";
+    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.jpeg";
+    std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT.JPG";
 
     Document document(imagePath);
     
@@ -108,15 +117,21 @@ int main()
     //savePredictionImage(document.getInputImage(), modelResult.first, modelResult.second, "../pred_model.jpg");
 
     // Predict from XML boxes
-    const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.xml";
+    //const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.xml";
+    const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT.xml";
     std::pair<matrix2D, std::vector<float>> XMLResult = predictFromXML(document, XMLPath);
-    savePredictionImage(document.getInputImage(), XMLResult.first, XMLResult.second, "../pred_xml.jpg");
+    //savePredictionImage(document.getInputImage(), XMLResult.first, XMLResult.second, "../pred_xml.jpg");
     
     std::vector<myPoint> points = computePoints(XMLResult);
-    saveCentersPredictionImage(document.getInputImage(), points, "../centers_xml.jpg");
+    //saveCentersPredictionImage(document.getInputImage(), points, "../centers_xml.jpg");
 
-    myDBSCAN dbScan(N, EPS, MIN_PTS, points);
+    // Aggregate boxes using DBSCAN
+    myDBSCAN dbScan(EPS, MIN_PTS, points);
     dbScan.run();
+
+    //std::vector<myPoint> newPoints = dbScan.getPoints();
+    saveCentersPredictionImage(document.getInputImage(), dbScan.getPoints(), "../DBSCAN_xml.jpg");
+    printAggregatedPoints(document, dbScan);
 
     return 0;
 }
