@@ -9,18 +9,37 @@
 #include <iostream>
 #include "Points.h"
 
-class Fields{
+
+class Field
+{
+    private:
+        std::vector<myPoint> originalCluster;
+        std::multimap<float, myPoint> field;
+        int clusterIdx;
+        std::string typeOfData;
+        bool partOfMRZ;
+
+    public:
+        Field(std::vector<myPoint>);
+        void setField(float x, myPoint point);
+        std::multimap<float, myPoint> getField();
+        void print();
+        void clear();
+        void isMRZ();
+        bool getPartOfMRZ();
+};
+
+
+class Fields
+{
     private:
         std::vector<myPoint> originalCluster;
         int numClusters;
-        std::map<int, std::multimap<float, myPoint>> fields;
+        std::map<int, Field> fields;
         std::vector<int> clusterIdxs;
-        std::string typeOfData;
-        bool isMRZ;
 
     public:
         Fields(std::vector<myPoint>, int);
-        void order();
         void fillFields();
         
 };
