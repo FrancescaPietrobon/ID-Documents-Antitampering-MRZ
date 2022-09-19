@@ -19,6 +19,6 @@ typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 void savePredictionImage(cv::Mat img, matrix2D boxes, std::vector<float> classes, std::string img_name);
 matrix2D computeCenters(matrix2D boxes, matrix2D anchorBoxes);
 
-void saveCentersPredictionImage(cv::Mat img, std::vector<myPoint> centers, std::string img_name);
+void saveCentersPredictionImage(cv::Mat img, std::vector<Character> centers, std::string img_name);
 
 #endif

@@ -1,7 +1,7 @@
 #include "../include/DBSCAN.h"
 
 
-myDBSCAN::myDBSCAN(double eps_, int minPts_, std::vector<myPoint> points_):
+myDBSCAN::myDBSCAN(double eps_, int minPts_, std::vector<Character> points_):
     eps(eps_), minPts(minPts_), points(points_)
     {
         adjPoints.resize(size);
@@ -16,7 +16,7 @@ void myDBSCAN::checkNearPoints()
         {
             if(i == j)
                 continue;
-            //std::cout << points[i].distance(points[j]) << points[i].getLabel() << std::endl;
+            //std::cout << points[i].distance(points[j]) << points[i].getLabelIdx() << std::endl;
             if(points[i].distance(points[j]) <= eps)
             {
                 points[i].setCountPts(points[i].getCountPts() + 1);
@@ -62,7 +62,7 @@ void myDBSCAN::run()
 }
 
 
-std::vector<myPoint> myDBSCAN::getPoints()
+std::vector<Character> myDBSCAN::getPoints()
 {
     return points;
 }

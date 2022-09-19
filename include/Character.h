@@ -4,26 +4,30 @@
 #include <cmath>
 #include <vector>
 #include <string>
+#include <unordered_map>
+//#include "../src/Dictionary.cpp"
 
-class myPoint{
+class Character{
     private:
         float x_center;
         float y_center;
         float box_width;
         float box_height;
-        float label;
+        float labelIdx;
+        std::string label;
         int countPts;
         int cluster;
     public:
-        myPoint(float c_x, float c_y, float w, float h, float label, int cl);
+        Character(float c_x, float c_y, float w, float h, float label, int cl);
         float getX();
         float getY();
-        float getLabel();
+        std::string getLabel();
+        float getLabelIdx();
         int getCountPts();
         int getCluster();
         void setCountPts(int);
         void setCluster(int);
-        float distance(myPoint);  
+        float distance(Character);  
 };
 
 #endif

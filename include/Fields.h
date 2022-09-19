@@ -7,40 +7,29 @@
 #include <map>
 #include <unordered_map>
 #include <iostream>
-#include "Points.h"
-
-
-class Field
-{
-    private:
-        std::vector<myPoint> originalCluster;
-        std::multimap<float, myPoint> field;
-        int clusterIdx;
-        std::string typeOfData;
-        bool partOfMRZ;
-
-    public:
-        Field(std::vector<myPoint>);
-        void setField(float x, myPoint point);
-        std::multimap<float, myPoint> getField();
-        void print();
-        void clear();
-        void isMRZ();
-        bool getPartOfMRZ();
-};
+#include "Character.h"
+#include "MRZ.h"
+#include "Field.h"
 
 
 class Fields
 {
     private:
-        std::vector<myPoint> originalCluster;
+        std::vector<Character> originalCluster;
         int numClusters;
         std::map<int, Field> fields;
         std::vector<int> clusterIdxs;
+        int numLineOfMRZ = 0;
+        std::map<float, Field> splittedMRZ;
 
     public:
-        Fields(std::vector<myPoint>, int);
+        Fields(std::vector<Character>, int);
         void fillFields();
+        void printOrderedFields();
+        void fillLabels();
+        int getNumLineOfMRZ();
+        void checkMRZ();
+        std::string findMRZType(std::vector<std::vector<Character>>);
         
 };
 
