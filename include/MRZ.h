@@ -15,6 +15,7 @@ class MRZ
         int numLines;
         std::string MRZType;
         std::string docType;
+        std::string passportType;
         std::string state;
         std::string surname;
         std::string name;
@@ -27,7 +28,9 @@ class MRZ
         std::string dateExpireDoc;
         std::string checkDateExpireDoc;
         std::string optionalData;
-        std::string checkOptionalData;
+        bool check(std::string field, std::string checkDigit);
+        bool CheckOverAll(std::string checkOverall);
+        
 
     public:
         MRZ(std::vector<std::vector<Character>>, int);
@@ -51,7 +54,7 @@ class MRZ
         std::string getDateExpireDoc();
         std::string getCheckDateExpireDoc();
         std::string getOptionalData();
-        std::string getCheckOptionalData();
+        
         
 };
 
@@ -61,19 +64,54 @@ class TD1: public MRZ
     private:
         std::string secondOptionalData;
         std::string checkFirstTwoLines;
+        std::string checkOptionalData;
     public:
         TD1(std::vector<std::vector<Character>>, int);
         void extractFields();
 };
 
+class TD2: public MRZ
+{
+    private:
+
+    public:
+        TD2(std::vector<std::vector<Character>>, int);
+        void extractFields();
+        std::string checkOptionalData;
+        std::string checkOverall;
+
+};
+
 class TD3: public MRZ
 {
     private:
+        std::string getCheckOptionalData();
         std::string checkOverall;
+        std::string checkOptionalData;
+
     public:
         TD3(std::vector<std::vector<Character>>, int);
         void extractFields();
         void printMRZFields();
+};
+
+class MRVA: public MRZ
+{
+    private:
+
+    public:
+        MRVA(std::vector<std::vector<Character>>, int);
+        void extractFields();
+        void printMRZFields();
+};
+
+class MRVB: public MRZ
+{
+    private:
+
+    public:
+        MRVB(std::vector<std::vector<Character>>, int);
+        void extractFields();
 };
 
 #endif

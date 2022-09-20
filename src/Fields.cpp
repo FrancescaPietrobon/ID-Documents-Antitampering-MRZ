@@ -74,17 +74,17 @@ std::string Fields::findMRZType(std::vector<std::vector<Character>> mrz)
     }
     else if(mrz[0].size() == 36)
     {
-        if(mrz[0][0].getLabel() == "P")
-            MRZType = "TD2";
-        else
+        if(mrz[0][0].getLabel() == "V")
             MRZType = "MRVB";
+        else
+            MRZType = "TD2";
     }
     else if(mrz[0].size() == 44)
     {
-        if(mrz[0][0].getLabel() == "P")
-            MRZType = "TD3";
-        else
+        if(mrz[0][0].getLabel() == "V")
             MRZType = "MRVA";
+        else
+            MRZType = "TD3";
     }
     return MRZType;
 }
@@ -114,15 +114,35 @@ void Fields::checkMRZ()
     std::string MRZType = findMRZType(mrzChar);
 
     std::cout << "MRZ type: "<< MRZType << std::endl;
+    //MRZ mrzGeneral(mrzChar, numLineOfMRZ);
 
     if(MRZType == "TD3")
     {
         TD3 mrz(mrzChar, numLineOfMRZ);
+        std::cout << std::endl;
+        std::cout << "MRZ:" << std::endl;
+        mrz.printMRZ();
+        std::cout << std::endl;
+        mrz.extractFields();
+        std::cout << std::endl;
+        mrz.printMRZFields();
+    }
+    else if(MRZType == "MRVA")
+    {
+        MRVA mrz(mrzChar, numLineOfMRZ);
         std::cout << "MRZ:" << std::endl;
         mrz.printMRZ();
         std::cout << std::endl;
         mrz.extractFields();
         mrz.printMRZFields();
+    }
+    else if(MRZType == "TD1")
+    {
+        TD1 mrz(mrzChar, numLineOfMRZ);
+        std::cout << "MRZ:" << std::endl;
+        mrz.printMRZ();
+        std::cout << std::endl;
+        mrz.extractFields();
     }
 
 }

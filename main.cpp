@@ -100,7 +100,8 @@ std::pair<matrix2D, std::vector<float>> predictFromXML(Document document, const 
 int main()
 {
     //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.jpeg";
-    std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT.JPG";
+    std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT.JPG"; //TD3
+    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/ZWE_AO_01002_FRONT.JPG"; //MRVA
 
     Document document(imagePath);
     
@@ -111,7 +112,9 @@ int main()
 
     // Predict from XML boxes
     //const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.xml";
-    const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT.xml";
+    const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT.xml"; //TD3
+    //const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/ZWE_AO_01002_FRONT.xml"; //MRVA
+    
     std::pair<matrix2D, std::vector<float>> XMLResult = predictFromXML(document, XMLPath);
     //savePredictionImage(document.getInputImage(), XMLResult.first, XMLResult.second, "../pred_xml.jpg");
     
