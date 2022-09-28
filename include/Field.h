@@ -15,7 +15,7 @@ class Field
         std::vector<Character> originalCluster;
         std::vector<Character> orderedField;
         std::multimap<float, Character> field;
-        int clusterIdx;
+        std::string data;
         std::string typeOfData;
         bool partOfMRZ;
         float meanY;
@@ -31,6 +31,9 @@ class Field
         void isPartOfMRZ();
         bool getIsPartOfMRZ();
         void setTypeOfData(std::string);
+        std::string getTypeOfData();
+        void setData(std::string);
+        std::string getData();
         void computeField();
         void computeMeanY();
         float getMeanY();

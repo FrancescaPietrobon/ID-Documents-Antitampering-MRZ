@@ -35,7 +35,7 @@ void myDBSCAN::dfs(int now, int c) {
     points[now].setCluster(c);
     if(!isCoreObject(now)) return;
     
-    for(auto&next:adjPoints[now]) {
+    for(auto & next: adjPoints[now]) {
         if(points[next].getCluster() != NOT_CLASSIFIED) continue;
         dfs(next, c);
     }

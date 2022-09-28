@@ -3,8 +3,17 @@ cmake_minimum_required(VERSION 3.9)
 project(OCR VERSION 1.0)
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release) #Debug
+  set(CMAKE_BUILD_TYPE Debug) #Release
 endif()
+
+# to debug
+message(STATUS "MY_VARIABLE=${MY_VARIABLE}")
+include(CMakePrintHelpers)
+cmake_print_variables(MY_VARIABLE)
+cmake_print_properties(
+    TARGETS my_target
+    PROPERTIES POSITION_INDEPENDENT_CODE
+)
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 11)
@@ -31,6 +40,7 @@ add_library(Character src/Character.cpp)
 add_library(Fields src/Fields.cpp)
 add_library(Field src/Field.cpp)
 add_library(MRZ src/MRZ.cpp)
+add_library(Date src/Date.cpp)
 add_library(Dictionary src/Dictionary.cpp)
 add_library(Anchors src/Anchors.cpp)
 add_library(utilities src/utilities.cpp)
@@ -52,6 +62,7 @@ target_link_libraries(OCR Character)
 target_link_libraries(OCR Fields)
 target_link_libraries(OCR Field)
 target_link_libraries(OCR MRZ)
+target_link_libraries(OCR Date)
 target_link_libraries(OCR Dictionary)
 target_link_libraries(OCR Anchors)
 target_link_libraries(OCR utilities)

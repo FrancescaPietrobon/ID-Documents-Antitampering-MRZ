@@ -5,6 +5,7 @@ Field::Field(std::vector<Character> chars):
     originalCluster(chars)
     {
         partOfMRZ = false;
+        typeOfData = "";
     }
 
 
@@ -25,7 +26,7 @@ std::vector<Character> Field::getOriginalCluster()
 
 std::vector<Character> Field::getCharacters()
 {
-    for(auto character: field)
+    for(auto & character: field)
     {
         orderedField.push_back(character.second);
     }
@@ -53,10 +54,25 @@ void Field::setTypeOfData(std::string t)
     typeOfData = t;
 }
 
+std::string Field::getTypeOfData()
+{
+    return typeOfData;
+}
+
+void Field::setData(std::string d)
+{
+    data = d;
+}
+
+std::string Field::getData()
+{
+    return data;
+}
+
 void Field::computeMeanY()
 {
     float sum = 0;
-    for(auto character: field)
+    for(auto & character: field)
     {
         sum += character.second.getY();
     }

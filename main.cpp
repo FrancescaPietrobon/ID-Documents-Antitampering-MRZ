@@ -13,6 +13,7 @@
 #include "include/DBSCAN.h"
 #include "include/Anchors.h"
 #include "src/Dictionary.cpp"
+#include "include/Date.h"
 #include "include/Fields.h"
 #include "include/Character.h"
 
@@ -28,7 +29,7 @@
 #define THRESHOLD_NMS 0.01
 
 // DBSCAN params:
-#define EPS 15 //top 15 o 11
+#define EPS 11 //top 15 o 11 va ridimensionato in base alla dimensione dell'immagine
 #define MIN_PTS 1
 
 typedef std::vector<std::vector<float>> matrix2D;
@@ -100,9 +101,10 @@ std::pair<matrix2D, std::vector<float>> predictFromXML(Document document, const 
 int main()
 {
     //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.jpeg";
-    std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT.JPG"; //TD3
+    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT.JPG"; //TD3 //eps = 15
     //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/ZWE_AO_01002_FRONT.JPG"; //MRVA
-
+    std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT_3.JPG"; //TD3 //eps = 11
+    
     Document document(imagePath);
     
     // Predict from model
@@ -112,8 +114,9 @@ int main()
 
     // Predict from XML boxes
     //const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.xml";
-    const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT.xml"; //TD3
+    //const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT.xml"; //TD3 //eps = 15
     //const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/ZWE_AO_01002_FRONT.xml"; //MRVA
+    const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT_3.xml"; //TD3 //eps = 11
     
     std::pair<matrix2D, std::vector<float>> XMLResult = predictFromXML(document, XMLPath);
     //savePredictionImage(document.getInputImage(), XMLResult.first, XMLResult.second, "../pred_xml.jpg");
@@ -126,11 +129,17 @@ int main()
     dbscan.run();
 
     saveCentersPredictionImage(document.getInputImage(), dbscan.getPoints(), "../DBSCAN_xml.jpg");
+
     Fields fields(dbscan.getPoints(), dbscan.getClusterIdx());
     fields.fillFields();
-    //fields.printOrderedFields();
-    
     fields.checkMRZ();
+    std::cout << std::endl;
+    //fields.printOrderedFields();
+    //std::cout << std::endl;
+    fields.compareMRZFields();
+    std::cout << std::endl;
+    fields.printNotFilledAndFilledFields();
+
     //MRZ mrz = fields.getMRZ();
 
     return 0;

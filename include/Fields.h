@@ -10,6 +10,8 @@
 #include "Character.h"
 #include "MRZ.h"
 #include "Field.h"
+#include "utilities.h"
+#include "Date.h"
 
 
 class Fields
@@ -17,10 +19,12 @@ class Fields
     private:
         std::vector<Character> originalCluster;
         int numClusters;
-        std::map<int, Field> fields;
-        std::vector<int> clusterIdxs;
+        std::list<Field> fields;
         int numLineOfMRZ = 0;
         std::map<float, Field> splittedMRZ;
+        void searchField(std::string);
+        MRZ mrzGeneral;
+        std::string mostCompatible(Field field);
 
     public:
         Fields(std::vector<Character>, int);
@@ -30,6 +34,9 @@ class Fields
         int getNumLineOfMRZ();
         void checkMRZ();
         std::string findMRZType(std::vector<std::vector<Character>>);
+        void compareMRZFields();
+        void printMRZAllFieldsInv();
+        void printNotFilledAndFilledFields();
         
 };
 

@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <map>
 #include "Character.h"
 
 
@@ -12,6 +13,8 @@ class MRZ
 {
     protected:
         std::vector<std::vector<Character>> mrz;
+        std::multimap<std::string, std::string> allFields;
+        std::multimap<std::string, std::string> allFieldsInv;
         int numLines;
         std::string MRZType;
         std::string docType;
@@ -29,17 +32,20 @@ class MRZ
         std::string checkDateExpireDoc;
         std::string optionalData;
         bool check(std::string field, std::string checkDigit);
-        bool CheckOverAll(std::string checkOverall);
-        
+        bool CheckOverAll(std::string checkOverall); 
 
     public:
         MRZ(std::vector<std::vector<Character>>, int);
+        MRZ() = default;
+        void assignMRZ(std::vector<std::vector<Character>>, int);
         void printMRZ();
-        void findMRZType();
+        void printMRZFields();
         void extractFieldsTD2();
         void extractFieldsMRVA();
         void extractFieldsMRVB();
         void computeFullMRZ();
+        std::multimap<std::string, std::string> getAllFieldsInv();
+        std::multimap<std::string, std::string> getAllFields();
         std::string getMRZType();
         std::string getDocType();
         std::string getState();
@@ -54,6 +60,7 @@ class MRZ
         std::string getDateExpireDoc();
         std::string getCheckDateExpireDoc();
         std::string getOptionalData();
+        //std::unordered_map<std::string, std::string> allFieldsInv;
         
         
 };
