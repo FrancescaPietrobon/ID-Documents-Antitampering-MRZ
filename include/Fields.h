@@ -7,6 +7,7 @@
 #include <map>
 #include <unordered_map>
 #include <iostream>
+#include <algorithm>
 #include "Character.h"
 #include "MRZ.h"
 #include "Field.h"
@@ -20,11 +21,14 @@ class Fields
         std::vector<Character> originalCluster;
         int numClusters;
         std::list<Field> fields;
+        std::map<std::string, std::pair<std::pair<std::string,std::string>, float>> finalAssociation;
         int numLineOfMRZ = 0;
         std::map<float, Field> splittedMRZ;
         void searchField(std::string);
         MRZ mrzGeneral;
-        std::string mostCompatible(Field field);
+        void mostCompatible(Field & field);
+        void checkAlphanumDate(Field & field);
+        std::string checkMonth(std::string);
 
     public:
         Fields(std::vector<Character>, int);
@@ -37,6 +41,9 @@ class Fields
         void compareMRZFields();
         void printMRZAllFieldsInv();
         void printNotFilledAndFilledFields();
+        void printAssociations();
+        float computeFinalConf();
+        void printDoubtfulFields();
         
 };
 

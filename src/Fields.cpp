@@ -16,7 +16,7 @@ int Fields::getNumLineOfMRZ()
 void Fields::fillFields()
 {
     Field field(originalCluster);
-    for(int i = 0; i < numClusters; ++i)
+    for(int i = 0; i <= numClusters; ++i)
     {
         for(int j = 0; j < originalCluster.size(); ++j)
         {
@@ -53,6 +53,7 @@ void Fields::fillFields()
         for(auto & character: field.getField())
             data += character.second.getLabel();
         field.setData(data);
+        std::cout << data << std::endl;
     }
         
 }
@@ -153,14 +154,35 @@ void Fields::printOrderedFields()
 }
 
 
-void checkAlphanumDate(Field & field)
+std::string Fields::checkMonth(std::string field)
+{
+    extern std::map<std::string, std::string> monthUCtoNum, monthLCtoNum;
+
+    for(auto month: monthUCtoNum)
+    {
+        std::cout << field << " " << month.first << " " << month.second << std::endl;
+        if(field.find(month.first) != std::string::npos)
+            return month.first;
+    }
+    for(auto month: monthLCtoNum)
+    {
+        if(field.find(month.first) != std::string::npos)
+            return month.first;
+    }
+    return "None";
+        
+}
+
+void Fields::checkAlphanumDate(Field & field)
 {
     size_t countNotDigit = 0, countDigit = 0;
     //std::cout << "Field: " << field.getData() << std::endl;
 
     const char * text = field.getData().c_str();
-    std::string possibleMonth;
+    //std::string possibleMonth;
     size_t idxData = 0;
+    
+    /*
     for(size_t i = 0; text[i] != NULL; ++i)
     {
         if(!std::isdigit(text[i]) && countNotDigit <= 3)
@@ -172,32 +194,23 @@ void checkAlphanumDate(Field & field)
         else
             ++countDigit;
     }
+    */
+   std::string possibleMonth = checkMonth(field.getData());
 
-    if(countNotDigit != 0 && countDigit >= 3)
+    //if(countNotDigit != 0 && countDigit >= 3)
+    if(possibleMonth != "None")
     {
         //std::cout << "Possible date: " << field.getData();
         //std::cout << "   with possible month: " << possibleMonth << std::endl;
 
         Date date(field.getData(), possibleMonth, idxData);
         std::string newDate = date.convertAlphanumDate();
-        //std::cout << "New date: " << newDate << std::endl; 
-        field.setData(newDate);
+        if(newDate != "None")
+        {
+            //std::cout << "New date: " << newDate << std::endl; 
+            field.setData(newDate);
+        }
     }  
-}
-
-void Fields::printNotFilledAndFilledFields()
-{
-    std::cout << "Not filled fields:" << std::endl;
-    for(auto & field: fields)
-        if(field.getTypeOfData() == "None")
-            std::cout << field.getTypeOfData() << ": " << field.getData() << std::endl;
-
-    std::cout << std::endl;        
-    
-    std::cout << "Filled fields:" << std::endl;
-    for(auto & field: fields)
-        if(field.getTypeOfData() != "None")
-            std::cout << field.getTypeOfData() << ": " << field.getData() << std::endl;
 }
 
 
@@ -207,51 +220,119 @@ void Fields::compareMRZFields()
     // Then check for identical field
     for(auto & field: fields)
     {
-        if(field.getData().size() >= 6 && field.getData().size() <= 9)
+        if(field.getData().size() >= 6 && field.getData().size() <= 12)
             checkAlphanumDate(field);
         auto search = mrzGeneral.getAllFieldsInv().find(field.getData());
-        //std::cout << "Field: " << field.getData() << std::endl;
+        std::cout << "\nField: " << field.getData() << std::endl;
         if((field.getData() == search->first) && (field.getTypeOfData() == ""))
         {
-            //std::cout << "Field: " << field.getData() << " ";
-            //std::cout << " Find: " << search->first << " " << search->second << std::endl;
+            std::cout << "Field: " << field.getData() << " ";
+            std::cout << " Find: " << search->first << " " << search->second << std::endl;
+            // GESTISCI ATTRIBUZIONI MULTIPLE DELLO STESSO TIPO IN setTypeOfData
             field.setTypeOfData(search->second);
+            finalAssociation.emplace(search->second, std::make_pair(std::make_pair(field.getData(), search->first), 1.));
+            std::cout << "Associated" << std::endl;
         }
-        else
-        {
-            std::string bestField = mostCompatible(field);
-            field.setTypeOfData(bestField);
-        }
-        // TO DO: gestisci casi con dato già settato a un valore!!
-         
+        mostCompatible(field);
+              
     }
-    //std::cout << std::endl;
-    
-
+    std::cout << std::endl;
 }
 
-std::string Fields::mostCompatible(Field field)
+
+void Fields::mostCompatible(Field & field)
 {
-    int maxComp = 0, currentComp = 0;
+    float maxComp = 0, currentComp = 0;
     std::string bestField = mrzGeneral.getAllFieldsInv().begin()->first;
     //std::cout << "first field: " << bestField << std::endl;
     for(auto mrzField: mrzGeneral.getAllFieldsInv())
     {
-        //std::cout << "Field: " << field.getData() << "   MRZ Field: " << mrzField.first;
+        std::cout << "Field: " << field.getData() << "   MRZ Field: " << mrzField.first;
         currentComp = countPairs(field.getData(), mrzField.first);
-        //std::cout << "   Comp: " << currentComp << std::endl;
+        std::cout << "   Comp: " << currentComp << std::endl;
         if(currentComp > maxComp)
         {
             maxComp = currentComp;
             bestField = mrzField.second;
         }
     }
+    float conf = static_cast<float>(maxComp/(field.getData().size()));
 
-    if(maxComp <= field.getData().size() * 0.83)
-        bestField = "None";
-    return bestField;
+    if(finalAssociation.find(bestField) == finalAssociation.end())
+    {
+        //std::map<std::string, std::pair<std::pair<std::string,std::string>, float>> finalAssociationNEW;
+        finalAssociation.emplace(bestField, std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf));
+        field.setTypeOfData(bestField);
+        std::cout << "Associated" << std::endl;
+    }
+    else if(finalAssociation.find(bestField)->second.second < conf)
+    {
+        std::cout << "Prev conf: "<< finalAssociation.find(bestField)->second.second << "\t curr conf: " << conf << std::endl;
+        finalAssociation.find(bestField)->second = std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf);
+        std::cout << "Associated" << std::endl;
+    }
+    
 }
 
+
+void Fields::printNotFilledAndFilledFields()
+{
+    std::cout << "Not filled fields:" << std::endl;
+    for(auto & field: fields)
+        if(field.getTypeOfData() == "")
+            std::cout << "None: " << field.getData() << std::endl;
+
+    std::cout << std::endl;        
+    
+    std::cout << "Filled fields:" << std::endl;
+    for(auto & field: fields)
+        if(field.getTypeOfData() != "")
+            std::cout << field.getTypeOfData() << ": " << field.getData() << std::endl;
+}
+
+
+void Fields::printAssociations()
+{
+    std::cout << "\nAssociated fields:" << std::endl;
+    for(auto & association: finalAssociation)
+    {
+        std::cout << "\nField: " << association.first << std::endl;
+        std::cout << "data-field: " << association.second.first.first << std::endl;
+        std::cout << "mrz-data-field: " << association.second.first.second << std::endl;
+        std::cout << "confidence: " << association.second.second << std::endl;
+    }
+}
+
+
+void Fields::printDoubtfulFields()
+{
+    std::cout << "\nDoubtful fields:" << std::endl;
+    bool existDubField = false;
+    for(auto & association: finalAssociation)
+    {
+        if(association.second.second != 1.)
+        {
+            std::cout << "\nField: " << association.first << std::endl;
+            std::cout << "data-field: " << association.second.first.first << std::endl;
+            std::cout << "mrz-data-field: " << association.second.first.second << std::endl;
+            std::cout << "confidence: " << association.second.second << std::endl;
+            existDubField = true;
+        }
+    }
+    
+    if(!existDubField)
+        std::cout << "None"<< std::endl;
+}
+
+
+float Fields::computeFinalConf()
+{
+    float sum = 0;
+    for(auto & association: finalAssociation)
+        sum += association.second.second;
+    
+    return sum / finalAssociation.size();
+}
 
 
 /*

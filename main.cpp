@@ -18,6 +18,7 @@
 #include "include/Character.h"
 
 #define NUM_CLASSES 64
+#define CONF_THRESHOLD 0.75
 
 // Image preprocessing params:
 #define FEATURE_WIDTH 800
@@ -100,23 +101,24 @@ std::pair<matrix2D, std::vector<float>> predictFromXML(Document document, const 
 
 int main()
 {
-    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.jpeg";
-    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT.JPG"; //TD3 //eps = 15
-    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/ZWE_AO_01002_FRONT.JPG"; //MRVA
-    std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT_3.JPG"; //TD3 //eps = 11
-    
+    //std::string imagePath = "../data/BGR_AO_02001_FRONT.jpeg";
+    //std::string imagePath = "../data/AFG_AO_01001_FRONT.JPG"; //TD3 eps = 15
+    //std::string imagePath = "../data/ZWE_AO_01002_FRONT.JPG"; //MRVA
+    std::string imagePath = "../data/AFG_AO_01001_FRONT_3.JPG"; //TD3 eps = 11
+    //std::string imagePath = "../data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30
     Document document(imagePath);
     
     // Predict from model
-    //std::string networkPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/models/Frozen_graph_prova.pb";
+    //std::string networkPath = "../models/Frozen_graph_prova.pb";
     //std::pair<matrix2D, std::vector<float>> modelResult = predictFromModel(document, networkPath);
     //savePredictionImage(document.getInputImage(), modelResult.first, modelResult.second, "../pred_model.jpg");
 
     // Predict from XML boxes
-    //const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/BGR_AO_02001_FRONT.xml";
-    //const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT.xml"; //TD3 //eps = 15
-    //const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/ZWE_AO_01002_FRONT.xml"; //MRVA
-    const char* XMLPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/AFG_AO_01001_FRONT_3.xml"; //TD3 //eps = 11
+    //const char* XMLPath = "../data/BGR_AO_02001_FRONT.xml";
+    //const char* XMLPath = "../data/AFG_AO_01001_FRONT.xml"; //TD3 eps = 15
+    //const char* XMLPath = "../data/ZWE_AO_01002_FRONT.xml"; //MRVA
+    const char* XMLPath = "../data/AFG_AO_01001_FRONT_3.xml"; //TD3 eps = 11
+    //const char* XMLPath = "../data/IMG-20220930-WA0002.xml"; //TD3  eps = 30
     
     std::pair<matrix2D, std::vector<float>> XMLResult = predictFromXML(document, XMLPath);
     //savePredictionImage(document.getInputImage(), XMLResult.first, XMLResult.second, "../pred_xml.jpg");
@@ -134,13 +136,30 @@ int main()
     fields.fillFields();
     fields.checkMRZ();
     std::cout << std::endl;
-    //fields.printOrderedFields();
-    //std::cout << std::endl;
+    fields.printOrderedFields();
+    std::cout << std::endl;
     fields.compareMRZFields();
     std::cout << std::endl;
     fields.printNotFilledAndFilledFields();
+    std::cout << std::endl;
+    fields.printAssociations();
 
-    //MRZ mrz = fields.getMRZ();
+    // Useful outputs
+    std::cout << "\n\nFINAL OUTPUT" <<std::endl;
+    float finalConf = fields.computeFinalConf();
+    bool result = true;
+
+    std::cout << "\nImage name: " << imagePath << std::endl;
+    if(finalConf <= CONF_THRESHOLD)
+        result = false;
+
+    std::cout << "\nResult: " << std::boolalpha << result << std::endl;
+    std::cout << "\nConfidence threshold: " << CONF_THRESHOLD << std::endl;
+    std::cout << "\nConfidence: " << finalConf << std::endl;
+    fields.printDoubtfulFields();
+    
+    
+
 
     return 0;
 }

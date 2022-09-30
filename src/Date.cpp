@@ -14,7 +14,11 @@ std::string Date::convertAlphanumDate()
     else if(monthLCtoNum.find(possibleMonth) != monthLCtoNum.end())
         month = monthLCtoNum[possibleMonth];
     else
+    {
         std::cerr << "Month not found" << std::endl;
+        return "None";
+    }
+        
     //std::cout << "Month: " << month << std::endl;
 
     // Take only the last two numbers of the year
@@ -36,6 +40,8 @@ std::string Date::convertAlphanumDate()
     //std::cout << "Day: " << day << std::endl;
 
     newDate = year + month + day;
+
+    std::cout << "New date:" << newDate << std::endl;
 
     return newDate;
 }
