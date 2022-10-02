@@ -207,10 +207,11 @@ void TD3::extractFields()
         else
             surname += mrz[0][j].getLabel();
     }
+    surname = surname.substr(0, surname.size() - 1);
     //allFields.emplace("surname", surname);
     //allFieldsInv.emplace(surname, "surname");
-    allFields.insert(std::pair<std::string, std::string>("surname", surname.substr(0, surname.size() - 1)));
-    allFieldsInv.insert(std::pair<std::string, std::string>(surname.substr(0, surname.size() - 1), "surname"));
+    allFields.insert(std::pair<std::string, std::string>("surname", surname));
+    allFieldsInv.insert(std::pair<std::string, std::string>(surname, "surname"));
 
     for(size_t j = i; j < 44; ++j)
     {
@@ -221,10 +222,11 @@ void TD3::extractFields()
         else
             name += mrz[0][j].getLabel();
     }
+    name = name.substr(0, name.size() - 1);
     //allFields.emplace("name", name);
     //allFieldsInv.emplace(name, "name");
-    allFields.insert(std::pair<std::string, std::string>("name", name.substr(0, name.size() - 1)));
-    allFieldsInv.insert(std::pair<std::string, std::string>(name.substr(0, name.size() - 1), "name"));
+    allFields.insert(std::pair<std::string, std::string>("name", name));
+    allFieldsInv.insert(std::pair<std::string, std::string>(name, "name"));
 
     // Second line
 
@@ -311,13 +313,19 @@ void TD2::extractFields()
     // First line
 
     docType = mrz[0][0].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("docType", docType));
+    allFieldsInv.insert(std::pair<std::string, std::string>(docType, "docType"));
 
     if(mrz[0][1].getLabel() != "<")
         passportType = mrz[0][1].getLabel();
     else
         passportType = "NULL";
+    allFields.insert(std::pair<std::string, std::string>("passportType", passportType));
+    allFieldsInv.insert(std::pair<std::string, std::string>(passportType, "passportType"));
 
     state = mrz[0][2].getLabel() + mrz[0][3].getLabel() + mrz[0][4].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("state", state));
+    allFieldsInv.insert(std::pair<std::string, std::string>(state, "state"));
 
     int i = 5;
     for(size_t j = i; j < 36; ++j)
@@ -332,6 +340,8 @@ void TD2::extractFields()
         else
             surname += mrz[0][j].getLabel();
     }
+    allFields.insert(std::pair<std::string, std::string>("surname", surname.substr(0, surname.size() - 1)));
+    allFieldsInv.insert(std::pair<std::string, std::string>(surname.substr(0, surname.size() - 1), "surname"));
 
     for(size_t j = i; j < 36; ++j)
     {
@@ -341,12 +351,16 @@ void TD2::extractFields()
             name += " ";
         else
             name += mrz[0][j].getLabel();
-    }    
+    }
+    allFields.insert(std::pair<std::string, std::string>("name", name.substr(0, name.size() - 1)));
+    allFieldsInv.insert(std::pair<std::string, std::string>(name.substr(0, name.size() - 1), "name"));   
 
     // Second line
 
     for(size_t i = 0; i < 9 && mrz[1][i].getLabel() != "<"; ++i)
         docNumber += mrz[1][i].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("docNumber", docNumber));
+    allFieldsInv.insert(std::pair<std::string, std::string>(docNumber, "docNumber"));
 
     checkDocNum = mrz[1][9].getLabel();
 
@@ -356,9 +370,13 @@ void TD2::extractFields()
         std::cout << "Check in document number OK." << std::endl;
     
     nationality = mrz[1][10].getLabel() + mrz[1][11].getLabel() + mrz[1][12].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("nationality", nationality));
+    allFieldsInv.insert(std::pair<std::string, std::string>(nationality, "nationality"));
 
     for(size_t i = 13; i < 19; ++i)
         dateBirth += mrz[1][i].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("dateBirth", dateBirth));
+    allFieldsInv.insert(std::pair<std::string, std::string>(dateBirth, "dateBirth"));
 
     checkDateBirth = mrz[1][19].getLabel();
 
@@ -368,9 +386,13 @@ void TD2::extractFields()
         std::cout << "Check in date of birth OK." << std::endl;
 
     sex = mrz[1][20].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("sex", sex));
+    allFieldsInv.insert(std::pair<std::string, std::string>(sex, "sex"));
 
     for(size_t i = 21; i < 27; ++i)
         dateExpireDoc += mrz[1][i].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("dateExpireDoc", dateExpireDoc));
+    allFieldsInv.insert(std::pair<std::string, std::string>(dateExpireDoc, "dateExpireDoc"));
 
     checkDateExpireDoc = mrz[1][27].getLabel();
 
@@ -408,11 +430,17 @@ void TD1::extractFields()
     // First line
 
     docType = mrz[0][0].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("docType", docType));
+    allFieldsInv.insert(std::pair<std::string, std::string>(docType, "docType"));
 
     state = mrz[0][2].getLabel() + mrz[0][3].getLabel() + mrz[0][4].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("state", state));
+    allFieldsInv.insert(std::pair<std::string, std::string>(state, "state"));
 
     for(size_t i = 5; i < 14 && mrz[0][i].getLabel() != "<"; ++i)
         docNumber += mrz[0][i].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("docNumber", docNumber));
+    allFieldsInv.insert(std::pair<std::string, std::string>(docNumber, "docNumber"));
 
     checkDocNum = mrz[0][14].getLabel();
 
@@ -433,17 +461,25 @@ void TD1::extractFields()
 
     for(size_t i = 0; i < 6; ++i)
         dateBirth += mrz[1][i].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("dateBirth", dateBirth));
+    allFieldsInv.insert(std::pair<std::string, std::string>(dateBirth, "dateBirth"));
 
     checkDateBirth = mrz[1][6].getLabel();
 
     sex = mrz[1][7].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("sex", sex));
+    allFieldsInv.insert(std::pair<std::string, std::string>(sex, "sex"));
 
     for(size_t i = 8; i < 14; ++i)
         dateExpireDoc += mrz[1][i].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("dateExpireDoc", dateExpireDoc));
+    allFieldsInv.insert(std::pair<std::string, std::string>(dateExpireDoc, "dateExpireDoc"));
 
     checkDateExpireDoc = mrz[1][14].getLabel();
 
     nationality = mrz[1][15].getLabel() + mrz[1][16].getLabel() + mrz[1][17].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("nationality", nationality));
+    allFieldsInv.insert(std::pair<std::string, std::string>(nationality, "nationality"));
 
     if(mrz[1][18].getLabel() == "<")
         secondOptionalData = "NULL";
@@ -470,6 +506,8 @@ void TD1::extractFields()
         else
             surname += mrz[2][j].getLabel();
     }
+    allFields.insert(std::pair<std::string, std::string>("surname", surname.substr(0, surname.size() - 1)));
+    allFieldsInv.insert(std::pair<std::string, std::string>(surname.substr(0, surname.size() - 1), "surname")); 
 
     for(size_t j = i; j < 30; ++j)
     {
@@ -480,6 +518,8 @@ void TD1::extractFields()
         else
             name += mrz[2][j].getLabel();
     }
+    allFields.insert(std::pair<std::string, std::string>("name", name.substr(0, name.size() - 1)));
+    allFieldsInv.insert(std::pair<std::string, std::string>(name.substr(0, name.size() - 1), "name")); 
 }
 
 
@@ -488,13 +528,19 @@ void MRVA::extractFields()
     // First line
 
     docType = mrz[0][0].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("docType", docType));
+    allFieldsInv.insert(std::pair<std::string, std::string>(docType, "docType"));
 
     if(mrz[0][1].getLabel() != "<")
         passportType = mrz[0][1].getLabel();
     else
         passportType = "NULL";
+    allFields.insert(std::pair<std::string, std::string>("passportType", passportType));
+    allFieldsInv.insert(std::pair<std::string, std::string>(passportType, "passportType"));
 
     state = mrz[0][2].getLabel() + mrz[0][3].getLabel() + mrz[0][4].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("state", state));
+    allFieldsInv.insert(std::pair<std::string, std::string>(state, "state"));
 
     int i = 5;
     for(size_t j = i; j < 44; ++j)
@@ -509,6 +555,8 @@ void MRVA::extractFields()
         else
             surname += mrz[0][j].getLabel();
     }
+    allFields.insert(std::pair<std::string, std::string>("surname", surname.substr(0, surname.size() - 1)));
+    allFieldsInv.insert(std::pair<std::string, std::string>(surname.substr(0, surname.size() - 1), "surname"));
 
     for(size_t j = i; j < 44; ++j)
     {
@@ -519,25 +567,37 @@ void MRVA::extractFields()
         else
             name += mrz[0][j].getLabel();
     }
+    allFields.insert(std::pair<std::string, std::string>("name", name.substr(0, name.size() - 1)));
+    allFieldsInv.insert(std::pair<std::string, std::string>(name.substr(0, name.size() - 1), "name"));
 
     // Second line
 
     for(size_t i = 0; i < 9 && mrz[1][i].getLabel() != "<"; ++i)
         docNumber += mrz[1][i].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("docNumber", docNumber));
+    allFieldsInv.insert(std::pair<std::string, std::string>(docNumber, "docNumber"));
 
     checkDocNum = mrz[1][9].getLabel();
     
     nationality = mrz[1][10].getLabel() + mrz[1][11].getLabel() + mrz[1][12].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("nationality", nationality));
+    allFieldsInv.insert(std::pair<std::string, std::string>(nationality, "nationality"));
 
     for(size_t i = 13; i < 19; ++i)
         dateBirth += mrz[1][i].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("dateBirth", dateBirth));
+    allFieldsInv.insert(std::pair<std::string, std::string>(dateBirth, "dateBirth"));
 
     checkDateBirth = mrz[1][19].getLabel();
 
     sex = mrz[1][20].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("sex", sex));
+    allFieldsInv.insert(std::pair<std::string, std::string>(sex, "sex"));
 
     for(size_t i = 21; i < 27; ++i)
         dateExpireDoc += mrz[1][i].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("dateExpireDoc", dateExpireDoc));
+    allFieldsInv.insert(std::pair<std::string, std::string>(dateExpireDoc, "dateExpireDoc"));
 
     checkDateExpireDoc = mrz[1][27].getLabel();
 
@@ -563,13 +623,19 @@ void MRVB::extractFields()
     // First line
 
     docType = mrz[0][0].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("docType", docType));
+    allFieldsInv.insert(std::pair<std::string, std::string>(docType, "docType"));
 
     if(mrz[0][1].getLabel() != "<")
         passportType = mrz[0][1].getLabel();
     else
         passportType = "NULL";
+    allFields.insert(std::pair<std::string, std::string>("passportType", passportType));
+    allFieldsInv.insert(std::pair<std::string, std::string>(passportType, "passportType"));
 
     state = mrz[0][2].getLabel() + mrz[0][3].getLabel() + mrz[0][4].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("state", state));
+    allFieldsInv.insert(std::pair<std::string, std::string>(state, "state"));
 
     int i = 5;
     for(size_t j = i; j < 36; ++j)
@@ -584,6 +650,8 @@ void MRVB::extractFields()
         else
             surname += mrz[0][j].getLabel();
     }
+    allFields.insert(std::pair<std::string, std::string>("surname", surname.substr(0, surname.size() - 1)));
+    allFieldsInv.insert(std::pair<std::string, std::string>(surname.substr(0, surname.size() - 1), "surname"));
 
     for(size_t j = i; j < 36; ++j)
     {
@@ -594,26 +662,37 @@ void MRVB::extractFields()
         else
             name += mrz[0][j].getLabel();
     }
+    allFields.insert(std::pair<std::string, std::string>("name", name.substr(0, name.size() - 1)));
+    allFieldsInv.insert(std::pair<std::string, std::string>(name.substr(0, name.size() - 1), "name"));
 
     // Second line
 
-    i = 0;
     for(size_t i = 0; i < 9 && mrz[1][i].getLabel() != "<"; ++i)
         docNumber += mrz[1][i].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("docNumber", docNumber));
+    allFieldsInv.insert(std::pair<std::string, std::string>(docNumber, "docNumber"));
 
     checkDocNum = mrz[1][9].getLabel();
     
     nationality = mrz[1][10].getLabel() + mrz[1][11].getLabel() + mrz[1][12].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("nationality", nationality));
+    allFieldsInv.insert(std::pair<std::string, std::string>(nationality, "nationality"));
 
     for(size_t i = 13; i < 19; ++i)
         dateBirth += mrz[1][i].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("dateBirth", dateBirth));
+    allFieldsInv.insert(std::pair<std::string, std::string>(dateBirth, "dateBirth"));
 
     checkDateBirth = mrz[1][19].getLabel();
 
     sex = mrz[1][20].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("sex", sex));
+    allFieldsInv.insert(std::pair<std::string, std::string>(sex, "sex"));
 
     for(size_t i = 21; i < 27; ++i)
         dateExpireDoc += mrz[1][i].getLabel();
+    allFields.insert(std::pair<std::string, std::string>("dateExpireDoc", dateExpireDoc));
+    allFieldsInv.insert(std::pair<std::string, std::string>(dateExpireDoc, "dateExpireDoc"));
 
     checkDateExpireDoc = mrz[1][27].getLabel();
 

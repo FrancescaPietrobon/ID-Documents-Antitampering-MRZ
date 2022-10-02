@@ -40,9 +40,6 @@ class MRZ
         void assignMRZ(std::vector<std::vector<Character>>, int);
         void printMRZ();
         void printMRZFields();
-        void extractFieldsTD2();
-        void extractFieldsMRVA();
-        void extractFieldsMRVB();
         void computeFullMRZ();
         std::multimap<std::string, std::string> getAllFieldsInv();
         std::multimap<std::string, std::string> getAllFields();

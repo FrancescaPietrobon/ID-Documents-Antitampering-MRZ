@@ -27,7 +27,7 @@ std::string Date::convertAlphanumDate()
     //std::cout << "Year: " << year << std::endl;
 
     // Check if there is only one number for the day or two
-    if(index == 3)
+    if(index == 1)
     {
         day = "0";
         day += date[0];
@@ -40,7 +40,7 @@ std::string Date::convertAlphanumDate()
     //std::cout << "Day: " << day << std::endl;
 
     newDate = year + month + day;
-
+    std::cout << "Index:" << index << std::endl;
     std::cout << "New date:" << newDate << std::endl;
 
     return newDate;

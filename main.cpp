@@ -12,10 +12,12 @@
 #include "include/XMLBoxes.h"
 #include "include/DBSCAN.h"
 #include "include/Anchors.h"
-#include "src/Dictionary.cpp"
+#include "include/Dictionary.h"
 #include "include/Date.h"
 #include "include/Fields.h"
 #include "include/Character.h"
+#include "include/Response.h"
+#include "include/Metrics.h"
 
 #define NUM_CLASSES 64
 #define CONF_THRESHOLD 0.75
@@ -30,7 +32,7 @@
 #define THRESHOLD_NMS 0.01
 
 // DBSCAN params:
-#define EPS 11 //top 15 o 11 va ridimensionato in base alla dimensione dell'immagine
+#define EPS 30 //top 30, 15 o 11 va ridimensionato in base alla dimensione dell'immagine
 #define MIN_PTS 1
 
 typedef std::vector<std::vector<float>> matrix2D;
@@ -99,13 +101,14 @@ std::pair<matrix2D, std::vector<float>> predictFromXML(Document document, const 
 }
 
 
+
 int main()
 {
     //std::string imagePath = "../data/BGR_AO_02001_FRONT.jpeg";
-    //std::string imagePath = "../data/AFG_AO_01001_FRONT.JPG"; //TD3 eps = 15
-    //std::string imagePath = "../data/ZWE_AO_01002_FRONT.JPG"; //MRVA
-    std::string imagePath = "../data/AFG_AO_01001_FRONT_3.JPG"; //TD3 eps = 11
-    //std::string imagePath = "../data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30
+    //std::string imagePath = "../data/AFG_AO_01001_FRONT.JPG"; //TD3 eps = 27
+    //std::string imagePath = "../data/ZWE_AO_01002_FRONT.JPG"; //MRVA eps = 20
+    //std::string imagePath = "../data/AFG_AO_01001_FRONT_3.JPG"; //TD3 eps = 11
+    std::string imagePath = "../data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30
     Document document(imagePath);
     
     // Predict from model
@@ -115,10 +118,14 @@ int main()
 
     // Predict from XML boxes
     //const char* XMLPath = "../data/BGR_AO_02001_FRONT.xml";
-    //const char* XMLPath = "../data/AFG_AO_01001_FRONT.xml"; //TD3 eps = 15
-    //const char* XMLPath = "../data/ZWE_AO_01002_FRONT.xml"; //MRVA
-    const char* XMLPath = "../data/AFG_AO_01001_FRONT_3.xml"; //TD3 eps = 11
-    //const char* XMLPath = "../data/IMG-20220930-WA0002.xml"; //TD3  eps = 30
+    //const char* XMLPath = "../data/AFG_AO_01001_FRONT.xml"; //TD3 eps = 27
+    //const char* XMLPath = "../data/ZWE_AO_01002_FRONT.xml"; //MRVA eps = 20
+    //const char* XMLPath = "../data/AFG_AO_01001_FRONT_3.xml"; //TD3 eps = 11
+    const char* XMLPath = "../data/IMG-20220930-WA0002.xml"; //TD3  eps = 30
+
+    // Choose the metric type
+    //metricsType metric = pairs;
+    metricsType metric = distLev;
     
     std::pair<matrix2D, std::vector<float>> XMLResult = predictFromXML(document, XMLPath);
     //savePredictionImage(document.getInputImage(), XMLResult.first, XMLResult.second, "../pred_xml.jpg");
@@ -138,7 +145,7 @@ int main()
     std::cout << std::endl;
     fields.printOrderedFields();
     std::cout << std::endl;
-    fields.compareMRZFields();
+    fields.compareMRZFields(metric);
     std::cout << std::endl;
     fields.printNotFilledAndFilledFields();
     std::cout << std::endl;
@@ -146,20 +153,18 @@ int main()
 
     // Useful outputs
     std::cout << "\n\nFINAL OUTPUT" <<std::endl;
-    float finalConf = fields.computeFinalConf();
-    bool result = true;
 
     std::cout << "\nImage name: " << imagePath << std::endl;
-    if(finalConf <= CONF_THRESHOLD)
-        result = false;
 
-    std::cout << "\nResult: " << std::boolalpha << result << std::endl;
+    std::cout << "\nResult: " << std::boolalpha << fields.getResult() << std::endl;
     std::cout << "\nConfidence threshold: " << CONF_THRESHOLD << std::endl;
-    std::cout << "\nConfidence: " << finalConf << std::endl;
+    //std::cout << "\nConfidence: " << finalConf << std::endl;
+    std::cout << "\nConfidence: " << fields.getFinalConf() << std::endl;
     fields.printDoubtfulFields();
-    
-    
+   
+    std::cout << "\nNumber of doubtful fields: " << fields.getNumDoubtfulFields() << std::endl;
 
+    OcrMrzResponseResult res = fillResponse(imagePath, fields, CONF_THRESHOLD);
 
     return 0;
 }
