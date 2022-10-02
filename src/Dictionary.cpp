@@ -1,13 +1,8 @@
-#include <unordered_map>
-#include <map>
-#include <string>
-#include <cstring>
-#include <cctype>
-#include <functional>
-#include <algorithm>
-#include <iostream>
+#include "../include/Dictionary.h"
 
-std::unordered_map<unsigned, std::string> dictionary =   {{0, "0",},
+
+
+extern std::unordered_map<unsigned, std::string> dictionary =   {{0, "0",},
                                                 {1, "1",},
                                                 {2, "2",},
                                                 {3, "3",},
@@ -157,19 +152,35 @@ std::map<std::string, std::string> monthLCtoNum {
     {"Dec", "12"}
 };
 
-/*
-std::string a = "A";
-std::string s = "avc";
-std::string out;
-std::transform( s.begin(), s.end(), std::back_inserter(out), (int (*)(int))std::toupper); // specific overload requested ); 
+std::map<monthUpperCase, std::string> monthUpperCaseMap {
+    {JAN, "JAN"},
+    {FEB, "FEB"},
+    {MAR, "MAR"},
+    {APR, "APR"},
+    {MAY, "MAY"},
+    {JUN, "JUN"},
+    {JUL, "JUL"},
+    {AUG, "AUG"},
+    {SEP, "SEP"},
+    {OCT, "OCT"},
+    {NOV, "NOV"},
+    {DEC, "DEC"}
+};
 
-std::string s{"hello"};
-std::transform(s.cbegin(), s.cend(),
-                s.begin(), // write to the same location
-                [](unsigned char c) { return std::toupper(c); });
-                
-std::cout << "s = " << quoted(s) << '\n';
-*/
+std::map<monthLowerCase, std::string> monthLowerCaseMap {
+    {Jan, "Jan"},
+    {Feb, "Feb"},
+    {Mar, "Mar"},
+    {Apr, "Apr"},
+    {May, "May"},
+    {Jun, "Jun"},
+    {Jul, "Jul"},
+    {Aug, "Aug"},
+    {Sep, "Sep"},
+    {Oct, "Oct"},
+    {Nov, "Nov"},
+    {Dec, "Dec"}
+};
 
 std::map<std::string, std::string> statesDic {
     {"AFG", "Afghanistan"},
@@ -421,73 +432,4 @@ std::map<std::string, std::string> statesDic {
     {"XXB", "Refugee"},
     {"XXC", "Refugee (non-convention)"},
     {"XXX", "Unspecified / Unknown"}
-};
-
-
-
-
-
-
-enum monthUpperCase
-{
-    JAN = 1,
-    FEB,
-    MAR,
-    APR,
-    MAY,
-    JUN,
-    JUL,
-    AUG,
-    SEP,
-    OCT,
-    NOV,
-    DEC
-};
-
-enum monthLowerCase
-{
-    Jan = 1,
-    Feb,
-    Mar,
-    Apr,
-    May,
-    Jun,
-    Jul,
-    Aug,
-    Sep,
-    Oct,
-    Nov,
-    Dec
-};
-
-
-std::map<monthUpperCase, std::string> monthUpperCaseMap {
-    {JAN, "JAN"},
-    {FEB, "FEB"},
-    {MAR, "MAR"},
-    {APR, "APR"},
-    {MAY, "MAY"},
-    {JUN, "JUN"},
-    {JUL, "JUL"},
-    {AUG, "AUG"},
-    {SEP, "SEP"},
-    {OCT, "OCT"},
-    {NOV, "NOV"},
-    {DEC, "DEC"}
-};
-
-std::map<monthLowerCase, std::string> monthLowerCaseMap {
-    {Jan, "Jan"},
-    {Feb, "Feb"},
-    {Mar, "Mar"},
-    {Apr, "Apr"},
-    {May, "May"},
-    {Jun, "Jun"},
-    {Jul, "Jul"},
-    {Aug, "Aug"},
-    {Sep, "Sep"},
-    {Oct, "Oct"},
-    {Nov, "Nov"},
-    {Dec, "Dec"}
-};
-                                
+};                               

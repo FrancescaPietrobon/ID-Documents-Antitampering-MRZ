@@ -24,6 +24,5 @@ void saveCentersPredictionImage(cv::Mat img, std::vector<Character> centers, std
 
 int countAlnums(const std::string& s);
 
-int countPairs(std::string s1, std::string s2);
 
 #endif

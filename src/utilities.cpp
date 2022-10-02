@@ -53,39 +53,6 @@ matrix2D computeCenters(matrix2D boxes, matrix2D anchorBoxes)
 }
 
 
-//int countPairs(std::string s1, int n1, std::string s2, int n2)
-int countPairs(std::string s1, std::string s2)
-{
-    extern std::unordered_map<std::string, unsigned> inverse_dictionary;
-
-    // To store the frequencies of characters of string s1 and s2
-    int freq1[64] = {0};
-    int freq2[64] = {0};
- 
-    // To store the count of valid pairs
-    int count = 0;
-    // Update the frequencies of the characters of string s1
-    for (size_t i = 0; i != s1.size(); ++i)
-    {
-        std::string s(1, s1[i]);
-        freq1[unsigned(inverse_dictionary[s])]++;
-    }
- 
-    // Update the frequencies of the characters of string s2
-    for (size_t i = 0; i != s2.size(); ++i)
-    {
-        std::string s(1, s2[i]);
-        freq2[unsigned(inverse_dictionary[s])]++;
-    }
- 
-    // Find the count of valid pairs
-    for (size_t i = 0; i != 64; ++i)
-        count += (std::min(freq1[i], freq2[i]));
- 
-    return count;
-}
-
-
 
 /*
 int countAlnums(const std::string& s)

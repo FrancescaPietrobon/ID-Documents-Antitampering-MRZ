@@ -1,4 +1,5 @@
 #include "../include/Fields.h"
+#include "../include/Metrics.h"
 
 Fields::Fields(std::vector<Character> chars, int n):
     originalCluster(chars), numClusters(n)
@@ -10,6 +11,28 @@ Fields::Fields(std::vector<Character> chars, int n):
 int Fields::getNumLineOfMRZ()
 {
     return numLineOfMRZ;
+}
+
+
+size_t Fields::getNumDoubtfulFields()
+{
+    return numDoubtfulFields;
+}
+
+bool Fields::getResult()
+{
+    return result;
+}
+
+float Fields::getFinalConf()
+{
+    return finalConf;
+}
+
+ 
+std::map<std::string, std::pair<std::pair<std::string,std::string>, float>> Fields::getFinalAssociations()
+{
+    return finalAssociation;
 }
 
 
@@ -87,7 +110,19 @@ void Fields::checkMRZ()
         std::cout << "MRZ type: "<< MRZType << std::endl;
 
         // TO DO: create ENUM for mrz type
-        if(MRZType == "TD3")
+        if(MRZType == "TD1")
+        {
+            TD1 mrz(mrzChar, numLineOfMRZ);
+            mrz.extractFields();
+            mrzGeneral = mrz;
+        }
+        else if(MRZType == "TD2")
+        {
+            TD2 mrz(mrzChar, numLineOfMRZ);
+            mrz.extractFields();
+            mrzGeneral = mrz;
+        }
+        else if(MRZType == "TD3")
         {
             TD3 mrz(mrzChar, numLineOfMRZ);
             mrz.extractFields();
@@ -99,9 +134,9 @@ void Fields::checkMRZ()
             mrz.extractFields();
             mrzGeneral = mrz;
         }
-        else if(MRZType == "TD1")
+        else if(MRZType == "MRVB")
         {
-            TD1 mrz(mrzChar, numLineOfMRZ);
+            MRVB mrz(mrzChar, numLineOfMRZ);
             mrz.extractFields();
             mrzGeneral = mrz;
         }
@@ -154,7 +189,7 @@ void Fields::printOrderedFields()
 }
 
 
-std::string Fields::checkMonth(std::string field)
+std::pair<std::string, size_t> Fields::checkMonth(std::string field)
 {
     extern std::map<std::string, std::string> monthUCtoNum, monthLCtoNum;
 
@@ -162,14 +197,19 @@ std::string Fields::checkMonth(std::string field)
     {
         std::cout << field << " " << month.first << " " << month.second << std::endl;
         if(field.find(month.first) != std::string::npos)
-            return month.first;
+            return std::make_pair(month.first, field.find(month.first));
+            //return std::make_pair(month.first, field.find(month.first) - field.begin());
     }
     for(auto month: monthLCtoNum)
     {
+        //size_t it = field.find(month.first);
         if(field.find(month.first) != std::string::npos)
-            return month.first;
+            return std::make_pair(month.first, field.find(month.first));
+            //return std::make_pair(month.first, field.find(month.first) - field.begin());
+            //return month.first;
     }
-    return "None";
+    //return "None";
+    return std::make_pair("None", 0);
         
 }
 
@@ -178,9 +218,9 @@ void Fields::checkAlphanumDate(Field & field)
     size_t countNotDigit = 0, countDigit = 0;
     //std::cout << "Field: " << field.getData() << std::endl;
 
-    const char * text = field.getData().c_str();
+    //const char * text = field.getData().c_str();
     //std::string possibleMonth;
-    size_t idxData = 0;
+    //size_t idxData = 0;
     
     /*
     for(size_t i = 0; text[i] != NULL; ++i)
@@ -195,15 +235,16 @@ void Fields::checkAlphanumDate(Field & field)
             ++countDigit;
     }
     */
-   std::string possibleMonth = checkMonth(field.getData());
+   //std::string possibleMonth = checkMonth(field.getData());
+   std::pair<std::string, size_t> possibleMonthInfo = checkMonth(field.getData());
 
     //if(countNotDigit != 0 && countDigit >= 3)
-    if(possibleMonth != "None")
+    if(possibleMonthInfo.first != "None")
     {
         //std::cout << "Possible date: " << field.getData();
         //std::cout << "   with possible month: " << possibleMonth << std::endl;
 
-        Date date(field.getData(), possibleMonth, idxData);
+        Date date(field.getData(), possibleMonthInfo.first, possibleMonthInfo.second);
         std::string newDate = date.convertAlphanumDate();
         if(newDate != "None")
         {
@@ -214,7 +255,7 @@ void Fields::checkAlphanumDate(Field & field)
 }
 
 
-void Fields::compareMRZFields()
+void Fields::compareMRZFields(metricsType metricType)
 {
     //OCCHIO CHE SE HO SPECIMEN sia per nome che cognome mi dirà entrambe le volte SPECIMEN è cognome (primo che vede)
     // Then check for identical field
@@ -233,45 +274,94 @@ void Fields::compareMRZFields()
             finalAssociation.emplace(search->second, std::make_pair(std::make_pair(field.getData(), search->first), 1.));
             std::cout << "Associated" << std::endl;
         }
-        mostCompatible(field);
+        mostCompatible(field, metricType);
               
     }
     std::cout << std::endl;
+    
+    for(auto &association: finalAssociation)
+    {
+        if(association.second.second != 1)
+            numDoubtfulFields++;
+    }
+
+    if(numDoubtfulFields != 0)
+        result = false;
+
+    computeFinalConf();
+    
 }
 
 
-void Fields::mostCompatible(Field & field)
+void Fields::mostCompatible(Field & field, metricsType metricType)
 {
-    float maxComp = 0, currentComp = 0;
-    std::string bestField = mrzGeneral.getAllFieldsInv().begin()->first;
+    float currentComp = 0;
+    std::string bestField = mrzGeneral.getAllFieldsInv().begin()->second;
     //std::cout << "first field: " << bestField << std::endl;
-    for(auto mrzField: mrzGeneral.getAllFieldsInv())
+    if(metricType == pairs)
     {
-        std::cout << "Field: " << field.getData() << "   MRZ Field: " << mrzField.first;
-        currentComp = countPairs(field.getData(), mrzField.first);
-        std::cout << "   Comp: " << currentComp << std::endl;
-        if(currentComp > maxComp)
+        float maxComp = 0;
+        for(auto mrzField: mrzGeneral.getAllFieldsInv())
         {
-            maxComp = currentComp;
-            bestField = mrzField.second;
+            std::cout << "Field: " << field.getData() << "   MRZ Field: " << mrzField.first;
+            //currentComp = countPairs(field.getData(), mrzField.first);
+            currentComp = countPairs(field.getData(), mrzField.first);
+            std::cout << "   Comp: " << currentComp << std::endl;
+            if(currentComp > maxComp)
+            {
+                maxComp = currentComp;
+                bestField = mrzField.second;
+            }
+        }
+        float conf = static_cast<float>(maxComp/(field.getData().size()));
+
+        if(finalAssociation.find(bestField) == finalAssociation.end())
+        {
+            //std::map<std::string, std::pair<std::pair<std::string,std::string>, float>> finalAssociationNEW;
+            finalAssociation.emplace(bestField, std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf));
+            field.setTypeOfData(bestField);
+            std::cout << "Associated" << std::endl;
+        }
+        else if(finalAssociation.find(bestField)->second.second < conf)
+        {
+            std::cout << "Prev conf: "<< finalAssociation.find(bestField)->second.second << "\t curr conf: " << conf << std::endl;
+            finalAssociation.find(bestField)->second = std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf);
+            std::cout << "Associated" << std::endl;
         }
     }
-    float conf = static_cast<float>(maxComp/(field.getData().size()));
-
-    if(finalAssociation.find(bestField) == finalAssociation.end())
+    else if(metricType == distLev)
     {
-        //std::map<std::string, std::pair<std::pair<std::string,std::string>, float>> finalAssociationNEW;
-        finalAssociation.emplace(bestField, std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf));
-        field.setTypeOfData(bestField);
-        std::cout << "Associated" << std::endl;
+        float minComp = distanceLevenshtein(field.getData(), (*mrzGeneral.getAllFieldsInv().begin()).first);
+        for(auto mrzField: mrzGeneral.getAllFieldsInv())
+        {
+            std::cout << "Field: " << field.getData() << "   MRZ Field: " << mrzField.first;
+            //currentComp = countPairs(field.getData(), mrzField.first);
+            currentComp = distanceLevenshtein(field.getData(), mrzField.first);
+            std::cout << "   Comp: " << currentComp << std::endl;
+            if(currentComp < minComp)
+            {
+                minComp = currentComp;
+                bestField = mrzField.second;
+            }
+        }
+        float conf = 1 - static_cast<float>(minComp/(field.getData().size()));
+        if(mrzGeneral.getAllFields().find(bestField) != mrzGeneral.getAllFields().end()) //!!!!
+        {
+            if(finalAssociation.find(bestField) == finalAssociation.end())
+            {
+                finalAssociation.emplace(bestField, std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf));
+                field.setTypeOfData(bestField);
+                std::cout << "Associated" << std::endl;
+            }
+            else if(finalAssociation.find(bestField)->second.second < conf)
+            {
+                std::cout << "Prev conf: "<< finalAssociation.find(bestField)->second.second << "\t curr conf: " << conf << std::endl;
+                finalAssociation.find(bestField)->second = std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf);
+                std::cout << "Associated" << std::endl;
+            }
+        }
+        
     }
-    else if(finalAssociation.find(bestField)->second.second < conf)
-    {
-        std::cout << "Prev conf: "<< finalAssociation.find(bestField)->second.second << "\t curr conf: " << conf << std::endl;
-        finalAssociation.find(bestField)->second = std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf);
-        std::cout << "Associated" << std::endl;
-    }
-    
 }
 
 
@@ -325,13 +415,13 @@ void Fields::printDoubtfulFields()
 }
 
 
-float Fields::computeFinalConf()
+void Fields::computeFinalConf()
 {
     float sum = 0;
     for(auto & association: finalAssociation)
         sum += association.second.second;
     
-    return sum / finalAssociation.size();
+    finalConf = sum / finalAssociation.size();
 }
 
 
