@@ -20,6 +20,25 @@ void savePredictionImage(cv::Mat img, matrix2D boxes, std::vector<float> classes
 }
 
 
+void saveCentersPredictionImage(cv::Mat img, std::vector<Character> centers, std::string img_name)
+{
+    cv::Mat new_image = img;
+    int thickness = 5;
+    int lineType = cv::LINE_8;
+    std::vector<int> color;
+    color.resize(centers.size());
+
+    extern std::unordered_map<unsigned, std::string> dictionary;
+
+    for(size_t i = 0; i < centers.size(); ++i)
+    {
+        color[i] = (centers[i].getCluster() + 2);
+        cv::circle(new_image, cv::Point(centers[i].getX(), centers[i].getY()), 0, cv::Scalar(0, 0, color[i]*20), thickness, lineType);
+    }
+    cv::imwrite(img_name, new_image);
+}
+
+
 matrix2D computeCenters(matrix2D boxes, matrix2D anchorBoxes)
 {
     matrix2D center = boxes;
@@ -32,3 +51,13 @@ matrix2D computeCenters(matrix2D boxes, matrix2D anchorBoxes)
     }
     return center;
 }
+
+
+
+/*
+int countAlnums(const std::string& s)
+{    return std::count_if(s.begin(), s.end(), 
+                         [](unsigned char c){ return std::isalnum(c); }
+                        );
+}
+*/

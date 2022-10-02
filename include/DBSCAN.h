@@ -1,45 +1,33 @@
 #ifndef DBSCAN_H
 #define DBSCAN_H
 
+#include <iostream>
 #include <cmath>
 #include <vector>
+#include "../include/Character.h"
 
 const int NOISE = -2;
 const int NOT_CLASSIFIED = -1;
 
-class Point{
-    private:
-        double x, y;
-        int countPts, cluster;
-    public:
-        double distance(const Point &);
-        int getCountPts();
-        void setCountPts(int);
-        int getCluster();
-        void setCluster(int);
-
-    };
-
-class DBSCAN
+class myDBSCAN
 {
     private:
-        int n, minPts;
+        int minPts;
         double eps;
-        
-        const int size = points.size();
-        std::vector<std::vector<int>> adjPoints;
-        std::vector<bool> visited;
-        std::vector<std::vector<int>> cluster;
+        std::vector<Character> points;
+        const int size = points.size(); 
+        std::vector<std::vector<int>> adjPoints; //???
         int clusterIdx;
-    public:
-        std::vector<Point> points;
-        DBSCAN(int n, double eps, int minPts, std::vector<Point> points);
-        void checkNearPoints();
-        void run();
-        void dfs (int, int);
-        std::vector<std::vector<int> > getCluster();
-        bool isCoreObject(int);
+        std::vector<std::vector<int>> cluster;
 
+    public:
+        myDBSCAN(double eps, int minPts, std::vector<Character> points);
+        void run();
+        void checkNearPoints();
+        bool isCoreObject(int idx);
+        void dfs(int now, int c);
+        std::vector<Character> getPoints();
+        int getClusterIdx();
 
 };
 
