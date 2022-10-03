@@ -1,12 +1,34 @@
 #include "../include/DBSCAN.h"
 
 
-myDBSCAN::myDBSCAN(double eps_, int minPts_, std::vector<Character> points_):
-    eps(eps_), minPts(minPts_), points(points_)
+myDBSCAN::myDBSCAN(double eps_, int minPts_, std::pair<matrix2D, std::vector<float>> pred):
+    eps(eps_), minPts(minPts_)
     {
-        adjPoints.resize(size);
         clusterIdx = -1;
+        computePoints(pred);
+        size = points.size();
+        adjPoints.resize(size);
     }
+
+
+void myDBSCAN::computePoints(std::pair<matrix2D, std::vector<float>> boxes_labels)
+{
+    matrix2D boxes = boxes_labels.first;
+    std::vector<float> labels = boxes_labels.second;
+
+    float h, w, c_x, c_y;
+    for(size_t i = 0; i < boxes.size(); ++i)
+    {
+        w = boxes[i][2] - boxes[i][0];
+        h = boxes[i][3] - boxes[i][1];
+
+        c_x = boxes[i][0] + w / 2;
+        c_y = boxes[i][1] + h / 2;
+ 
+        Character point(c_x, c_y, w, h, labels[i], NOT_CLASSIFIED);
+        points.push_back(point);
+    }
+}
 
 
 void myDBSCAN::checkNearPoints()

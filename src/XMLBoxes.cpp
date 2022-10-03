@@ -1,5 +1,8 @@
 #include "../include/XMLBoxes.h"
 
+XMLBoxes::XMLBoxes(Document doc, const char* xml):
+            Boxes(doc), XMLPath(xml){}
+
 void XMLBoxes::extractBoxes()
 {
     std::vector<float> singleBox, singleBoxReshaped;

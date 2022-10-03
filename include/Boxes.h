@@ -12,8 +12,6 @@
 #define FEATURE_HEIGHT 800
 
 typedef std::vector<std::vector<float>> matrix2D;
-typedef std::vector<std::vector<std::vector<float>>> matrix3D;
-typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 
 class Boxes
 {
@@ -24,7 +22,7 @@ class Boxes
         std::vector<float> classes;
 
     public:
-        explicit Boxes(Document);
+        Boxes(Document);
         matrix2D getBoxes();
         std::vector<float> getClasses();
 

@@ -36,32 +36,6 @@
 #define MIN_PTS 1
 
 typedef std::vector<std::vector<float>> matrix2D;
-typedef std::vector<std::vector<std::vector<float>>> matrix3D;
-typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
-
-
-std::vector<Character> computePoints(std::pair<matrix2D, std::vector<float>> boxes_labels)
-{
-    matrix2D boxes = boxes_labels.first;
-    std::vector<float> labels = boxes_labels.second;
-
-    std::vector<Character> points;
-    float h, w, c_x, c_y;
-    for(size_t i = 0; i < boxes.size(); ++i)
-    {
-        w = boxes[i][2] - boxes[i][0];
-        h = boxes[i][3] - boxes[i][1];
-
-        c_x = boxes[i][0] + w / 2;
-        c_y = boxes[i][1] + h / 2;
-
-        Character point(c_x, c_y, w, h, labels[i], NOT_CLASSIFIED);
-        points.push_back(point);
-    }
-
-    return points;
-}
-
 
 std::pair<matrix2D, std::vector<float>> predictFromModel(Document document, std::string networkPath)
 {
@@ -92,11 +66,8 @@ std::pair<matrix2D, std::vector<float>> predictFromModel(Document document, std:
 std::pair<matrix2D, std::vector<float>> predictFromXML(Document document, const char* XMLPath)
 {
     XMLBoxes xmlBoxes(document, XMLPath);
-
     xmlBoxes.extractBoxes();
-
     std::pair<matrix2D, std::vector<float>> result(xmlBoxes.getBoxes(), xmlBoxes.getClasses());
-
     return result;
 }
 
@@ -130,11 +101,8 @@ int main()
     std::pair<matrix2D, std::vector<float>> XMLResult = predictFromXML(document, XMLPath);
     //savePredictionImage(document.getInputImage(), XMLResult.first, XMLResult.second, "../pred_xml.jpg");
     
-    std::vector<Character> points = computePoints(XMLResult);
-    //saveCentersPredictionImage(document.getInputImage(), points, "../centers_xml.jpg");
-
     // Aggregate boxes using DBSCAN
-    myDBSCAN dbscan(EPS, MIN_PTS, points);
+    myDBSCAN dbscan(EPS, MIN_PTS, XMLResult);
     dbscan.run();
 
     saveCentersPredictionImage(document.getInputImage(), dbscan.getPoints(), "../DBSCAN_xml.jpg");
