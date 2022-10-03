@@ -32,11 +32,16 @@
 #define THRESHOLD_NMS 0.01
 
 // DBSCAN params:
-#define EPS 30 //top 30, 15 o 11 va ridimensionato in base alla dimensione dell'immagine
+#define EPS 30 // it depends on the image
 #define MIN_PTS 1
+
+// Meshgrid
+#define RX_Y_PLUS 0.5
+
 
 typedef std::vector<std::vector<float>> matrix2D;
 
+// Predictions form Model and from given XML
 std::pair<matrix2D, std::vector<float>> predictFromModel(Document document, std::string networkPath)
 {
     // Predict
@@ -44,10 +49,10 @@ std::pair<matrix2D, std::vector<float>> predictFromModel(Document document, std:
     network.setInput(document.getBlob());
     cv::Mat prediction = network.forward();
 
-    ModelBoxes boxes(document, prediction);
+    ModelBoxes boxes(document, prediction, NUM_CLASSES);
 
     // Compute anchors
-    Anchors anchors;
+    Anchors anchors(FEATURE_WIDTH, FEATURE_HEIGHT, RX_Y_PLUS);
     matrix2D anchorBoxes = anchors.anchorsGenerator();
 
     // Compute the right boxes
@@ -62,8 +67,7 @@ std::pair<matrix2D, std::vector<float>> predictFromModel(Document document, std:
     return result;
 }
 
-
-std::pair<matrix2D, std::vector<float>> predictFromXML(Document document, const char* XMLPath)
+std::pair<matrix2D, std::vector<float>> predictFromXML(Document &document, const char* XMLPath)
 {
     XMLBoxes xmlBoxes(document, XMLPath);
     xmlBoxes.extractBoxes();
@@ -80,7 +84,7 @@ int main()
     //std::string imagePath = "../data/ZWE_AO_01002_FRONT.JPG"; //MRVA eps = 20
     //std::string imagePath = "../data/AFG_AO_01001_FRONT_3.JPG"; //TD3 eps = 11
     std::string imagePath = "../data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30
-    Document document(imagePath);
+    Document document(imagePath, FEATURE_WIDTH, FEATURE_HEIGHT, DENOISE_PARAM);
     
     // Predict from model
     //std::string networkPath = "../models/Frozen_graph_prova.pb";
@@ -107,19 +111,26 @@ int main()
 
     saveCentersPredictionImage(document.getInputImage(), dbscan.getPoints(), "../DBSCAN_xml.jpg");
 
+    // Find fields based on DBSCAN predictions
     Fields fields(dbscan.getPoints(), dbscan.getClusterIdx());
-    fields.fillFields();
+
     fields.checkMRZ();
     std::cout << std::endl;
+
     fields.printOrderedFields();
     std::cout << std::endl;
+
     fields.compareMRZFields(metric);
     std::cout << std::endl;
+
     fields.printNotFilledAndFilledFields();
     std::cout << std::endl;
+
     fields.printAssociations();
 
+
     // Useful outputs
+
     std::cout << "\n\nFINAL OUTPUT" <<std::endl;
 
     std::cout << "\nImage name: " << imagePath << std::endl;
@@ -132,7 +143,9 @@ int main()
    
     std::cout << "\nNumber of doubtful fields: " << fields.getNumDoubtfulFields() << std::endl;
 
-    OcrMrzResponseResult res = fillResponse(imagePath, fields, CONF_THRESHOLD);
+
+    // Compact output
+    //OcrMrzResponseResult res = fillResponse(imagePath, fields, CONF_THRESHOLD);
 
     return 0;
 }

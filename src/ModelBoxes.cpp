@@ -1,10 +1,10 @@
 #include "../include/ModelBoxes.h"
 
-ModelBoxes::ModelBoxes(Document doc, cv::Mat pred):
-    Boxes(doc), predictions(pred)
+ModelBoxes::ModelBoxes(Document doc, cv::Mat pred, int n):
+    Boxes(doc), predictions(pred), numClasses(n)
     {
         cv::Range boxRange(0, 4);
-        cv::Range classRange(4, NUM_CLASSES + 5);
+        cv::Range classRange(4, numClasses + 5);
         cv::Range all(cv::Range::all());
         std::vector<cv::Range> boxRanges = {all, boxRange, all, all};
         std::vector<cv::Range> classRanges = {all, classRange, all, all};

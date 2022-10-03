@@ -8,9 +8,6 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "Document.h"
 
-#define FEATURE_WIDTH 800
-#define FEATURE_HEIGHT 800
-
 typedef std::vector<std::vector<float>> matrix2D;
 
 class Boxes

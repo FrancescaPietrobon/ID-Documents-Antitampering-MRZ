@@ -9,10 +9,6 @@
 #include "Boxes.h"
 #include "utilities.h"
 
-#define FEATURE_WIDTH 800
-#define FEATURE_HEIGHT 800
-#define NUM_CLASSES 64
-
 typedef std::vector<std::vector<float>> matrix2D;
 
 class ModelBoxes: public Boxes
@@ -24,11 +20,12 @@ class ModelBoxes: public Boxes
         matrix2D boxPred;
         matrix2D classPred;
         matrix2D boxesPreNMS;
+        int numClasses;
         matrix2D extractPredCVMat(cv::Mat);
         void applySigmoid(matrix2D &);
 
     public:
-        ModelBoxes(Document doc, cv::Mat pred);
+        ModelBoxes(Document doc, cv::Mat pred, int numClasses);
         matrix2D getBoxPred();
         matrix2D getClassPred();
         matrix2D getBoxesPreNMS();

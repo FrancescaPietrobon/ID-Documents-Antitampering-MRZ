@@ -1,6 +1,5 @@
 #include "../include/Metrics.h"
 
-
 //https://github.com/bangxiang/LevenshteinDistance/blob/master/LevenshteinDistance.hh
 
 int min3(int a, int b, int c) {

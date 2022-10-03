@@ -1,5 +1,5 @@
-#ifndef UTILITIES_H
-#define UTILITIES_H
+#ifndef MYUTILITIES_H
+#define MYUTILITIES_H
 
 #include <iostream>
 #include <vector>
@@ -8,10 +8,8 @@
 #include <opencv2/dnn/dnn.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#include "DBSCAN.h"
-
-#define FEATURE_WIDTH 800
-#define FEATURE_HEIGHT 800
+#include "Character.h"
+#include "Document.h"
 
 typedef std::vector<std::vector<float>> matrix2D;
 

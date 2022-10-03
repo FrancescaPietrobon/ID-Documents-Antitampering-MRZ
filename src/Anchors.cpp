@@ -1,7 +1,8 @@
 #include "../include/Anchors.h"
 
 
-Anchors::Anchors()
+Anchors::Anchors(int w, int h, float plus):
+  width(w), height(h), rxyPlus(plus)
 {
     for(float area: areas_dims)
         areas.push_back(std::pow(area, 2));
@@ -49,11 +50,11 @@ matrix3D Anchors::meshgrid(int level)
   matrix2D grid;
   matrix3D grid_rep;
 
-  for(int i = 0; i < FEATURE_WIDTH / std::pow(2, level); ++i)
+  for(int i = 0; i < width / std::pow(2, level); ++i)
   {
-    for(int j = 0; j < FEATURE_WIDTH / std::pow(2, level); ++j)
+    for(int j = 0; j < width / std::pow(2, level); ++j)
     {
-      point = {static_cast<float>(j + RX_Y_PLUS) * static_cast<float>(std::pow(2, level)), static_cast<float>(i + RX_Y_PLUS) * static_cast<float>(std::pow(2, level))};
+      point = {static_cast<float>(j + rxyPlus) * static_cast<float>(std::pow(2, level)), static_cast<float>(i + rxyPlus) * static_cast<float>(std::pow(2, level))};
       //std::cout << point[0] << " " << point[1] << std::endl;
       for(int k = 0; k < 15; ++k)
         grid.push_back(point);
@@ -131,7 +132,7 @@ matrix2D Anchors::anchorsGenerator()
         matrix2D area = anchor_dims_all[level - 3];
 
         matrix3D area_exp;
-        for(int k = 0; k < ceil(FEATURE_WIDTH / std::pow(2, level))*ceil(FEATURE_HEIGHT / std::pow(2, level)); ++k)
+        for(int k = 0; k < ceil(width / std::pow(2, level))*ceil(height / std::pow(2, level)); ++k)
             area_exp.push_back(area);
 
         // To check that are the same with the ones considered in python

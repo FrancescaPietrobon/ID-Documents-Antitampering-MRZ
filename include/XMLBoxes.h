@@ -1,5 +1,5 @@
-#ifndef XML_BOXES_H
-#define XML_BOXES_H
+#ifndef XMLBOXES_H
+#define XMLBOXES_H
 
 #include <iostream>
 #include <vector>

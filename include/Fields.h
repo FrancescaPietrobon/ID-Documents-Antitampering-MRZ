@@ -10,7 +10,11 @@
 #include <algorithm>
 #include <iterator>
 #include "Character.h"
-#include "MRZ.h"
+#include "TD1.h"
+#include "TD2.h"
+#include "TD3.h"
+#include "MRVA.h"
+#include "MRVB.h"
 #include "Field.h"
 #include "utilities.h"
 #include "Date.h"
