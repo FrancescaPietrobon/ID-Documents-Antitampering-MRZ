@@ -1,8 +1,8 @@
 #include "../include/Anchors.h"
 
 
-Anchors::Anchors(int w, int h, float plus):
-  width(w), height(h), rxyPlus(plus)
+Anchors::Anchors(int w, int h):
+  width(w), height(h)
 {
     for(float area: areas_dims)
         areas.push_back(std::pow(area, 2));
@@ -54,7 +54,7 @@ matrix3D Anchors::meshgrid(int level)
   {
     for(int j = 0; j < width / std::pow(2, level); ++j)
     {
-      point = {static_cast<float>(j + rxyPlus) * static_cast<float>(std::pow(2, level)), static_cast<float>(i + rxyPlus) * static_cast<float>(std::pow(2, level))};
+      point = {static_cast<float>(j + RX_Y_PLUS) * static_cast<float>(std::pow(2, level)), static_cast<float>(i + RX_Y_PLUS) * static_cast<float>(std::pow(2, level))};
       //std::cout << point[0] << " " << point[1] << std::endl;
       for(int k = 0; k < 15; ++k)
         grid.push_back(point);

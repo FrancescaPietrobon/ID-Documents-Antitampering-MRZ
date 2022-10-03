@@ -19,6 +19,8 @@ class Document
         cv::Mat getInputImage();
         float getXAlter();
         float getYAlter();
+        int getWidth();
+        int getHeight();
         
     private:
         cv::Mat inputImage;

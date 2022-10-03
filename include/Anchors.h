@@ -7,13 +7,16 @@
 #include <math.h>
 #include <algorithm>
 
+// Meshgrid
+#define RX_Y_PLUS 0.5
+
 typedef std::vector<std::vector<float>> matrix2D;
 typedef std::vector<std::vector<std::vector<float>>> matrix3D;
 
 class Anchors
 {
     public:
-        Anchors(int width, int height, float rxyPlus);
+        Anchors(int width, int height);
         void computeDims();
         matrix3D meshgrid(int level);
         void printAnchors(matrix3D A, matrix3D B);
@@ -28,7 +31,6 @@ class Anchors
         std::vector<float> areas_dims = {32, 64, 128, 256, 512};
         std::vector<float> strides_range = {3, 4, 5, 6, 7};
 
-        float rxyPlus;
         int width;
         int height;
         std::vector<float> areas;

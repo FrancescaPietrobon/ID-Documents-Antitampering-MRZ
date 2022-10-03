@@ -1,6 +1,41 @@
 #include "../include/utilities.h"
 
 
+std::pair<matrix2D, std::vector<float>> predictFromXML(Document &document, const char* XMLPath)
+{
+    XMLBoxes xmlBoxes(document, XMLPath);
+    xmlBoxes.extractBoxes();
+    std::pair<matrix2D, std::vector<float>> result(xmlBoxes.getBoxes(), xmlBoxes.getClasses());
+    return result;
+}
+
+
+std::pair<matrix2D, std::vector<float>> predictFromModel(Document document, std::string networkPath, int numClasses, float thresholdIOU, float thresholdNMS)
+{
+    // Predict
+    cv::dnn::Net network = cv::dnn::readNetFromTensorflow(networkPath);
+    network.setInput(document.getBlob());
+    cv::Mat prediction = network.forward();
+
+    ModelBoxes boxes(document, prediction, numClasses);
+
+    // Compute anchors
+    Anchors anchors(document.getWidth(), document.getHeight());
+    matrix2D anchorBoxes = anchors.anchorsGenerator();
+
+    // Compute the right boxes
+    matrix2D centers = computeCenters(boxes.getBoxPred(), anchorBoxes);
+    boxes.computeBoxes(centers);
+    boxes.computeNMS(thresholdIOU, thresholdNMS);
+
+    boxes.reshapeBoxes();
+    
+    std::pair<matrix2D, std::vector<float>> result(boxes.getBoxes(), boxes.getClasses());
+
+    return result;
+}
+
+
 void savePredictionImage(cv::Mat img, matrix2D boxes, std::vector<float> classes, std::string img_name)
 {
     cv::Mat new_image = img;

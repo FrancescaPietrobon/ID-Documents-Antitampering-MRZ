@@ -45,3 +45,14 @@ float Document::getYAlter()
 {
     return yAlter;
 }
+
+int Document::getWidth()
+{
+    return width;
+}
+
+
+int Document::getHeight()
+{
+    return height;
+}

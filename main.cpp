@@ -35,45 +35,15 @@
 #define EPS 30 // it depends on the image
 #define MIN_PTS 1
 
-// Meshgrid
-#define RX_Y_PLUS 0.5
+
 
 
 typedef std::vector<std::vector<float>> matrix2D;
 
 // Predictions form Model and from given XML
-std::pair<matrix2D, std::vector<float>> predictFromModel(Document document, std::string networkPath)
-{
-    // Predict
-    cv::dnn::Net network = cv::dnn::readNetFromTensorflow(networkPath);
-    network.setInput(document.getBlob());
-    cv::Mat prediction = network.forward();
 
-    ModelBoxes boxes(document, prediction, NUM_CLASSES);
 
-    // Compute anchors
-    Anchors anchors(FEATURE_WIDTH, FEATURE_HEIGHT, RX_Y_PLUS);
-    matrix2D anchorBoxes = anchors.anchorsGenerator();
 
-    // Compute the right boxes
-    matrix2D centers = computeCenters(boxes.getBoxPred(), anchorBoxes);
-    boxes.computeBoxes(centers);
-    boxes.computeNMS(THRESHOLD_IOU, THRESHOLD_NMS);
-
-    boxes.reshapeBoxes();
-    
-    std::pair<matrix2D, std::vector<float>> result(boxes.getBoxes(), boxes.getClasses());
-
-    return result;
-}
-
-std::pair<matrix2D, std::vector<float>> predictFromXML(Document &document, const char* XMLPath)
-{
-    XMLBoxes xmlBoxes(document, XMLPath);
-    xmlBoxes.extractBoxes();
-    std::pair<matrix2D, std::vector<float>> result(xmlBoxes.getBoxes(), xmlBoxes.getClasses());
-    return result;
-}
 
 
 
@@ -88,7 +58,7 @@ int main()
     
     // Predict from model
     //std::string networkPath = "../models/Frozen_graph_prova.pb";
-    //std::pair<matrix2D, std::vector<float>> modelResult = predictFromModel(document, networkPath);
+    //std::pair<matrix2D, std::vector<float>> modelResult = predictFromModel(document, networkPath, NUM_CLASSES, THRESHOLD_IOU, THRESHOLD_NMS);
     //savePredictionImage(document.getInputImage(), modelResult.first, modelResult.second, "../pred_model.jpg");
 
     // Predict from XML boxes
