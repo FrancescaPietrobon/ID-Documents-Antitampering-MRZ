@@ -34,28 +34,21 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 include_directories(
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/src
-        #${PROJECT_SOURCE_DIR}/include/MRZ
-        #${PROJECT_SOURCE_DIR}/src/MRZ
 )
-
 
 file(GLOB_RECURSE all_SRCS
         "${PROJECT_SOURCE_DIR}/include/*.h"
         "${PROJECT_SOURCE_DIR}/include/*.hpp"
-        #"${PROJECT_SOURCE_DIR}/include/MRZ/*.h"
+        "${PROJECT_SOURCE_DIR}/include/MRZ/*.h"
         "${PROJECT_SOURCE_DIR}/src/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/*.c"
-        #"${PROJECT_SOURCE_DIR}/src/MRZ/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/MRZ/*.cpp"
         )
 
 add_library(OCR SHARED ${all_SRCS})
-
-#add_executable(OCR main.cpp)
 
 find_package(OpenCV REQUIRED)
 
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 target_link_libraries(OCR ${OpenCV_LIBS})
-
-#add_executable(OCR main.cpp)

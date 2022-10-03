@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 #include <map>
-#include "MRZ.h"
+#include "../MRZ.h"
 
 
 class TD1: public MRZ

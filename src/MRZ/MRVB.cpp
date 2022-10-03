@@ -1,30 +1,11 @@
-#include "../include/MRVA.h"
+#include "../include/MRZ/MRVB.h"
 
 
-MRVA::MRVA(std::vector<std::vector<Character>> characters, int nl):
+MRVB::MRVB(std::vector<std::vector<Character>> characters, int nl):
     MRZ(characters, nl){}
 
 
-void MRVA::printMRZFields()
-{
-    std::cout << "Document type: " << docType << std::endl;
-    std::cout << "Passport type: " << passportType << std::endl;
-    std::cout << "State: " << state << std::endl;
-    std::cout << "Surname: " << surname << std::endl;
-    std::cout << "Name: " << name << std::endl;
-    std::cout << "Document number: " << docNumber << std::endl;
-    std::cout << "Check document number: " << checkDocNum << std::endl;
-    std::cout << "Nationality: " << nationality << std::endl;
-    std::cout << "Date of birth: " << dateBirth << std::endl;
-    std::cout << "Check date of birth: " << checkDateBirth << std::endl;
-    std::cout << "Sex: " << sex << std::endl;
-    std::cout << "Date of expire: " << dateExpireDoc << std::endl;
-    std::cout << "Check date of expire: " << checkDateExpireDoc << std::endl;
-    std::cout << "Optional data: " << optionalData << std::endl;
-}
-
-
-void MRVA::extractFields()
+void MRVB::extractFields()
 {
     // First line
 
@@ -44,7 +25,7 @@ void MRVA::extractFields()
     allFieldsInv.insert(std::pair<std::string, std::string>(state, "state"));
 
     int i = 5;
-    for(size_t j = i; j < 44; ++j)
+    for(size_t j = i; j < 36; ++j)
     {
         if(mrz[0][j].getLabel() == "<" && mrz[0][j-1].getLabel() == "<")
         {
@@ -59,7 +40,7 @@ void MRVA::extractFields()
     allFields.insert(std::pair<std::string, std::string>("surname", surname.substr(0, surname.size() - 1)));
     allFieldsInv.insert(std::pair<std::string, std::string>(surname.substr(0, surname.size() - 1), "surname"));
 
-    for(size_t j = i; j < 44; ++j)
+    for(size_t j = i; j < 36; ++j)
     {
         if(mrz[0][j].getLabel() == "<" && mrz[0][j-1].getLabel() == "<")
             break;
@@ -106,7 +87,7 @@ void MRVA::extractFields()
         optionalData = "NULL";
     else
     {
-        for(size_t i = 28; i < 44; ++i)
+        for(size_t i = 28; i < 36; ++i)
         {
             if(mrz[1][i].getLabel() == "<" && mrz[1][i-1].getLabel() == "<")
                 break;
