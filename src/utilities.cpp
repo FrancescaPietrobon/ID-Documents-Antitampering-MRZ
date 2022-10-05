@@ -89,11 +89,7 @@ matrix2D computeCenters(matrix2D boxes, matrix2D anchorBoxes)
 }
 
 
-
-/*
-int countAlnums(const std::string& s)
-{    return std::count_if(s.begin(), s.end(), 
-                         [](unsigned char c){ return std::isalnum(c); }
-                        );
+bool isNumber(const std::string& str)
+{
+    return str.find_first_not_of("0123456789") == std::string::npos;
 }
-*/

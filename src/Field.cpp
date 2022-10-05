@@ -2,11 +2,7 @@
 
 
 Field::Field(std::vector<Character> chars):
-    originalCluster(chars)
-    {
-        partOfMRZ = false;
-        typeOfData = "";
-    }
+    originalCluster(chars){}
 
 
 void Field::setField(float x, Character point)
@@ -39,9 +35,9 @@ void Field::clear()
     partOfMRZ = false;
 }
 
-void Field::isPartOfMRZ()
+void Field::setisPartOfMRZ(bool isPart)
 {
-    partOfMRZ = true;
+    partOfMRZ = isPart;
 }
 
 bool Field::getIsPartOfMRZ()
@@ -89,14 +85,5 @@ void Field::print()
     for(auto it = field.begin(); it != field.end(); ++it)
     {
         std::cout << ((*it).second).getLabel();
-    }
-}
-
-
-void Field::computeField()
-{
-    for(auto it = field.begin(); it != field.end(); ++it)
-    {
-        //std::cout << ((*it).second).getLabel();
     }
 }

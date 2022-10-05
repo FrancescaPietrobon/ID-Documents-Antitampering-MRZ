@@ -7,12 +7,6 @@ Fields::Fields(std::vector<Character> chars, int n):
         fillFields();  
     }
 
-int Fields::getNumLineOfMRZ()
-{
-    return numLineOfMRZ;
-}
-
-
 size_t Fields::getNumDoubtfulFields()
 {
     return numDoubtfulFields;
@@ -27,7 +21,6 @@ float Fields::getFinalConf()
 {
     return finalConf;
 }
-
  
 std::map<std::string, std::pair<std::pair<std::string,std::string>, float>> Fields::getFinalAssociations()
 {
@@ -47,7 +40,7 @@ void Fields::fillFields()
                 field.setField(originalCluster[j].getX(), originalCluster[j]);
                 if(!field.getIsPartOfMRZ() && originalCluster[j].getLabel() == "<")
                 {
-                    field.isPartOfMRZ();
+                    field.setisPartOfMRZ(true);
                     ++numLineOfMRZ;
                 }
             }
@@ -56,6 +49,7 @@ void Fields::fillFields()
         field.clear();
     }
     
+    // Consider single characters as field
     for(int j = 0; j < originalCluster.size(); ++j)
     {
         if(originalCluster[j].getCluster() == -2)
@@ -76,8 +70,7 @@ void Fields::fillFields()
             data += character.second.getLabel();
         field.setData(data);
         std::cout << data << std::endl;
-    }
-        
+    }       
 }
 
 
@@ -108,7 +101,6 @@ void Fields::checkMRZ()
 
         std::cout << "MRZ type: "<< MRZType << std::endl;
 
-        // TO DO: create ENUM for mrz type
         if(MRZType == "TD1")
         {
             TD1 mrz(mrzChar, numLineOfMRZ);
@@ -160,19 +152,19 @@ std::string Fields::findMRZType(std::vector<std::vector<Character>> mrz)
     {
         MRZType = "TD1";
     }
-    else if(mrz[0].size() == 36)
+    else if(mrz[0].size() >= 32 && mrz[0].size() <= 40) // if(mrz[0].size() == 36) restrictive case
     {
-        if(mrz[0][0].getLabel() == "V")
-            MRZType = "MRVB";
-        else
+        if(mrz[0][0].getLabel() == "P")
             MRZType = "TD2";
-    }
-    else if(mrz[0].size() == 44)
-    {
-        if(mrz[0][0].getLabel() == "V")
-            MRZType = "MRVA";
         else
+            MRZType = "MRVB";
+    }
+    else if(mrz[0].size() > 40 && mrz[0].size() <= 48) // if(mrz[0].size() == 44) restrictive case
+    {
+        if(mrz[0][0].getLabel() == "P")
             MRZType = "TD3";
+        else
+            MRZType = "MRVA";
     }
     else
         MRZType = "NULL";
@@ -188,69 +180,14 @@ void Fields::printOrderedFields()
 }
 
 
-std::pair<std::string, size_t> Fields::checkMonth(std::string field)
-{
-    extern std::map<std::string, std::string> monthUCtoNum, monthLCtoNum;
-
-    for(auto month: monthUCtoNum)
-    {
-        std::cout << field << " " << month.first << " " << month.second << std::endl;
-        if(field.find(month.first) != std::string::npos)
-            return std::make_pair(month.first, field.find(month.first));
-            //return std::make_pair(month.first, field.find(month.first) - field.begin());
-    }
-    for(auto month: monthLCtoNum)
-    {
-        //size_t it = field.find(month.first);
-        if(field.find(month.first) != std::string::npos)
-            return std::make_pair(month.first, field.find(month.first));
-            //return std::make_pair(month.first, field.find(month.first) - field.begin());
-            //return month.first;
-    }
-    //return "None";
-    return std::make_pair("None", 0);
-        
-}
-
 void Fields::checkAlphanumDate(Field & field)
 {
-    size_t countNotDigit = 0, countDigit = 0;
-    //std::cout << "Field: " << field.getData() << std::endl;
-
-    //const char * text = field.getData().c_str();
-    //std::string possibleMonth;
-    //size_t idxData = 0;
+    Date date(field.getData());
     
-    /*
-    for(size_t i = 0; text[i] != NULL; ++i)
-    {
-        if(!std::isdigit(text[i]) && countNotDigit <= 3)
-        {   
-            idxData = i;
-            ++countNotDigit;
-            possibleMonth += text[i];
-        }
-        else
-            ++countDigit;
-    }
-    */
-   //std::string possibleMonth = checkMonth(field.getData());
-   std::pair<std::string, size_t> possibleMonthInfo = checkMonth(field.getData());
-
-    //if(countNotDigit != 0 && countDigit >= 3)
-    if(possibleMonthInfo.first != "None")
-    {
-        //std::cout << "Possible date: " << field.getData();
-        //std::cout << "   with possible month: " << possibleMonth << std::endl;
-
-        Date date(field.getData(), possibleMonthInfo.first, possibleMonthInfo.second);
-        std::string newDate = date.convertAlphanumDate();
-        if(newDate != "None")
-        {
-            //std::cout << "New date: " << newDate << std::endl; 
-            field.setData(newDate);
-        }
-    }  
+    // REQUIRED DATE DETECTED CORRECTLY
+    // If it is a date, it is refactorized in format yymmdd.
+    if(date.isDate())
+        field.setData(date.getNewDate());
 }
 
 
@@ -264,17 +201,20 @@ void Fields::compareMRZFields(metricsType metricType)
             checkAlphanumDate(field);
         auto search = mrzGeneral.getAllFieldsInv().find(field.getData());
         std::cout << "\nField: " << field.getData() << std::endl;
-        if((field.getData() == search->first) && (field.getTypeOfData() == ""))
+        //std::cout << " Find: " << search->first << std::endl;
+        if(search != mrzGeneral.getAllFieldsInv().end()) //NON VA!!!
         {
-            std::cout << "Field: " << field.getData() << " ";
-            std::cout << " Find: " << search->first << " " << search->second << std::endl;
-            // GESTISCI ATTRIBUZIONI MULTIPLE DELLO STESSO TIPO IN setTypeOfData
-            field.setTypeOfData(search->second);
-            finalAssociation.emplace(search->second, std::make_pair(std::make_pair(field.getData(), search->first), 1.));
-            std::cout << "Associated" << std::endl;
-        }
-        mostCompatible(field, metricType);
-              
+            if((field.getData() == search->first) && (field.getTypeOfData() == ""))
+            {
+                std::cout << "Field: " << field.getData() << " ";
+                std::cout << " Find: " << search->first << " " << search->second << std::endl;
+                // GESTISCI ATTRIBUZIONI MULTIPLE DELLO STESSO TIPO IN setTypeOfData
+                field.setTypeOfData(search->second);
+                finalAssociation.emplace(search->second, std::make_pair(std::make_pair(field.getData(), search->first), 1.));
+                std::cout << "Associated" << std::endl;
+            }
+            mostCompatible(field, metricType);
+        }      
     }
     std::cout << std::endl;
     

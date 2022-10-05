@@ -48,7 +48,10 @@ file(GLOB_RECURSE all_SRCS
 add_library(OCR SHARED ${all_SRCS})
 
 find_package(OpenCV REQUIRED)
-
 include_directories( ${OpenCV_INCLUDE_DIRS} )
-
 target_link_libraries(OCR ${OpenCV_LIBS})
+
+add_executable(app)
+target_sources(app PRIVATE main.cpp)
+
+target_link_libraries(app PRIVATE OCR)

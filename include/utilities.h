@@ -24,6 +24,8 @@ matrix2D computeCenters(matrix2D boxes, matrix2D anchorBoxes);
 
 void saveCentersPredictionImage(cv::Mat img, std::vector<Character> centers, std::string img_name);
 
+bool isNumber(const std::string& str);
+
 int countAlnums(const std::string& s);
 
 

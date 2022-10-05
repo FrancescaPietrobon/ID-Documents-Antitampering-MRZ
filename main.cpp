@@ -32,28 +32,19 @@
 #define THRESHOLD_NMS 0.01
 
 // DBSCAN params:
-#define EPS 30 // it depends on the image
+#define EPS 11 // it depends on the image
 #define MIN_PTS 1
 
-
-
-
 typedef std::vector<std::vector<float>> matrix2D;
-
-// Predictions form Model and from given XML
-
-
-
-
-
 
 int main()
 {
     //std::string imagePath = "../data/BGR_AO_02001_FRONT.jpeg";
     //std::string imagePath = "../data/AFG_AO_01001_FRONT.JPG"; //TD3 eps = 27
     //std::string imagePath = "../data/ZWE_AO_01002_FRONT.JPG"; //MRVA eps = 20
-    //std::string imagePath = "../data/AFG_AO_01001_FRONT_3.JPG"; //TD3 eps = 11
-    std::string imagePath = "../data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30
+    std::string imagePath = "../data/AFG_AO_01001_FRONT_3.JPG"; //TD3 eps = 11
+    //std::string imagePath = "../data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30
+
     Document document(imagePath, FEATURE_WIDTH, FEATURE_HEIGHT, DENOISE_PARAM);
     
     // Predict from model
@@ -65,12 +56,12 @@ int main()
     //const char* XMLPath = "../data/BGR_AO_02001_FRONT.xml";
     //const char* XMLPath = "../data/AFG_AO_01001_FRONT.xml"; //TD3 eps = 27
     //const char* XMLPath = "../data/ZWE_AO_01002_FRONT.xml"; //MRVA eps = 20
-    //const char* XMLPath = "../data/AFG_AO_01001_FRONT_3.xml"; //TD3 eps = 11
-    const char* XMLPath = "../data/IMG-20220930-WA0002.xml"; //TD3  eps = 30
+    const char* XMLPath = "../data/AFG_AO_01001_FRONT_3.xml"; //TD3 eps = 11
+    //const char* XMLPath = "../data/IMG-20220930-WA0002.xml"; //TD3  eps = 30
 
     // Choose the metric type
-    //metricsType metric = pairs;
-    metricsType metric = distLev;
+    metricsType metric = pairs;
+    //metricsType metric = distLev;
     
     std::pair<matrix2D, std::vector<float>> XMLResult = predictFromXML(document, XMLPath);
     //savePredictionImage(document.getInputImage(), XMLResult.first, XMLResult.second, "../pred_xml.jpg");

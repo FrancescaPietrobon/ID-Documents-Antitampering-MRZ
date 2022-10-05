@@ -52,9 +52,3 @@ void XMLBoxes::printXMLBoxes()
         std::cout << ", ymax " << box.child_value("ymax") << std::endl;
     }
 }
-
-
-
-
-
-

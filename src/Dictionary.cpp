@@ -1,7 +1,6 @@
 #include "../include/Dictionary.h"
 
 
-
 extern std::unordered_map<unsigned, std::string> dictionary =   {{0, "0",},
                                                 {1, "1",},
                                                 {2, "2",},
