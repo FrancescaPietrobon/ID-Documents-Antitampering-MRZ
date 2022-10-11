@@ -57,7 +57,6 @@ class MRZ
         std::string getDateExpireDoc();
         std::string getCheckDateExpireDoc();
         std::string getOptionalData();
-
 };
 
 

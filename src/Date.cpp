@@ -19,13 +19,10 @@ bool Date::isDate()
 {
     findMonth();
     if(possibleMonth != "None")
-    {
         return checkAlphanumericDate();
-    }
+
     if(isNumber(data) && ((data.size() == 6) || (data.size() == 9)))
-    {
         return checkNumericDate();
-    }
 
     return false;
 }
@@ -47,7 +44,7 @@ void Date::searchMonth(std::string field, std::map<std::string, std::string> mon
 {
     for(auto m: months)
     {
-        // check if the name of one month is contained in the string field
+        // Check if the name of one month is contained in the string field
         if(field.find(m.first) != std::string::npos) 
         {
             possibleMonth = m.first;
@@ -97,6 +94,7 @@ bool Date::checkAlphanumericDate()
         day = data[0];
         day += data[1];
     }
+    
     if(!dayOk())
         return false;
 

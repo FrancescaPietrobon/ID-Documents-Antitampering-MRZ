@@ -10,6 +10,16 @@ myDBSCAN::myDBSCAN(float eps_, int minPts_, std::pair<matrix2D, std::vector<floa
         adjPoints.resize(size);
     }
 
+std::vector<Character> myDBSCAN::getPoints()
+{
+    return points;
+}
+
+int myDBSCAN::getClusterIdx()
+{
+    return clusterIdx;
+}
+
 
 void myDBSCAN::computePoints(std::pair<matrix2D, std::vector<float>> boxes_labels)
 {
@@ -81,15 +91,4 @@ void myDBSCAN::run()
     for(int i = 0; i < size; i++)
         if(points[i].getCluster() != NOISE)
             cluster[points[i].getCluster()].push_back(i);
-}
-
-
-std::vector<Character> myDBSCAN::getPoints()
-{
-    return points;
-}
-
-int myDBSCAN::getClusterIdx()
-{
-    return clusterIdx;
 }

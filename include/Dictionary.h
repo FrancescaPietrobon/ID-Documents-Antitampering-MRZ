@@ -58,7 +58,4 @@ extern std::map<monthLowerCase, std::string> monthLowerCaseMap;
 
 extern std::map<std::string, std::string> statesDic;
 
-
-
-
 #endif

@@ -36,7 +36,6 @@ class Field
         void print();
         void clear();
         void computeMeanY();
-        
 };
 
 #endif

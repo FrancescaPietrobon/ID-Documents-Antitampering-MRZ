@@ -193,7 +193,7 @@ void Fields::checkAlphanumDate(Field & field)
 
 void Fields::compareMRZFields(metricsType metricType)
 {
-    //OCCHIO CHE SE HO SPECIMEN sia per nome che cognome mi dirà entrambe le volte SPECIMEN è cognome (primo che vede)
+    // OCCHIO CHE SE HO SPECIMEN sia per nome che cognome mi dirà entrambe le volte SPECIMEN è cognome (primo che vede)
     // Then check for identical field
     for(auto & field: fields)
     {

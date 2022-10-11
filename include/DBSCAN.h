@@ -14,8 +14,8 @@ typedef std::vector<std::vector<float>> matrix2D;
 class myDBSCAN
 {
     private:
-        int minPts;
-        float eps;
+        const float eps;
+        const int minPts;
         std::vector<Character> points;
         int size; 
         std::vector<std::vector<int>> adjPoints;
@@ -24,14 +24,13 @@ class myDBSCAN
         void computePoints(std::pair<matrix2D, std::vector<float>> boxes_labels);
 
     public:
-        myDBSCAN(float eps, int minPts, std::pair<matrix2D, std::vector<float>> pred);
+        myDBSCAN(float, int, std::pair<matrix2D, std::vector<float>>);
         void run();
         void checkNearPoints();
         bool isCoreObject(int idx);
         void dfs(int now, int c);
         std::vector<Character> getPoints();
         int getClusterIdx();
-
 };
 
 #endif

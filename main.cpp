@@ -29,7 +29,7 @@
 
 // NMS params:
 #define THRESHOLD_IOU 0.3 //0.5
-#define THRESHOLD_NMS 0.1 //0.3
+#define THRESHOLD_NMS 0.1 //0.1
 
 // DBSCAN params:
 #define EPS 27 // it depends on the image
@@ -47,9 +47,7 @@ int main()
 
     Document document(imagePath, FEATURE_WIDTH, FEATURE_HEIGHT, DENOISE_PARAM);
 
-    // Choose the metric type
-
-    //metricsType metric = pairs;
+    // Choose the metric type (pairs or distLev)
     metricsType metric = distLev;
     
 
@@ -66,7 +64,10 @@ int main()
     
 
     // Predict from model
-    std::string networkPath = "../models/Frozen_graph_lnorm_bello.pb";
+
+    std::string networkPath = "../models/Frozen_graph_lnorm_bello.pb"; //best
+    //std::string networkPath = "../models/Frozen_graph_lnorm_1e5.pb";
+    
     std::pair<matrix2D, std::vector<float>> modelResult = predictFromModel(document, networkPath, NUM_CLASSES, THRESHOLD_IOU, THRESHOLD_NMS);
     savePredictionImage(document.getInputImage(), modelResult.first, modelResult.second, "../pred_model.jpg");
 

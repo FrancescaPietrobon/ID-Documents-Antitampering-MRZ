@@ -96,11 +96,13 @@ void MRZ::printMRZ()
     }
 }
 
+
 void MRZ::assignMRZ(std::vector<std::vector<Character>> mrzChar, int numLineOfMRZ)
 {
     mrz = mrzChar;
     numLines = numLineOfMRZ;
 }
+
 
 void MRZ::printMRZFields()
 {
@@ -138,6 +140,7 @@ bool MRZ::check(std::string field, std::string checkDigit)
 
     return (checkDigit == std::to_string(sum % 10));
 }
+
 
 bool MRZ::CheckOverAll(std::string checkOverall)
 {

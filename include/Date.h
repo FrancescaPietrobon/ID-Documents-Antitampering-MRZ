@@ -29,7 +29,6 @@ class Date
         Date(std::string d);
         bool isDate();
         std::string getNewDate();     
-        
 };
 
 

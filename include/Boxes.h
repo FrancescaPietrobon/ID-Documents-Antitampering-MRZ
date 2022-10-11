@@ -22,7 +22,6 @@ class Boxes
         Boxes(Document);
         matrix2D getBoxes();
         std::vector<float> getClasses();
-
 };
 
 #endif

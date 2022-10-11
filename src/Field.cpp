@@ -29,12 +29,6 @@ std::vector<Character> Field::getCharacters()
     return orderedField;
 }
 
-void Field::clear()
-{
-    field.clear();
-    partOfMRZ = false;
-}
-
 void Field::setisPartOfMRZ(bool isPart)
 {
     partOfMRZ = isPart;
@@ -65,6 +59,19 @@ std::string Field::getData()
     return data;
 }
 
+float Field::getMeanY()
+{
+    return meanY;
+}
+
+
+void Field::clear()
+{
+    field.clear();
+    partOfMRZ = false;
+}
+
+
 void Field::computeMeanY()
 {
     float sum = 0;
@@ -75,10 +82,6 @@ void Field::computeMeanY()
     meanY = sum / field.size();
 }
 
-float Field::getMeanY()
-{
-    return meanY;
-}
 
 void Field::print()
 {

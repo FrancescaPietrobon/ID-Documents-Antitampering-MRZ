@@ -40,7 +40,6 @@ class ModelBoxes: public Boxes
         void reshapeBoxes();
         void applySigmoid(matrix2D &);
         void multBias(matrix2D &);
-
 };
 
 #endif
