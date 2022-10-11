@@ -19,7 +19,7 @@
 #include "include/Response.h"
 #include "include/Metrics.h"
 
-#define NUM_CLASSES 64
+#define NUM_CLASSES 63
 #define CONF_THRESHOLD 0.75
 
 // Image preprocessing params:
@@ -28,46 +28,51 @@
 #define DENOISE_PARAM 10
 
 // NMS params:
-#define THRESHOLD_IOU 0.08
-#define THRESHOLD_NMS 0.01
+#define THRESHOLD_IOU 0.3 //0.5
+#define THRESHOLD_NMS 0.1 //0.3
 
 // DBSCAN params:
-#define EPS 11 // it depends on the image
+#define EPS 27 // it depends on the image
 #define MIN_PTS 1
 
 typedef std::vector<std::vector<float>> matrix2D;
 
 int main()
 {
+    std::string imagePath = "../data/AFG_AO_01001_FRONT.JPG"; //TD3 eps = 27
     //std::string imagePath = "../data/BGR_AO_02001_FRONT.jpeg";
-    //std::string imagePath = "../data/AFG_AO_01001_FRONT.JPG"; //TD3 eps = 27
     //std::string imagePath = "../data/ZWE_AO_01002_FRONT.JPG"; //MRVA eps = 20
-    std::string imagePath = "../data/AFG_AO_01001_FRONT_3.JPG"; //TD3 eps = 11
+    //std::string imagePath = "../data/AFG_AO_01001_FRONT_3.JPG"; //TD3 eps = 11
     //std::string imagePath = "../data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30
 
     Document document(imagePath, FEATURE_WIDTH, FEATURE_HEIGHT, DENOISE_PARAM);
-    
-    // Predict from model
-    //std::string networkPath = "../models/Frozen_graph_prova.pb";
-    //std::pair<matrix2D, std::vector<float>> modelResult = predictFromModel(document, networkPath, NUM_CLASSES, THRESHOLD_IOU, THRESHOLD_NMS);
-    //savePredictionImage(document.getInputImage(), modelResult.first, modelResult.second, "../pred_model.jpg");
-
-    // Predict from XML boxes
-    //const char* XMLPath = "../data/BGR_AO_02001_FRONT.xml";
-    //const char* XMLPath = "../data/AFG_AO_01001_FRONT.xml"; //TD3 eps = 27
-    //const char* XMLPath = "../data/ZWE_AO_01002_FRONT.xml"; //MRVA eps = 20
-    const char* XMLPath = "../data/AFG_AO_01001_FRONT_3.xml"; //TD3 eps = 11
-    //const char* XMLPath = "../data/IMG-20220930-WA0002.xml"; //TD3  eps = 30
 
     // Choose the metric type
-    metricsType metric = pairs;
-    //metricsType metric = distLev;
+
+    //metricsType metric = pairs;
+    metricsType metric = distLev;
     
-    std::pair<matrix2D, std::vector<float>> XMLResult = predictFromXML(document, XMLPath);
+
+    // Predict from XML boxes
+
+    const char* XMLPath = "../data/AFG_AO_01001_FRONT.xml"; //TD3 eps = 27
+    //const char* XMLPath = "../data/BGR_AO_02001_FRONT.xml";
+    //const char* XMLPath = "../data/ZWE_AO_01002_FRONT.xml"; //MRVA eps = 20
+    //const char* XMLPath = "../data/AFG_AO_01001_FRONT_3.xml"; //TD3 eps = 11
+    //const char* XMLPath = "../data/IMG-20220930-WA0002.xml"; //TD3  eps = 30
+    
+    //std::pair<matrix2D, std::vector<float>> XMLResult = predictFromXML(document, XMLPath);
     //savePredictionImage(document.getInputImage(), XMLResult.first, XMLResult.second, "../pred_xml.jpg");
     
+
+    // Predict from model
+    std::string networkPath = "../models/Frozen_graph_lnorm_bello.pb";
+    std::pair<matrix2D, std::vector<float>> modelResult = predictFromModel(document, networkPath, NUM_CLASSES, THRESHOLD_IOU, THRESHOLD_NMS);
+    savePredictionImage(document.getInputImage(), modelResult.first, modelResult.second, "../pred_model.jpg");
+
+
     // Aggregate boxes using DBSCAN
-    myDBSCAN dbscan(EPS, MIN_PTS, XMLResult);
+    myDBSCAN dbscan(EPS, MIN_PTS, modelResult);
     dbscan.run();
 
     saveCentersPredictionImage(document.getInputImage(), dbscan.getPoints(), "../DBSCAN_xml.jpg");
@@ -98,7 +103,6 @@ int main()
 
     std::cout << "\nResult: " << std::boolalpha << fields.getResult() << std::endl;
     std::cout << "\nConfidence threshold: " << CONF_THRESHOLD << std::endl;
-    //std::cout << "\nConfidence: " << finalConf << std::endl;
     std::cout << "\nConfidence: " << fields.getFinalConf() << std::endl;
     fields.printDoubtfulFields();
    
@@ -107,6 +111,8 @@ int main()
 
     // Compact output
     //OcrMrzResponseResult res = fillResponse(imagePath, fields, CONF_THRESHOLD);
+
+    
 
     return 0;
 }

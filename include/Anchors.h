@@ -26,9 +26,9 @@ class Anchors
         void printAnchorShapesTransf(matrix3D grid, matrix3D area_exp, matrix3D concatenation, matrix2D resized_anchors, int level);
 
     private:
-        std::vector<float> aspect_ratios = {0.2, 0.3, 0.5, 1.0, 2.0};
+        std::vector<float> aspect_ratios = {0.25, 0.42, 0.59, 0.76, 1.0};
         std::vector<float> scales = {0.4, 0.6, 0.8};
-        std::vector<float> areas_dims = {32, 64, 128, 256, 512};
+        std::vector<float> areas_dims = {30., 40., 50., 60., 70.};
         std::vector<float> strides_range = {3, 4, 5, 6, 7};
 
         int width;

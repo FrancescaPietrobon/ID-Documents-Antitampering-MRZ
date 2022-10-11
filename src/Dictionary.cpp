@@ -63,9 +63,7 @@ extern std::unordered_map<unsigned, std::string> dictionary =   {{0, "0",},
                                                 {59, "y",},
                                                 {60, "Z",},
                                                 {61, "z",},
-                                                {62, "-",},
-                                                {63, "/",},
-                                                {64, "<",}};
+                                                {62, "<",}};
 
 
 template<typename K, typename V>

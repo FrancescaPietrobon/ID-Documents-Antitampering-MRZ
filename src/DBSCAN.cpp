@@ -1,7 +1,7 @@
 #include "../include/DBSCAN.h"
 
 
-myDBSCAN::myDBSCAN(double eps_, int minPts_, std::pair<matrix2D, std::vector<float>> pred):
+myDBSCAN::myDBSCAN(float eps_, int minPts_, std::pair<matrix2D, std::vector<float>> pred):
     eps(eps_), minPts(minPts_)
     {
         clusterIdx = -1;

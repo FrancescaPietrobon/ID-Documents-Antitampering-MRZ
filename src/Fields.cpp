@@ -33,7 +33,7 @@ void Fields::fillFields()
     Field field(originalCluster);
     for(int i = 0; i <= numClusters; ++i)
     {
-        for(int j = 0; j < originalCluster.size(); ++j)
+        for(size_t j = 0; j < originalCluster.size(); ++j)
         {
             if(originalCluster[j].getCluster() == i)
             {
@@ -50,7 +50,7 @@ void Fields::fillFields()
     }
     
     // Consider single characters as field
-    for(int j = 0; j < originalCluster.size(); ++j)
+    for(size_t j = 0; j < originalCluster.size(); ++j)
     {
         if(originalCluster[j].getCluster() == -2)
         {

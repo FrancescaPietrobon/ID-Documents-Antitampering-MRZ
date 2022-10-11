@@ -15,7 +15,7 @@ class myDBSCAN
 {
     private:
         int minPts;
-        double eps;
+        float eps;
         std::vector<Character> points;
         int size; 
         std::vector<std::vector<int>> adjPoints;
@@ -24,7 +24,7 @@ class myDBSCAN
         void computePoints(std::pair<matrix2D, std::vector<float>> boxes_labels);
 
     public:
-        myDBSCAN(double eps, int minPts, std::pair<matrix2D, std::vector<float>> pred);
+        myDBSCAN(float eps, int minPts, std::pair<matrix2D, std::vector<float>> pred);
         void run();
         void checkNearPoints();
         bool isCoreObject(int idx);

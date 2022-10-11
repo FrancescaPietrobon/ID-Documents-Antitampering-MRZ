@@ -10,7 +10,7 @@ std::pair<matrix2D, std::vector<float>> predictFromXML(Document &document, const
 }
 
 
-std::pair<matrix2D, std::vector<float>> predictFromModel(Document document, std::string networkPath, int numClasses, float thresholdIOU, float thresholdNMS)
+std::pair<matrix2D, std::vector<float>> predictFromModel(Document & document, std::string networkPath, int numClasses, float thresholdIOU, float thresholdNMS)
 {
     // Predict
     cv::dnn::Net network = cv::dnn::readNetFromTensorflow(networkPath);
@@ -18,6 +18,7 @@ std::pair<matrix2D, std::vector<float>> predictFromModel(Document document, std:
     cv::Mat prediction = network.forward();
 
     ModelBoxes boxes(document, prediction, numClasses);
+    std::cout << " ModelBoxes boxes(document, prediction, numClasses); ok" << std::endl;
 
     // Compute anchors
     Anchors anchors(document.getWidth(), document.getHeight());
@@ -25,12 +26,26 @@ std::pair<matrix2D, std::vector<float>> predictFromModel(Document document, std:
 
     // Compute the right boxes
     matrix2D centers = computeCenters(boxes.getBoxPred(), anchorBoxes);
+    //std::cout << " computeCenters(boxes.getBoxPred(), anchorBoxes); ok" << std::endl;
     boxes.computeBoxes(centers);
+
+    //std::cout << " boxes.computeBoxes(centers); ok" << std::endl;
+    //std::cout << "ClassPred:" << std::endl;
+    //boxes.printClassPred();
     boxes.computeNMS(thresholdIOU, thresholdNMS);
+    //std::cout << " boxes.computeNMS(thresholdIOU, thresholdNMS); ok" << std::endl;
 
     boxes.reshapeBoxes();
-    
+    //std::cout << " boxes.reshapeBoxes(); ok" << std::endl;
+
     std::pair<matrix2D, std::vector<float>> result(boxes.getBoxes(), boxes.getClasses());
+    //std::cout << " result(boxes.getBoxes(), boxes.getClasses()); ok" << std::endl;
+
+    //boxes.printBoxPred(); //OK
+    //std::cout << std::endl;
+    //std::cout << "ClassPred:" << std::endl;
+    //boxes.printClassPred(); //OK
+
 
     return result;
 }
@@ -40,7 +55,7 @@ void savePredictionImage(cv::Mat img, matrix2D boxes, std::vector<float> classes
 {
     cv::Mat new_image = img;
     int fontFace = cv::FONT_HERSHEY_SIMPLEX;
-    double fontScale = 0.4;
+    float fontScale = 0.4;
     int thickness_pred = 1;
     int thickness_rect = 1;
     int lineType = cv::LINE_8;
