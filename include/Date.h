@@ -4,22 +4,31 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include "utilities.h"
+
 
 class Date
 {
     private:
-        std::string date;
+        std::string data;
         std::string possibleMonth;
         size_t index;
-        std::string year;
-        std::string month;
-        std::string day;
+        bool possibleDate = "None";
+        std::string year = "None";
+        std::string month = "None";
+        std::string day = "None";
         std::string newDate;
+        bool dayOk();
+        bool monthOk();
+        bool checkNumericDate();
+        bool checkAlphanumericDate();
+        void findMonth();
+        void searchMonth(std::string field, std::map<std::string, std::string> months);
 
     public:
-        Date(std::string d, std::string m, size_t idx);
-        std::string convertDateOLD(std::string);
-        std::string convertAlphanumDate();
+        Date(std::string d);
+        bool isDate();
+        std::string getNewDate();     
 };
 
 

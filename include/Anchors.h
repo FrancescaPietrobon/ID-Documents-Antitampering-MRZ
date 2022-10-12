@@ -7,18 +7,16 @@
 #include <math.h>
 #include <algorithm>
 
-#define FEATURE_WIDTH 800
-#define FEATURE_HEIGHT 800
+// Meshgrid
 #define RX_Y_PLUS 0.5
 
 typedef std::vector<std::vector<float>> matrix2D;
 typedef std::vector<std::vector<std::vector<float>>> matrix3D;
-typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 
 class Anchors
 {
     public:
-        Anchors();
+        Anchors(int width, int height);
         void computeDims();
         matrix3D meshgrid(int level);
         void printAnchors(matrix3D A, matrix3D B);
@@ -28,17 +26,18 @@ class Anchors
         void printAnchorShapesTransf(matrix3D grid, matrix3D area_exp, matrix3D concatenation, matrix2D resized_anchors, int level);
 
     private:
-        std::vector<float> aspect_ratios = {0.2, 0.3, 0.5, 1.0, 2.0};
-        std::vector<float> scales = {0.4, 0.6, 0.8};
-        std::vector<float> areas_dims = {32, 64, 128, 256, 512};
-        std::vector<float> strides_range = {3, 4, 5, 6, 7};
+        const std::vector<float> aspect_ratios = {0.25, 0.42, 0.59, 0.76, 1.0};
+        const std::vector<float> scales = {0.4, 0.6, 0.8};
+        const std::vector<float> areas_dims = {30., 40., 50., 60., 70.};
+        const std::vector<float> strides_range = {3, 4, 5, 6, 7};
 
+        int width;
+        int height;
         std::vector<float> areas;
         std::vector<float> strides;
         std::vector<float> dims;
         matrix2D anchor_dims;
         matrix3D anchor_dims_all;
-
 };
 
 #endif

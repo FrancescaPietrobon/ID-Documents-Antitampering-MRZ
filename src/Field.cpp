@@ -2,11 +2,7 @@
 
 
 Field::Field(std::vector<Character> chars):
-    originalCluster(chars)
-    {
-        partOfMRZ = false;
-        typeOfData = "";
-    }
+    originalCluster(chars){}
 
 
 void Field::setField(float x, Character point)
@@ -33,15 +29,9 @@ std::vector<Character> Field::getCharacters()
     return orderedField;
 }
 
-void Field::clear()
+void Field::setisPartOfMRZ(bool isPart)
 {
-    field.clear();
-    partOfMRZ = false;
-}
-
-void Field::isPartOfMRZ()
-{
-    partOfMRZ = true;
+    partOfMRZ = isPart;
 }
 
 bool Field::getIsPartOfMRZ()
@@ -69,6 +59,19 @@ std::string Field::getData()
     return data;
 }
 
+float Field::getMeanY()
+{
+    return meanY;
+}
+
+
+void Field::clear()
+{
+    field.clear();
+    partOfMRZ = false;
+}
+
+
 void Field::computeMeanY()
 {
     float sum = 0;
@@ -79,24 +82,11 @@ void Field::computeMeanY()
     meanY = sum / field.size();
 }
 
-float Field::getMeanY()
-{
-    return meanY;
-}
 
 void Field::print()
 {
     for(auto it = field.begin(); it != field.end(); ++it)
     {
         std::cout << ((*it).second).getLabel();
-    }
-}
-
-
-void Field::computeField()
-{
-    for(auto it = field.begin(); it != field.end(); ++it)
-    {
-        //std::cout << ((*it).second).getLabel();
     }
 }

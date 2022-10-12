@@ -1,7 +1,8 @@
 #include "../include/Anchors.h"
 
 
-Anchors::Anchors()
+Anchors::Anchors(int w, int h):
+  width(w), height(h)
 {
     for(float area: areas_dims)
         areas.push_back(std::pow(area, 2));
@@ -49,9 +50,9 @@ matrix3D Anchors::meshgrid(int level)
   matrix2D grid;
   matrix3D grid_rep;
 
-  for(int i = 0; i < FEATURE_WIDTH / std::pow(2, level); ++i)
+  for(int i = 0; i < width / std::pow(2, level); ++i)
   {
-    for(int j = 0; j < FEATURE_WIDTH / std::pow(2, level); ++j)
+    for(int j = 0; j < width / std::pow(2, level); ++j)
     {
       point = {static_cast<float>(j + RX_Y_PLUS) * static_cast<float>(std::pow(2, level)), static_cast<float>(i + RX_Y_PLUS) * static_cast<float>(std::pow(2, level))};
       //std::cout << point[0] << " " << point[1] << std::endl;
@@ -131,7 +132,7 @@ matrix2D Anchors::anchorsGenerator()
         matrix2D area = anchor_dims_all[level - 3];
 
         matrix3D area_exp;
-        for(int k = 0; k < ceil(FEATURE_WIDTH / std::pow(2, level))*ceil(FEATURE_HEIGHT / std::pow(2, level)); ++k)
+        for(int k = 0; k < ceil(width / std::pow(2, level))*ceil(height / std::pow(2, level)); ++k)
             area_exp.push_back(area);
 
         // To check that are the same with the ones considered in python
@@ -150,86 +151,3 @@ matrix2D Anchors::anchorsGenerator()
     
     return all_anchors;
 }
-
-
-
-/* UNUSED 
-
-void Anchors::meshgrid_opencv(cv::Mat &X, cv::Mat &Y)
-{
-    std::vector<float> t_x, t_y;
-    for(int i = 0; i < FEATURE_WIDTH / std::pow(2,3); i++) t_x.push_back(i + 0.5);
-    for(int j = 0; j < FEATURE_HEIGHT / std::pow(2,3); j++) t_y.push_back(j + 0.5);
-
-    cv::repeat(cv::Mat(t_x).t(), t_y.size(), 1, X);
-    cv::repeat(cv::Mat(t_y), 1, t_x.size(), Y);
-    
-    //for(unsigned i = 0; i < X.rows; ++i)
-    //  for(unsigned j = 0; i < X.cols; ++j)
-    //    std::cout << X.at(i,j) << std::endl;
-    
-}
-
-
-void Anchors::meshgrid_old(matrix3D &X, matrix3D &Y, int level)
-{
-  std::vector<float> t_x, t_y;
-  matrix2D X2, Y2;
-
-  for(int i = 0; i < FEATURE_WIDTH / std::pow(2, level); i++)
-  {
-    for(int j = 0; j < FEATURE_WIDTH / std::pow(2, level); j++)
-      t_x.push_back((i + 0.5)*std::pow(2, level));
-    X2.push_back(t_x);
-  }
-  for(int k = 0; k < 15; k++)
-    X.push_back(X2);
-
-
-  for(int j = 0; j < FEATURE_HEIGHT / std::pow(2, level); j++)
-    t_y.push_back((j + 0.5)*std::pow(2, level));
-  for(int j = 0; j < FEATURE_HEIGHT / std::pow(2, level); j++)
-    Y2.push_back(t_y);
-  for(int k = 0; k < 15; k++)
-    Y.push_back(Y2);
-
-}
-
-
-// In AnchorsGenerator
-
-    //int from_to[] = { 0,0,0, 1,1,1};
-    //cv::mixChannels( in, 3, &tot, 1, from_to,2);
-    
-    //centers.push_back(Y_red, );
-    //std::cout << centers.size[0] << " " << centers.size[1] << " " << centers.size[2] << std::endl;
-    //std::vector<int> dim = {100, 100, 2};
-    //centers.reshape(3, dim);
-    //std::cout << centers.size[0] << " " << centers.size[1] << " " << centers.size[2] << std::endl;
-    //cv::vconcat(X, Y, centers);
-    //std::cout << centers.size() << std::endl;
-    //std::vector<int> dim2 = {100, 100, 1, 1};
-    //centers.reshape(4, dim2);
-    //std::cout << centers.size() << std::endl;
-    //centers = tf.stack(tf.meshgrid(rx, ry), axis=-1) * self._strides[level - 3]
-    //centers = tf.expand_dims(centers, axis=-2)
-    //centers = tf.tile(centers, [1, 1, self._num_anchors, 1])
-    //dims = tf.tile(self._anchor_dims[level - 3], [feature_height, feature_width, 1, 1])
-    //anchors = tf.concat([centers, dims], axis=-1)
-
-    
-
-*/
-
-/*
-    std::vector<float> rx(FEATURE_WIDTH);
-    std::iota(std::begin(rx), std::end(rx), 1);
-    std::for_each(rx.begin(), rx.end(), [](float& d) { d+=0.5;});
-
-    std::vector<float> ry(FEATURE_HEIGHT);
-    std::iota(std::begin(ry), std::end(ry), 1);
-    std::for_each(ry.begin(), ry.end(), [](float& d) { d+=0.5;});
-
-    for(unsigned i = 0; i < rx.size(); ++i)
-        std::cout << rx[i] << std::endl;
-    */

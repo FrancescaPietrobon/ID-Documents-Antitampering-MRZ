@@ -1,5 +1,5 @@
-#ifndef XML_BOXES_H
-#define XML_BOXES_H
+#ifndef XMLBOXES_H
+#define XMLBOXES_H
 
 #include <iostream>
 #include <vector>
@@ -7,12 +7,9 @@
 #include <opencv2/dnn/dnn.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include "pugixml.hpp"
-#include "utilities.h"
 #include "Boxes.h"
 
 typedef std::vector<std::vector<float>> matrix2D;
-typedef std::vector<std::vector<std::vector<float>>> matrix3D;
-typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 
 class XMLBoxes: public Boxes
 {
@@ -20,8 +17,7 @@ class XMLBoxes: public Boxes
         const char* XMLPath;
 
     public:
-        XMLBoxes(Document doc, const char* xml):
-            Boxes(doc), XMLPath(xml){}
+        XMLBoxes(Document doc, const char* xml);
         void extractBoxes();
         void printXMLBoxes();
 };

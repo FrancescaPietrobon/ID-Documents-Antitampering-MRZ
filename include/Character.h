@@ -5,9 +5,10 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-//#include "../src/Dictionary.cpp"
 
-class Character{
+
+class Character
+{
     private:
         float x_center;
         float y_center;
@@ -17,6 +18,7 @@ class Character{
         std::string label;
         int countPts = 0;
         int cluster = 0;
+
     public:
         Character(float c_x, float c_y, float w, float h, float label, int cl);
         float getX();

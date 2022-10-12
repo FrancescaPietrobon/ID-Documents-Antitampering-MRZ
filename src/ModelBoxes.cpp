@@ -1,21 +1,36 @@
 #include "../include/ModelBoxes.h"
 
-ModelBoxes::ModelBoxes(Document doc, cv::Mat pred):
-    Boxes(doc), predictions(pred)
+ModelBoxes::ModelBoxes(Document doc, cv::Mat pred, int n):
+    Boxes(doc), predictions(pred), numClasses(n)
     {
         cv::Range boxRange(0, 4);
-        cv::Range classRange(4, NUM_CLASSES + 5);
+        cv::Range classRange(4, numClasses + 4);
         cv::Range all(cv::Range::all());
-        std::vector<cv::Range> boxRanges = {all, boxRange, all, all};
-        std::vector<cv::Range> classRanges = {all, classRange, all, all};
+        std::vector<cv::Range> boxRanges = {all, all, all, boxRange};
+        std::vector<cv::Range> classRanges = {all, all, all, classRange};
+
         boxPredCVMat = predictions(boxRanges);
         classPredCVMat = predictions(classRanges);
 
         boxPred = extractPredCVMat(boxPredCVMat);
+        multBias(boxPred);
         classPred = extractPredCVMat(classPredCVMat);
-
         applySigmoid(classPred);
+
+        //printBoxPred();
+        //printClassPred();
     }
+
+void ModelBoxes::multBias(matrix2D & box)
+{
+    for(size_t i = 0; i < box.size(); ++i)
+    {
+        box[i][0] = box[i][0] * 0.1;
+        box[i][1] = box[i][1] * 0.1;
+        box[i][2] = box[i][2] * 0.2;
+        box[i][3] = box[i][3] * 0.2;
+    }
+}
 
 matrix2D ModelBoxes::getBoxPred()
 {
@@ -27,6 +42,16 @@ matrix2D ModelBoxes::getClassPred()
     return classPred;
 }
 
+cv::Mat ModelBoxes::getBoxPredCVMat()
+{
+    return boxPredCVMat;
+}
+
+cv::Mat ModelBoxes::getClassPredCVMat()
+{
+    return boxPredCVMat;
+}
+
 matrix2D ModelBoxes::getBoxesPreNMS()
 {
     return boxesPreNMS;
@@ -36,6 +61,7 @@ matrix2D ModelBoxes::getBoxesReshaped()
 {
     return boxesReshaped;
 }
+
 
 void ModelBoxes::computeBoxes(matrix2D centers)
 {
@@ -49,6 +75,7 @@ void ModelBoxes::computeBoxes(matrix2D centers)
     }
 }
 
+
 matrix2D ModelBoxes::extractPredCVMat(cv::Mat cvMat)
 {
     matrix2D matrix;
@@ -60,24 +87,21 @@ matrix2D ModelBoxes::extractPredCVMat(cv::Mat cvMat)
 
     while(count < cvMat.size[1] * cvMat.size[3])
     {
-        if(j >= cvMat.size[3])
-        {
-            i += 1;
-            j = 0;
-        }
         idx = {0, i, 0, j};
         pred.push_back(cvMat.at<float>(idx));
         count += 1;
-        j += 1;
-        if(count % cvMat.size[1] == 0)
+        if(count % cvMat.size[3] == 0)
         {
+            i += 1;
+            j = 0;
             matrix.push_back(pred);
             pred.clear();
         }
+        else
+           j += 1; 
     }
     return matrix;
 }
-
 
 
 void ModelBoxes::computeNMS(float threshold, float threshold_nms)
@@ -86,31 +110,32 @@ void ModelBoxes::computeNMS(float threshold, float threshold_nms)
     std::vector<float> all_max;
     std::vector<float>::iterator max_it;
     float index_max;
-    float max;
     matrix2D boxes_new;
     std::vector<cv::Rect2d> boxes_rect;
-    
+
     for(size_t i = 0; i < classPred.size(); ++i)
     {
-        max = *std::max_element(classPred[i].begin(), classPred[i].end());
         max_it = std::max_element(classPred[i].begin(), classPred[i].end());
         index_max = std::distance(classPred[i].begin(), max_it);
-
-        if(max > threshold)
+        
+        if(*max_it >= threshold)
         {
-            all_max.push_back(max);
+            all_max.push_back(*max_it);
             indices_max.push_back(index_max);
             boxes_new.push_back(boxesPreNMS[i]);
             cv::Rect2d rect(boxesPreNMS[i][0], boxesPreNMS[i][1], boxesPreNMS[i][2] - boxesPreNMS[i][0], boxesPreNMS[i][3] - boxesPreNMS[i][1]);
             boxes_rect.push_back(rect);
         }
+        max_it = classPred[i].end();
+        index_max = 0;
     }
 
+    std::cout << "Number of chars detected pre NMS: " << boxes_rect.size() << std::endl;
     std::vector<int> nmsIndices;
     cv::dnn::dnn4_v20220524::NMSBoxes(boxes_rect, all_max, threshold, threshold_nms, nmsIndices);
     
     std::vector<float> all_max_nms;
-    //std::cout << "Number of chars after NMS: " << nmsIndices.size() << std::endl;
+    std::cout << "Number of chars detected after NMS: " << nmsIndices.size() << std::endl;
 
     for(size_t i = 0; i < nmsIndices.size(); ++i)
     {
@@ -133,14 +158,28 @@ void ModelBoxes::reshapeBoxes()
     }
 }
 
-void ModelBoxes::printPredCVMat()
+void ModelBoxes::printBoxPred()
 {
+    
     for(size_t i = 0; i < boxPred.size(); ++i)
     {
         for(size_t j = 0; j < boxPred.begin()->size(); ++j)
-            if(i < 20)
+            if(i < 10)
                 std::cout << boxPred[i][j] << " ";
-        if(i < 20)
+        if(i < 10)
+            std::cout << " " << std::endl;
+    }
+}
+
+
+void ModelBoxes::printClassPred()
+{    
+    for(size_t i = 0; i < classPred.size(); ++i)
+    {
+        for(size_t j = 0; j < classPred.begin()->size(); ++j)
+            if(i < 5)
+                std::cout << classPred[i][j] << " ";
+        if(i < 5)
             std::cout << " " << std::endl;
     }
 }
@@ -149,6 +188,6 @@ void ModelBoxes::printPredCVMat()
 void ModelBoxes::applySigmoid(matrix2D &A)
 {
     for(size_t i = 0; i < A.size(); ++i)
-        for(size_t j = 0; j < A[0].size(); ++j)
+        for(size_t j = 0; j < A[i].size(); ++j)
             A[i][j] = 1 / (1 + exp(- A[i][j]));
 }

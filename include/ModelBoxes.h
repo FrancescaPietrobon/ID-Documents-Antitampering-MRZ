@@ -3,19 +3,14 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include <opencv2/opencv.hpp>
 #include <opencv2/dnn/dnn.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include "Boxes.h"
 #include "utilities.h"
 
-#define FEATURE_WIDTH 800
-#define FEATURE_HEIGHT 800
-#define NUM_CLASSES 64
-
 typedef std::vector<std::vector<float>> matrix2D;
-typedef std::vector<std::vector<std::vector<float>>> matrix3D;
-typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 
 class ModelBoxes: public Boxes
 {
@@ -26,20 +21,25 @@ class ModelBoxes: public Boxes
         matrix2D boxPred;
         matrix2D classPred;
         matrix2D boxesPreNMS;
+        int numClasses;
         matrix2D extractPredCVMat(cv::Mat);
-        void applySigmoid(matrix2D &);
+        
 
     public:
-        ModelBoxes(Document doc, cv::Mat pred);
+        ModelBoxes(Document doc, cv::Mat pred, int numClasses);
         matrix2D getBoxPred();
         matrix2D getClassPred();
+        cv::Mat getBoxPredCVMat();
+        cv::Mat getClassPredCVMat();
         matrix2D getBoxesPreNMS();
         matrix2D getBoxesReshaped();
         void computeBoxes(matrix2D);
         void computeNMS(float threshold, float threshold_nms);
-        void printPredCVMat();
+        void printBoxPred();
+        void printClassPred();
         void reshapeBoxes();
-
+        void applySigmoid(matrix2D &);
+        void multBias(matrix2D &);
 };
 
 #endif

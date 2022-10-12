@@ -1,5 +1,9 @@
 #include "../include/XMLBoxes.h"
 
+XMLBoxes::XMLBoxes(Document doc, const char* xml):
+            Boxes(doc), XMLPath(xml){}
+
+
 void XMLBoxes::extractBoxes()
 {
     std::vector<float> singleBox, singleBoxReshaped;
@@ -49,9 +53,3 @@ void XMLBoxes::printXMLBoxes()
         std::cout << ", ymax " << box.child_value("ymax") << std::endl;
     }
 }
-
-
-
-
-
-

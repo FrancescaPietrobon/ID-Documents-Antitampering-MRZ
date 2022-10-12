@@ -7,26 +7,26 @@
 #include <opencv2/dnn/dnn.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
-#define FEATURE_WIDTH 800
-#define FEATURE_HEIGHT 800
-#define DENOISE_PARAM 10
-
 typedef std::vector<std::vector<float>> matrix2D;
-typedef std::vector<std::vector<std::vector<float>>> matrix3D;
-typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 
 class Document
 {
     public:
-        Document(const std::string);
+        Document(const std::string, int, int, float);
         void preprocessing();
         cv::Mat getBlob();
         cv::Mat getDocument();
         cv::Mat getInputImage();
         float getXAlter();
         float getYAlter();
+        int getWidth();
+        int getHeight();
         
     private:
+        std::string imagePath;
+        int width;
+        int height;
+        float denoiseParam;
         cv::Mat inputImage;
         cv::Mat imagePreprocessed;
         cv::Mat blob;
@@ -34,8 +34,6 @@ class Document
         float img_h;
         float xAlter;
         float yAlter;
-        std::string imagePath;
-
 };
 
 #endif

@@ -15,28 +15,27 @@ class Field
         std::vector<Character> originalCluster;
         std::vector<Character> orderedField;
         std::multimap<float, Character> field;
-        std::string data;
-        std::string typeOfData;
-        bool partOfMRZ;
+        std::string data = "";
+        std::string typeOfData = "";
+        bool partOfMRZ = false;
         float meanY;
 
     public:
         Field(std::vector<Character>);
         void setField(float x, Character point);
+        void setData(std::string);
+        void setTypeOfData(std::string);
         std::multimap<float, Character> getField();
         std::vector<Character> getCharacters();
         std::vector<Character> getOriginalCluster();
+        float getMeanY();
+        std::string getData();
+        void setisPartOfMRZ(bool);
+        bool getIsPartOfMRZ();
+        std::string getTypeOfData();
         void print();
         void clear();
-        void isPartOfMRZ();
-        bool getIsPartOfMRZ();
-        void setTypeOfData(std::string);
-        std::string getTypeOfData();
-        void setData(std::string);
-        std::string getData();
-        void computeField();
         void computeMeanY();
-        float getMeanY();
 };
 
 #endif

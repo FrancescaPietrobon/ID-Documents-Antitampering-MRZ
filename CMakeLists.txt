@@ -31,43 +31,27 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 
-add_library(Document src/Document.cpp)
-add_library(Boxes src/Boxes.cpp)
-add_library(ModelBoxes src/ModelBoxes.cpp)
-add_library(XMLBoxes src/XMLBoxes.cpp)
-add_library(DBSCAN src/DBSCAN.cpp)
-add_library(Character src/Character.cpp)
-add_library(Fields src/Fields.cpp)
-add_library(Field src/Field.cpp)
-add_library(MRZ src/MRZ.cpp)
-add_library(Date src/Date.cpp)
-add_library(Dictionary src/Dictionary.cpp)
-add_library(Anchors src/Anchors.cpp)
-add_library(utilities src/utilities.cpp)
-add_library(pugixml include/pugixml.cpp)
-add_library(Response src/Response.cpp)
-add_library(Metrics src/Metrics.cpp)
+include_directories(
+        ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/src
+)
+
+file(GLOB_RECURSE all_SRCS
+        "${PROJECT_SOURCE_DIR}/include/*.h"
+        "${PROJECT_SOURCE_DIR}/include/*.hpp"
+        "${PROJECT_SOURCE_DIR}/include/MRZ/*.h"
+        "${PROJECT_SOURCE_DIR}/src/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/*.c"
+        "${PROJECT_SOURCE_DIR}/src/MRZ/*.cpp"
+        )
+
+add_library(OCR SHARED ${all_SRCS})
 
 find_package(OpenCV REQUIRED)
-
 include_directories( ${OpenCV_INCLUDE_DIRS} )
-
-add_executable(OCR main.cpp)
-
 target_link_libraries(OCR ${OpenCV_LIBS})
-target_link_libraries(OCR Document)
-target_link_libraries(OCR Boxes)
-target_link_libraries(OCR ModelBoxes)
-target_link_libraries(OCR XMLBoxes)
-target_link_libraries(OCR DBSCAN)
-target_link_libraries(OCR Character)
-target_link_libraries(OCR Fields)
-target_link_libraries(OCR Field)
-target_link_libraries(OCR MRZ)
-target_link_libraries(OCR Date)
-target_link_libraries(OCR Dictionary)
-target_link_libraries(OCR Anchors)
-target_link_libraries(OCR utilities)
-target_link_libraries(OCR pugixml)
-target_link_libraries(OCR Response)
-target_link_libraries(OCR Metrics)
+
+add_executable(app)
+target_sources(app PRIVATE main.cpp)
+
+target_link_libraries(app PRIVATE OCR)

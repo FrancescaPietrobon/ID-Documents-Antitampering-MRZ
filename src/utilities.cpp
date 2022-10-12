@@ -1,10 +1,45 @@
 #include "../include/utilities.h"
 
+
+std::pair<matrix2D, std::vector<float>> predictFromXML(Document &document, const char* XMLPath)
+{
+    XMLBoxes xmlBoxes(document, XMLPath);
+    xmlBoxes.extractBoxes();
+    std::pair<matrix2D, std::vector<float>> result(xmlBoxes.getBoxes(), xmlBoxes.getClasses());
+    return result;
+}
+
+
+std::pair<matrix2D, std::vector<float>> predictFromModel(Document & document, std::string networkPath, int numClasses, float thresholdIOU, float thresholdNMS)
+{
+    // Predict
+    cv::dnn::Net network = cv::dnn::readNetFromTensorflow(networkPath);
+    network.setInput(document.getBlob());
+    cv::Mat prediction = network.forward();
+
+    ModelBoxes boxes(document, prediction, numClasses);
+
+    // Compute anchors
+    Anchors anchors(document.getWidth(), document.getHeight());
+    matrix2D anchorBoxes = anchors.anchorsGenerator();
+
+    // Compute boxes
+    matrix2D centers = computeCenters(boxes.getBoxPred(), anchorBoxes);
+    boxes.computeBoxes(centers);
+    boxes.computeNMS(thresholdIOU, thresholdNMS);
+    boxes.reshapeBoxes();
+
+    std::pair<matrix2D, std::vector<float>> result(boxes.getBoxes(), boxes.getClasses());
+
+    return result;
+}
+
+
 void savePredictionImage(cv::Mat img, matrix2D boxes, std::vector<float> classes, std::string img_name)
 {
     cv::Mat new_image = img;
     int fontFace = cv::FONT_HERSHEY_SIMPLEX;
-    double fontScale = 0.4;
+    float fontScale = 0.4;
     int thickness_pred = 1;
     int thickness_rect = 1;
     int lineType = cv::LINE_8;
@@ -53,11 +88,7 @@ matrix2D computeCenters(matrix2D boxes, matrix2D anchorBoxes)
 }
 
 
-
-/*
-int countAlnums(const std::string& s)
-{    return std::count_if(s.begin(), s.end(), 
-                         [](unsigned char c){ return std::isalnum(c); }
-                        );
+bool isNumber(const std::string& str)
+{
+    return str.find_first_not_of("0123456789") == std::string::npos;
 }
-*/

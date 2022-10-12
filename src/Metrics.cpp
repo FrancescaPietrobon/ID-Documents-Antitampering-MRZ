@@ -1,11 +1,11 @@
 #include "../include/Metrics.h"
 
-
 //https://github.com/bangxiang/LevenshteinDistance/blob/master/LevenshteinDistance.hh
 
 int min3(int a, int b, int c) {
     return std::min(std::min(a,b), c);
 }
+
 
 int distanceLevenshtein(const std::string& s0, const std::string& s1)
 {
