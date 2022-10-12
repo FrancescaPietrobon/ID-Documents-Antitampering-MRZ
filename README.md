@@ -19,5 +19,5 @@ make
 To extract the prediction:
 
     
-    ./OCR
+    ./app
     
