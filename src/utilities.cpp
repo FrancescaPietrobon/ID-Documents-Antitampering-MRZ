@@ -18,7 +18,6 @@ std::pair<matrix2D, std::vector<float>> predictFromModel(Document & document, st
     cv::Mat prediction = network.forward();
 
     ModelBoxes boxes(document, prediction, numClasses);
-    std::cout << " ModelBoxes boxes(document, prediction, numClasses); ok" << std::endl;
 
     // Compute anchors
     Anchors anchors(document.getWidth(), document.getHeight());

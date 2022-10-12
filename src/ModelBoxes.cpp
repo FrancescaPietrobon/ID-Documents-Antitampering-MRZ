@@ -130,12 +130,12 @@ void ModelBoxes::computeNMS(float threshold, float threshold_nms)
         index_max = 0;
     }
 
-    std::cout << "Number of chars pre NMS: " << boxes_rect.size() << std::endl;
+    std::cout << "Number of chars detected pre NMS: " << boxes_rect.size() << std::endl;
     std::vector<int> nmsIndices;
     cv::dnn::dnn4_v20220524::NMSBoxes(boxes_rect, all_max, threshold, threshold_nms, nmsIndices);
     
     std::vector<float> all_max_nms;
-    std::cout << "Number of chars after NMS: " << nmsIndices.size() << std::endl;
+    std::cout << "Number of chars detected after NMS: " << nmsIndices.size() << std::endl;
 
     for(size_t i = 0; i < nmsIndices.size(); ++i)
     {

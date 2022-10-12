@@ -106,6 +106,7 @@ void MRZ::assignMRZ(std::vector<std::vector<Character>> mrzChar, int numLineOfMR
 
 void MRZ::printMRZFields()
 {
+    std::cout << "MRZ fields detected: " << std::endl;
     std::cout << "Document type: " << docType << std::endl;
     std::cout << "State: " << state << std::endl;
     std::cout << "Surname: " << surname << std::endl;

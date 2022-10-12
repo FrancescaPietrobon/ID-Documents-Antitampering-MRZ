@@ -26,6 +26,7 @@ class Fields
     private:
         std::vector<Character> originalCluster;
         int numClusters;
+        float confThreshold;
         std::list<Field> fields;
         std::map<std::string, std::pair<std::pair<std::string,std::string>, float>> finalAssociation;
         int numLineOfMRZ = 0;
@@ -33,20 +34,20 @@ class Fields
         MRZ mrzGeneral;
         size_t numDoubtfulFields = 0;
         bool result = true;
-        float finalConf = 1;
+        float confFinal = 1;
         void mostCompatible(Field & field, metricsType metricType);
         void checkAlphanumDate(Field & field);
-        void computeFinalConf();
+        void computeConfFinal();
         std::string findMRZType(std::vector<std::vector<Character>>);
 
     public:
-        Fields(std::vector<Character>, int);
+        Fields(std::vector<Character>, int, float);
         void fillFields();
         void printOrderedFields();
         size_t getNumDoubtfulFields();
         bool getResult();
-        float getFinalConf();
-        void checkMRZ();
+        float getConfFinal();
+        bool findMRZ();
         void compareMRZFields(metricsType);
         void printNotFilledAndFilledFields();
         void printAssociations();

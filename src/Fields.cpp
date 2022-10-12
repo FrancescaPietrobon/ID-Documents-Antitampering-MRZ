@@ -1,7 +1,7 @@
 #include "../include/Fields.h"
 
-Fields::Fields(std::vector<Character> chars, int n):
-    originalCluster(chars), numClusters(n)
+Fields::Fields(std::vector<Character> chars, int n, float conf):
+    originalCluster(chars), numClusters(n), confThreshold(conf)
     {
         MRZ mrz;
         fillFields();  
@@ -17,9 +17,9 @@ bool Fields::getResult()
     return result;
 }
 
-float Fields::getFinalConf()
+float Fields::getConfFinal()
 {
-    return finalConf;
+    return confFinal;
 }
  
 std::map<std::string, std::pair<std::pair<std::string,std::string>, float>> Fields::getFinalAssociations()
@@ -61,6 +61,7 @@ void Fields::fillFields()
         }
     }
 
+    std::cout << "\nFields detected by DBSCAN:" << std::endl;
     for(auto & field: fields)
     {
         field.computeMeanY();
@@ -74,7 +75,7 @@ void Fields::fillFields()
 }
 
 
-void Fields::checkMRZ()
+bool Fields::findMRZ()
 {
     int count = 0;
     std::vector<std::vector<Character>> mrzChar;
@@ -99,7 +100,7 @@ void Fields::checkMRZ()
     {
         std::string MRZType = findMRZType(mrzChar);
 
-        std::cout << "MRZ type: "<< MRZType << std::endl;
+        std::cout << "\nMRZ type: "<< MRZType << std::endl;
 
         if(MRZType == "TD1")
         {
@@ -132,34 +133,40 @@ void Fields::checkMRZ()
             mrzGeneral = mrz;
         }
         else
-            std::cerr << "MRZ type not found." << std::endl;
-        
-        std::cout << std::endl;
-        std::cout << "MRZ:" << std::endl;
+        {
+            std::cout << "MRZ type not found." << std::endl;
+            return false;
+        }
+
+        std::cout << "\nMRZ:" << std::endl;
         mrzGeneral.printMRZ();
         std::cout << std::endl;
         mrzGeneral.printMRZFields();
     }
     else
-        std::cerr << "MRZ not found." << std::endl;
+    {
+        std::cout << "MRZ not found." << std::endl;
+        return false;
+    }
+    return true;   
 }
 
 
 std::string Fields::findMRZType(std::vector<std::vector<Character>> mrz)
 {
     std::string MRZType;
-    if(numLineOfMRZ == 3)
+    if((numLineOfMRZ == 3) && (mrz[0].size() == 36) && (mrz[1].size() == 36) && (mrz[2].size() == 36))
     {
         MRZType = "TD1";
     }
-    else if(mrz[0].size() >= 32 && mrz[0].size() <= 40) // if(mrz[0].size() == 36) restrictive case
+    else if((mrz[0].size() == 36) && (mrz[1].size() == 36)) // if(mrz[0].size() >= 32 && mrz[0].size() <= 40) less restrictive case
     {
         if(mrz[0][0].getLabel() == "P")
             MRZType = "TD2";
         else
             MRZType = "MRVB";
     }
-    else if(mrz[0].size() > 40 && mrz[0].size() <= 48) // if(mrz[0].size() == 44) restrictive case
+    else if(mrz[0].size() == 44) // if(mrz[0].size() > 40 && mrz[0].size() <= 48) less restrictive case
     {
         if(mrz[0][0].getLabel() == "P")
             MRZType = "TD3";
@@ -175,8 +182,10 @@ std::string Fields::findMRZType(std::vector<std::vector<Character>> mrz)
 
 void Fields::printOrderedFields()
 {
+    std::cout << "\nFields detected:" << std::endl;
     for(auto & field: fields)
         std::cout << field.getMeanY() << " " << field.getData() << " is part of MRZ: " << field.getIsPartOfMRZ() << std::endl;
+    std::cout << std::endl;
 }
 
 
@@ -193,22 +202,18 @@ void Fields::checkAlphanumDate(Field & field)
 
 void Fields::compareMRZFields(metricsType metricType)
 {
-    // OCCHIO CHE SE HO SPECIMEN sia per nome che cognome mi dirà entrambe le volte SPECIMEN è cognome (primo che vede)
-    // Then check for identical field
     for(auto & field: fields)
     {
         if(field.getData().size() >= 6 && field.getData().size() <= 12)
             checkAlphanumDate(field);
         auto search = mrzGeneral.getAllFieldsInv().find(field.getData());
         std::cout << "\nField: " << field.getData() << std::endl;
-        //std::cout << " Find: " << search->first << std::endl;
-        if(search != mrzGeneral.getAllFieldsInv().end()) //NON VA!!!
+        if(search != mrzGeneral.getAllFieldsInv().end())
         {
             if((field.getData() == search->first) && (field.getTypeOfData() == ""))
             {
                 std::cout << "Field: " << field.getData() << " ";
                 std::cout << " Find: " << search->first << " " << search->second << std::endl;
-                // GESTISCI ATTRIBUZIONI MULTIPLE DELLO STESSO TIPO IN setTypeOfData
                 field.setTypeOfData(search->second);
                 finalAssociation.emplace(search->second, std::make_pair(std::make_pair(field.getData(), search->first), 1.));
                 std::cout << "Associated" << std::endl;
@@ -223,12 +228,7 @@ void Fields::compareMRZFields(metricsType metricType)
         if(association.second.second != 1)
             numDoubtfulFields++;
     }
-
-    if(numDoubtfulFields != 0)
-        result = false;
-
-    computeFinalConf();
-    
+    computeConfFinal();
 }
 
 
@@ -236,14 +236,12 @@ void Fields::mostCompatible(Field & field, metricsType metricType)
 {
     float currentComp = 0;
     std::string bestField = mrzGeneral.getAllFieldsInv().begin()->second;
-    //std::cout << "first field: " << bestField << std::endl;
     if(metricType == pairs)
     {
         float maxComp = 0;
         for(auto mrzField: mrzGeneral.getAllFieldsInv())
         {
             std::cout << "Field: " << field.getData() << "   MRZ Field: " << mrzField.first;
-            //currentComp = countPairs(field.getData(), mrzField.first);
             currentComp = countPairs(field.getData(), mrzField.first);
             std::cout << "   Comp: " << currentComp << std::endl;
             if(currentComp > maxComp)
@@ -256,7 +254,6 @@ void Fields::mostCompatible(Field & field, metricsType metricType)
 
         if(finalAssociation.find(bestField) == finalAssociation.end())
         {
-            //std::map<std::string, std::pair<std::pair<std::string,std::string>, float>> finalAssociationNEW;
             finalAssociation.emplace(bestField, std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf));
             field.setTypeOfData(bestField);
             std::cout << "Associated" << std::endl;
@@ -274,7 +271,6 @@ void Fields::mostCompatible(Field & field, metricsType metricType)
         for(auto mrzField: mrzGeneral.getAllFieldsInv())
         {
             std::cout << "Field: " << field.getData() << "   MRZ Field: " << mrzField.first;
-            //currentComp = countPairs(field.getData(), mrzField.first);
             currentComp = distanceLevenshtein(field.getData(), mrzField.first);
             std::cout << "   Comp: " << currentComp << std::endl;
             if(currentComp < minComp)
@@ -306,7 +302,7 @@ void Fields::mostCompatible(Field & field, metricsType metricType)
 
 void Fields::printNotFilledAndFilledFields()
 {
-    std::cout << "Not filled fields:" << std::endl;
+    std::cout << "\nNot filled fields:" << std::endl;
     for(auto & field: fields)
         if(field.getTypeOfData() == "")
             std::cout << "None: " << field.getData() << std::endl;
@@ -317,6 +313,7 @@ void Fields::printNotFilledAndFilledFields()
     for(auto & field: fields)
         if(field.getTypeOfData() != "")
             std::cout << field.getTypeOfData() << ": " << field.getData() << std::endl;
+    std::cout << std::endl;
 }
 
 
@@ -354,11 +351,14 @@ void Fields::printDoubtfulFields()
 }
 
 
-void Fields::computeFinalConf()
+void Fields::computeConfFinal()
 {
     float sum = 0;
     for(auto & association: finalAssociation)
         sum += association.second.second;
     
-    finalConf = sum / finalAssociation.size();
+    confFinal = sum / finalAssociation.size();
+
+    if(confFinal < confThreshold)
+        result = false;
 }
