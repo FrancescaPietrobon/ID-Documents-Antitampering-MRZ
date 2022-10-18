@@ -12,30 +12,28 @@
 class Field
 {
     protected:
-        std::vector<Character> originalCluster;
-        std::vector<Character> orderedField;
-        std::multimap<float, Character> field;
+        std::multimap<float, Character> field; //it could be deleted after computeOrderedCharacters
+        std::vector<Character> orderedCharacters;
+        float meanY = 0;
         std::string data = "";
-        std::string typeOfData = "";
         bool partOfMRZ = false;
-        float meanY;
+        std::string typeOfData = "None";
+
+        bool operator == (const Field & other) const;
 
     public:
-        Field(std::vector<Character>);
         void setField(float x, Character point);
-        void setData(std::string);
-        void setTypeOfData(std::string);
-        std::multimap<float, Character> getField();
-        std::vector<Character> getCharacters();
-        std::vector<Character> getOriginalCluster();
-        float getMeanY();
-        std::string getData();
-        void setisPartOfMRZ(bool);
         bool getIsPartOfMRZ();
-        std::string getTypeOfData();
-        void print();
+        void setIsPartOfMRZ(bool);
         void clear();
         void computeMeanY();
+        void computeOrderedCharacters();
+        void setData(std::string);
+        void setTypeOfData(std::string);
+        std::vector<Character> getCharacters();
+        float getMeanY();
+        std::string getTypeOfData();
+        std::string getData();        
 };
 
 #endif

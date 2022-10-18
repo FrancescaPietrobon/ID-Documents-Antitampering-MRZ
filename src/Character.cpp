@@ -1,7 +1,7 @@
 #include "../include/Character.h"
 
-Character::Character(float c_x, float c_y, float w, float h, float lab, int cl):
-    x_center(c_x), y_center(c_y), box_width(w), box_height(h), labelIdx(lab), cluster(cl)
+Character::Character(float c_x, float c_y,float lab, int cl):
+    xCenter(c_x), yCenter(c_y), labelIdx(lab), cluster(cl)
     {
         extern std::unordered_map<unsigned, std::string> dictionary;
         label = dictionary[int(labelIdx)];
@@ -10,12 +10,12 @@ Character::Character(float c_x, float c_y, float w, float h, float lab, int cl):
 
 float Character::getX()
 {
-    return x_center;
+    return xCenter;
 }
 
 float Character::getY()
 {
-    return y_center;
+    return yCenter;
 }
 
 float Character::getLabelIdx()
@@ -51,6 +51,6 @@ void Character::setCluster(int cl)
 
 float Character::distance(Character point)
 {
-    return std::sqrt((x_center - point.getX()) * (x_center - point.getX()) +
-                     (y_center - point.getY()) * (y_center - point.getY()));
+    return std::sqrt((xCenter - point.getX()) * (xCenter - point.getX()) +
+                     (yCenter - point.getY()) * (yCenter - point.getY()));
 }

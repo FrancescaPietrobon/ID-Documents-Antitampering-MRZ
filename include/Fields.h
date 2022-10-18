@@ -20,35 +20,53 @@
 #include "Date.h"
 #include "Metrics.h"
 
+struct association
+{
+    std::string fieldType;
+    std::string dataField;
+    std::string mrzDataField;
+    float confidence;
+};
+
 
 class Fields
 {
     private:
         std::vector<Character> originalCluster;
         int numClusters;
-        float confThreshold;
-        std::list<Field> fields;
-        std::map<std::string, std::pair<std::pair<std::string,std::string>, float>> finalAssociation;
+        std::vector<Field> fields;
         int numLineOfMRZ = 0;
         std::map<float, Field> splittedMRZ;
+        std::string MRZType = "";
         MRZ mrzGeneral;
+        std::string findMRZType(std::vector<std::vector<Character>>);
+        void checkDate(Field & field);
+
+        float confThreshold;
+        
+        std::map<std::string, std::pair<std::pair<std::string,std::string>, float>> finalAssociation;
         size_t numDoubtfulFields = 0;
         bool result = true;
         float confFinal = 1;
         void mostCompatible(Field & field, metricsType metricType);
-        void checkAlphanumDate(Field & field);
         void computeConfFinal();
-        std::string findMRZType(std::vector<std::vector<Character>>);
+        std::vector<association> finAss;
+        std::vector<association> doubtfulAss;
 
     public:
         Fields(std::vector<Character>, int, float);
         void fillFields();
+        bool findMRZ();
         void printOrderedFields();
+        void compareMRZFields(metricsType);
+        void compare();
+        void printFinAss();
+        void printDoubtfulAss();
+
         size_t getNumDoubtfulFields();
         bool getResult();
         float getConfFinal();
-        bool findMRZ();
-        void compareMRZFields(metricsType);
+        MRZ getMRZ();
         void printNotFilledAndFilledFields();
         void printAssociations();
         void printDoubtfulFields();

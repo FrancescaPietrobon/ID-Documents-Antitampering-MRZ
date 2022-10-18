@@ -11,8 +11,8 @@ class Date
 {
     private:
         std::string data;
-        std::string possibleMonth;
-        size_t index;
+        std::string possibleMonth = "None";
+        size_t index = 0;
         bool possibleDate = "None";
         std::string year = "None";
         std::string month = "None";

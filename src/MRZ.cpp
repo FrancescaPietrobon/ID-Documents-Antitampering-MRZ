@@ -13,74 +13,28 @@ std::multimap<std::string, std::string> MRZ::getAllFields()
     return allFields;
 }
 
-std::string MRZ::getMRZType()
+std::vector<detection> MRZ::getAllFieldsStruct()
 {
-    return MRZType;
+    return allFieldsStruct;
 }
 
-std::string MRZ::getDocType()
+void MRZ::removeFieldInv(std::multimap<std::string, std::string>::iterator it)
 {
-    return docType;
+    allFieldsInv.erase(it->first);
+    allFields.erase(it->second);
 }
 
-std::string MRZ::getState()
+void MRZ::removeField(std::multimap<std::string, std::string>::iterator it)
 {
-    return state;
+    allFieldsInv.erase(it->second);
+    allFields.erase(it->first);
 }
 
-std::string MRZ::getSurname()
+void MRZ::removeAllFieldsStruct(std::vector<detection>::iterator i)
 {
-    return surname;
-}
-
-std::string MRZ::getName()
-{
-    return name;
-}
-
-std::string MRZ::getDocNumber()
-{
-    return docNumber;
-}
-
-std::string MRZ::getCheckDocNum()
-{
-    return checkDocNum;
-}
-
-std::string MRZ::getNationality()
-{
-    return nationality;
-}
-
-std::string MRZ::getDateBirth()
-{
-    return dateBirth;
-}
-
-std::string MRZ::getCheckDateBirth()
-{
-    return checkDateBirth;
-}
-
-std::string MRZ::getSex()
-{
-    return sex;
-}
-
-std::string MRZ::getDateExpireDoc()
-{
-    return dateExpireDoc;
-}
-
-std::string MRZ::getCheckDateExpireDoc()
-{
-    return checkDateExpireDoc;
-}
-
-std::string MRZ::getOptionalData()
-{
-    return optionalData;
+    std::cout << "erase " << (*i).fieldMRZ << " " << (*i).typeFieldMRZ << std::endl;
+    allFieldsStruct.erase(i);
+    std::cout << allFieldsStruct.size() << std::endl;
 }
 
 

@@ -29,8 +29,8 @@
 #define DENOISE_PARAM 10
 
 // NMS params:
-#define THRESHOLD_IOU 0.3 //0.5 or 0.3
-#define THRESHOLD_NMS 0.1 //0.1
+#define THRESHOLD_IOU 0.3 //0.3
+#define THRESHOLD_NMS 0.0005 //0.1
 
 // DBSCAN params:
 #define EPS 27 // it depends on the image
@@ -44,10 +44,12 @@ int main()
     auto start = std::chrono::high_resolution_clock::now();
 
     std::string imagePath = "../data/AFG_AO_01001_FRONT.JPG"; //TD3 eps = 27
+    //std::string imagePath = "../data/GBR-AO-04002.jpeg";
     //std::string imagePath = "../data/BGR_AO_02001_FRONT.jpeg";
     //std::string imagePath = "../data/ZWE_AO_01002_FRONT.JPG"; //MRVA eps = 20
     //std::string imagePath = "../data/AFG_AO_01001_FRONT_3.JPG"; //TD3 eps = 11
     //std::string imagePath = "../data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30
+    
 
     Document document(imagePath, FEATURE_WIDTH, FEATURE_HEIGHT, DENOISE_PARAM);
 
@@ -69,18 +71,22 @@ int main()
 
     // Predict from model
 
-    std::string networkPath = "../models/Frozen_graph_lnorm_bello.pb"; //best
+    //std::string networkPath = "../models/Frozen_graph_lnorm_bello.pb"; //best
+    std::string networkPath = "../models/Frozen_graph_lnorm_5e6_156img.pb";
+    
     //std::string networkPath = "../models/Frozen_graph_lnorm_1e5.pb";
+    //std::string networkPath = "../models/Frozen_graph_lnorm_7e6_0.8tr.pb";
+    
     
     std::pair<matrix2D, std::vector<float>> modelResult = predictFromModel(document, networkPath, NUM_CLASSES, THRESHOLD_IOU, THRESHOLD_NMS);
     savePredictionImage(document.getInputImage(), modelResult.first, modelResult.second, "../pred_model.jpg");
 
 
     // Aggregate boxes using DBSCAN
-    myDBSCAN dbscan(EPS, MIN_PTS, modelResult);
+    DBSCAN dbscan(EPS, MIN_PTS, modelResult);
     dbscan.run();
 
-    saveCentersPredictionImage(document.getInputImage(), dbscan.getPoints(), "../DBSCAN_xml.jpg");
+    saveCentersPredictionImage(document.getInputImage(), dbscan.getPoints(), "../DBSCAN.jpg");
 
     // Find fields based on DBSCAN predictions
     Fields fields(dbscan.getPoints(), dbscan.getClusterIdx(), CONF_THRESHOLD);
@@ -88,11 +94,13 @@ int main()
     if(fields.findMRZ())
     {
         fields.printOrderedFields();
+        fields.compare();
+        fields.printFinAss();
+        fields.printDoubtfulAss();
+        //fields.compareMRZFields(metric);
 
-        fields.compareMRZFields(metric);
-
-        fields.printNotFilledAndFilledFields();
-        fields.printAssociations();
+        //fields.printNotFilledAndFilledFields();
+        //fields.printAssociations();
 
 
         // Useful outputs
@@ -104,7 +112,7 @@ int main()
         std::cout << "\nResult: " << std::boolalpha << fields.getResult() << std::endl;
         std::cout << "\nConfidence threshold: " << CONF_THRESHOLD << std::endl;
         std::cout << "\nConfidence: " << fields.getConfFinal() << std::endl;
-        fields.printDoubtfulFields();
+        fields.printDoubtfulAss();
     
         std::cout << "\nNumber of doubtful fields: " << fields.getNumDoubtfulFields() << std::endl;
         

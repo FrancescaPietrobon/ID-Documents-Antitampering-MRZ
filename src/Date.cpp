@@ -2,11 +2,7 @@
 
 
 Date::Date(std::string d):
-    data(d)
-    {
-        possibleMonth = "None";
-        index = 0;
-    }
+    data(d){}
 
 
 std::string Date::getNewDate()
@@ -56,29 +52,10 @@ void Date::searchMonth(std::string field, std::map<std::string, std::string> mon
 }
 
 
-bool Date::checkNumericDate()
-{
-    day = data[0];
-    day += data[1];
-    if(!dayOk())
-        return false;
-
-    month = data[2];
-    month += data[3];
-    if(!monthOk())
-        return false;
-
-    year = data[data.size()-2];
-    year += data[data.size()-1];
-
-    newDate = year + month + day;
-
-    return true;
-}
-
-
 bool Date::checkAlphanumericDate()
 {
+    // TO DO: manage also yy mm dd and yyyy mm dd format
+    
     // Take only the last two numbers of the year
     year = data[data.size()-2];
     year += data[data.size()-1];
@@ -104,13 +81,34 @@ bool Date::checkAlphanumericDate()
 }
 
 
+bool Date::checkNumericDate()
+{
+    day = data[0];
+    day += data[1];
+    if(!dayOk())
+        return false;
+
+    month = data[2];
+    month += data[3];
+    if(!monthOk())
+        return false;
+
+    year = data[data.size()-2];
+    year += data[data.size()-1];
+
+    newDate = year + month + day;
+
+    return true;
+}
+
+
 bool Date::dayOk()
 {
-    return ((std::stoi(day) > 0) && (std::stoi(day) <= 31));
+    return (isNumber(day) && (std::stoi(day) > 0) && (std::stoi(day) <= 31));
 }
 
 
 bool Date::monthOk()
 {
-    return ((std::stoi(month) > 0) && (std::stoi(month) <= 12));
+    return (isNumber(month) && (std::stoi(month) > 0) && (std::stoi(month) <= 12));
 }

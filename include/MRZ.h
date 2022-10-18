@@ -6,17 +6,25 @@
 #include <string>
 #include <unordered_map>
 #include <map>
+#include <list>
 #include "Character.h"
 
+
+struct detection
+{
+    std::string typeFieldMRZ;
+    std::string fieldMRZ;
+};
 
 class MRZ
 {
     protected:
         std::vector<std::vector<Character>> mrz;
-        std::multimap<std::string, std::string> allFields;
-        std::multimap<std::string, std::string> allFieldsInv;
         int numLines;
-        std::string MRZType;
+        std::multimap<std::string, std::string> allFieldsInv;
+        std::vector<detection> allFieldsStruct;
+
+        std::multimap<std::string, std::string> allFields;
         std::string docType;
         std::string passportType;
         std::string state;
@@ -37,26 +45,17 @@ class MRZ
     public:
         MRZ(std::vector<std::vector<Character>>, int);
         MRZ() = default;
-        void assignMRZ(std::vector<std::vector<Character>>, int);
         void printMRZ();
         void printMRZFields();
-        void computeFullMRZ();
         std::multimap<std::string, std::string> getAllFieldsInv();
+        void removeField(std::multimap<std::string, std::string>::iterator);
+        void removeFieldInv(std::multimap<std::string, std::string>::iterator);
+        void removeAllFieldsStruct(std::vector<detection>::iterator);
+
+        void assignMRZ(std::vector<std::vector<Character>>, int);
+        void computeFullMRZ();
         std::multimap<std::string, std::string> getAllFields();
-        std::string getMRZType();
-        std::string getDocType();
-        std::string getState();
-        std::string getSurname();
-        std::string getName();
-        std::string getDocNumber();
-        std::string getCheckDocNum();
-        std::string getNationality();
-        std::string getDateBirth();
-        std::string getCheckDateBirth();
-        std::string getSex();
-        std::string getDateExpireDoc();
-        std::string getCheckDateExpireDoc();
-        std::string getOptionalData();
+        std::vector<detection> getAllFieldsStruct();
 };
 
 
