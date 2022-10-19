@@ -7,6 +7,7 @@
 #include <map>
 #include <unordered_map>
 #include <iostream>
+#include <iomanip>
 #include <algorithm>
 #include <iterator>
 #include "Character.h"
@@ -16,9 +17,16 @@
 #include "MRZ/MRVA.h"
 #include "MRZ/MRVB.h"
 #include "Field.h"
-#include "utilities.h"
 #include "Date.h"
 #include "Metrics.h"
+
+struct association
+{
+    std::string fieldType;
+    std::string dataField;
+    std::string mrzDataField;
+    float confidence;
+};
 
 
 class Fields
@@ -27,32 +35,34 @@ class Fields
         std::vector<Character> originalCluster;
         int numClusters;
         float confThreshold;
-        std::list<Field> fields;
-        std::map<std::string, std::pair<std::pair<std::string,std::string>, float>> finalAssociation;
+        std::vector<Field> fields;
         int numLineOfMRZ = 0;
         std::map<float, Field> splittedMRZ;
+        std::string MRZType = "";
         MRZ mrzGeneral;
+        std::vector<association> finAss;
+        std::vector<association> doubtfulAss;
         size_t numDoubtfulFields = 0;
         bool result = true;
         float confFinal = 1;
-        void mostCompatible(Field & field, metricsType metricType);
-        void checkAlphanumDate(Field & field);
-        void computeConfFinal();
+        void fillFields();
         std::string findMRZType(std::vector<std::vector<Character>>);
+        void checkDate(Field & field);
+        bool findField(std::string dataField, std::string& mrzDataField, std::string& fieldType, float confidence);
+        void addAssociation(std::string dataField, std::string& mrzDataField, std::string& fieldType, float confidence);
+        void computeConfFinal();
 
     public:
         Fields(std::vector<Character>, int, float);
-        void fillFields();
+        bool findMRZ();
+        void compareMRZFields(metricsType);
         void printOrderedFields();
+        void printAssociations();
+        void printDoubtfulFields();
         size_t getNumDoubtfulFields();
         bool getResult();
         float getConfFinal();
-        bool findMRZ();
-        void compareMRZFields(metricsType);
-        void printNotFilledAndFilledFields();
-        void printAssociations();
-        void printDoubtfulFields();
-        std::map<std::string, std::pair<std::pair<std::string,std::string>, float>> getFinalAssociations();
+        std::vector<association> getDoubtfulFields();
 };
 
 #endif

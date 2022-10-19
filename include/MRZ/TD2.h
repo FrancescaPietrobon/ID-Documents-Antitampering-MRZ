@@ -4,17 +4,19 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <map>
 #include "../MRZ.h"
 
 
 class TD2: public MRZ
 {
-    public:
-        TD2(std::vector<std::vector<Character>>, int);
-        void extractFields();
+    private:
         std::string checkOptionalData;
-        std::string checkOverall;
+        std::string checkOverallDigit;
+
+    public:
+        TD2(std::vector<std::vector<Character>>);
+        void extractFields();
+        void printMRZFields();     
 };
 
 

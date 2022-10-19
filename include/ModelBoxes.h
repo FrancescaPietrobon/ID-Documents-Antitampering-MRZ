@@ -15,22 +15,19 @@ typedef std::vector<std::vector<float>> matrix2D;
 class ModelBoxes: public Boxes
 {
     private:
-        cv::Mat predictions;
+        const cv::Mat predictions;
+        const int numClasses;
         cv::Mat boxPredCVMat;
         cv::Mat classPredCVMat;
         matrix2D boxPred;
         matrix2D classPred;
         matrix2D boxesPreNMS;
-        int numClasses;
         matrix2D extractPredCVMat(cv::Mat);
         
 
     public:
-        ModelBoxes(Document doc, cv::Mat pred, int numClasses);
+        ModelBoxes(Document doc, const cv::Mat pred, const int numClasses);
         matrix2D getBoxPred();
-        matrix2D getClassPred();
-        cv::Mat getBoxPredCVMat();
-        cv::Mat getClassPredCVMat();
         matrix2D getBoxesPreNMS();
         matrix2D getBoxesReshaped();
         void computeBoxes(matrix2D);
@@ -39,7 +36,7 @@ class ModelBoxes: public Boxes
         void printClassPred();
         void reshapeBoxes();
         void applySigmoid(matrix2D &);
-        void multBias(matrix2D &);
+        void multVariance(matrix2D &);
 };
 
 #endif

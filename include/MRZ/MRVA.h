@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <map>
 #include "../MRZ.h"
 
 
@@ -13,7 +12,7 @@ class MRVA: public MRZ
     private:
 
     public:
-        MRVA(std::vector<std::vector<Character>>, int);
+        MRVA(std::vector<std::vector<Character>>);
         void extractFields();
         void printMRZFields();
 };

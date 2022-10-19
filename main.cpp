@@ -29,8 +29,8 @@
 #define DENOISE_PARAM 10
 
 // NMS params:
-#define THRESHOLD_IOU 0.3 //0.5 or 0.3
-#define THRESHOLD_NMS 0.1 //0.1
+#define THRESHOLD_IOU 0.3 //0.3
+#define THRESHOLD_NMS 0.0005 //0.1
 
 // DBSCAN params:
 #define EPS 27 // it depends on the image
@@ -44,15 +44,17 @@ int main()
     auto start = std::chrono::high_resolution_clock::now();
 
     std::string imagePath = "../data/AFG_AO_01001_FRONT.JPG"; //TD3 eps = 27
+    //std::string imagePath = "../data/GBR-AO-04002.jpeg";
     //std::string imagePath = "../data/BGR_AO_02001_FRONT.jpeg";
     //std::string imagePath = "../data/ZWE_AO_01002_FRONT.JPG"; //MRVA eps = 20
     //std::string imagePath = "../data/AFG_AO_01001_FRONT_3.JPG"; //TD3 eps = 11
     //std::string imagePath = "../data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30
+    
 
     Document document(imagePath, FEATURE_WIDTH, FEATURE_HEIGHT, DENOISE_PARAM);
 
     // Choose the metric type (pairs or distLev)
-    metricsType metric = distLev;
+    metricsType metric = WER;
     
 
     // Predict from XML boxes
@@ -69,18 +71,22 @@ int main()
 
     // Predict from model
 
-    std::string networkPath = "../models/Frozen_graph_lnorm_bello.pb"; //best
+    //std::string networkPath = "../models/Frozen_graph_lnorm_bello.pb"; //best
+    std::string networkPath = "../models/Frozen_graph_lnorm_5e6_156img.pb";
+    
     //std::string networkPath = "../models/Frozen_graph_lnorm_1e5.pb";
+    //std::string networkPath = "../models/Frozen_graph_lnorm_7e6_0.8tr.pb";
+    
     
     std::pair<matrix2D, std::vector<float>> modelResult = predictFromModel(document, networkPath, NUM_CLASSES, THRESHOLD_IOU, THRESHOLD_NMS);
     savePredictionImage(document.getInputImage(), modelResult.first, modelResult.second, "../pred_model.jpg");
 
 
     // Aggregate boxes using DBSCAN
-    myDBSCAN dbscan(EPS, MIN_PTS, modelResult);
+    DBSCAN dbscan(EPS, MIN_PTS, modelResult);
     dbscan.run();
 
-    saveCentersPredictionImage(document.getInputImage(), dbscan.getPoints(), "../DBSCAN_xml.jpg");
+    saveCentersPredictionImage(document.getInputImage(), dbscan.getPoints(), "../DBSCAN.jpg");
 
     // Find fields based on DBSCAN predictions
     Fields fields(dbscan.getPoints(), dbscan.getClusterIdx(), CONF_THRESHOLD);
@@ -88,35 +94,18 @@ int main()
     if(fields.findMRZ())
     {
         fields.printOrderedFields();
-
         fields.compareMRZFields(metric);
-
-        fields.printNotFilledAndFilledFields();
         fields.printAssociations();
-
-
-        // Useful outputs
-        
-        std::cout << "\n\nFINAL OUTPUT" <<std::endl;
-
-        std::cout << "\nImage name: " << imagePath << std::endl;
-
-        std::cout << "\nResult: " << std::boolalpha << fields.getResult() << std::endl;
-        std::cout << "\nConfidence threshold: " << CONF_THRESHOLD << std::endl;
-        std::cout << "\nConfidence: " << fields.getConfFinal() << std::endl;
         fields.printDoubtfulFields();
-    
-        std::cout << "\nNumber of doubtful fields: " << fields.getNumDoubtfulFields() << std::endl;
-        
 
         // Compact output
-        //OcrMrzResponseResult res = fillResponse(imagePath, fields, CONF_THRESHOLD);
+        OcrMrzResponseResult res = fillResponse(imagePath, fields, CONF_THRESHOLD);
+        printResponse(res);
     }
     
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
     std::cout << "\nTime taken by the complete application: " << duration.count() << " milliseconds" << std::endl;
-    
 
     return 0;
 }

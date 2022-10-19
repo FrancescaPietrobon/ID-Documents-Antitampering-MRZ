@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <map>
 #include "../MRZ.h"
 
 
@@ -14,9 +13,11 @@ class TD1: public MRZ
         std::string secondOptionalData;
         std::string checkFirstTwoLines;
         std::string checkOptionalData;
+
     public:
-        TD1(std::vector<std::vector<Character>>, int);
+        TD1(std::vector<std::vector<Character>>);
         void extractFields();
+        void printMRZFields();
 };
 
 

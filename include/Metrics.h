@@ -8,13 +8,16 @@
 enum metricsType
 {
     pairs = 1,
-    distLev
+    WER
 };
 
+float computeConfidence(metricsType metric, const std::string& s1, const std::string& s2);
 
-int distanceLevenshtein(const std::string& s0, const std::string& s1);
+int computeWER(const std::string& s1, const std::string& s2);
 int min3(int a, int b, int c);
+float confWER(const std::string& s1, const std::string& s2);
 
-int countPairs(std::string s1, std::string s2);
+int countPairs(const std::string& s1, const std::string& s2);
+float confCountPairs(const std::string& s1, const std::string& s2);
 
 #endif

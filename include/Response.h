@@ -40,5 +40,6 @@ struct OcrMrzResponse {
 char* convertStringtoCharPtr(std::string str);
 
 OcrMrzResponseResult fillResponse(std::string image, Fields fields, float confidence_threshold);
+void printResponse(OcrMrzResponseResult res);
 
 #endif

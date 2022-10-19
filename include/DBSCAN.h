@@ -11,7 +11,7 @@ const int NOT_CLASSIFIED = -1;
 
 typedef std::vector<std::vector<float>> matrix2D;
 
-class myDBSCAN
+class DBSCAN
 {
     private:
         const float eps;
@@ -21,10 +21,10 @@ class myDBSCAN
         std::vector<std::vector<int>> adjPoints;
         int clusterIdx;
         std::vector<std::vector<int>> cluster;
-        void computePoints(std::pair<matrix2D, std::vector<float>> boxes_labels);
+        void computePoints(std::pair<matrix2D, std::vector<float>> boxesLabels);
 
     public:
-        myDBSCAN(float, int, std::pair<matrix2D, std::vector<float>>);
+        DBSCAN(float, int, std::pair<matrix2D, std::vector<float>>);
         void run();
         void checkNearPoints();
         bool isCoreObject(int idx);

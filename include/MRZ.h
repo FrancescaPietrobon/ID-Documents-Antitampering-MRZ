@@ -4,21 +4,21 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <unordered_map>
-#include <map>
 #include "Character.h"
 
+
+struct detection
+{
+    std::string typeFieldMRZ;
+    std::string fieldMRZ;
+};
 
 class MRZ
 {
     protected:
         std::vector<std::vector<Character>> mrz;
-        std::multimap<std::string, std::string> allFields;
-        std::multimap<std::string, std::string> allFieldsInv;
-        int numLines;
-        std::string MRZType;
+        std::vector<detection> allFields;
         std::string docType;
-        std::string passportType;
         std::string state;
         std::string surname;
         std::string name;
@@ -32,32 +32,14 @@ class MRZ
         std::string checkDateExpireDoc;
         std::string optionalData;
         bool check(std::string field, std::string checkDigit);
-        bool CheckOverAll(std::string checkOverall); 
+        bool checkOverall(std::string overallDigit); 
 
     public:
-        MRZ(std::vector<std::vector<Character>>, int);
+        MRZ(std::vector<std::vector<Character>>);
         MRZ() = default;
-        void assignMRZ(std::vector<std::vector<Character>>, int);
         void printMRZ();
         void printMRZFields();
-        void computeFullMRZ();
-        std::multimap<std::string, std::string> getAllFieldsInv();
-        std::multimap<std::string, std::string> getAllFields();
-        std::string getMRZType();
-        std::string getDocType();
-        std::string getState();
-        std::string getSurname();
-        std::string getName();
-        std::string getDocNumber();
-        std::string getCheckDocNum();
-        std::string getNationality();
-        std::string getDateBirth();
-        std::string getCheckDateBirth();
-        std::string getSex();
-        std::string getDateExpireDoc();
-        std::string getCheckDateExpireDoc();
-        std::string getOptionalData();
+        std::vector<detection> getAllFields();
 };
-
 
 #endif

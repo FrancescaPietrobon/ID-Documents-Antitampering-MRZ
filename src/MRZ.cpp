@@ -1,86 +1,11 @@
 #include "../include/MRZ.h"
 
-MRZ::MRZ(std::vector<std::vector<Character>> characters, int nl):
-    mrz(characters), numLines(nl){}
+MRZ::MRZ(std::vector<std::vector<Character>> characters):
+    mrz(characters){}
 
-std::multimap<std::string, std::string> MRZ::getAllFieldsInv()
-{
-    return allFieldsInv;
-}
-
-std::multimap<std::string, std::string> MRZ::getAllFields()
+std::vector<detection> MRZ::getAllFields()
 {
     return allFields;
-}
-
-std::string MRZ::getMRZType()
-{
-    return MRZType;
-}
-
-std::string MRZ::getDocType()
-{
-    return docType;
-}
-
-std::string MRZ::getState()
-{
-    return state;
-}
-
-std::string MRZ::getSurname()
-{
-    return surname;
-}
-
-std::string MRZ::getName()
-{
-    return name;
-}
-
-std::string MRZ::getDocNumber()
-{
-    return docNumber;
-}
-
-std::string MRZ::getCheckDocNum()
-{
-    return checkDocNum;
-}
-
-std::string MRZ::getNationality()
-{
-    return nationality;
-}
-
-std::string MRZ::getDateBirth()
-{
-    return dateBirth;
-}
-
-std::string MRZ::getCheckDateBirth()
-{
-    return checkDateBirth;
-}
-
-std::string MRZ::getSex()
-{
-    return sex;
-}
-
-std::string MRZ::getDateExpireDoc()
-{
-    return dateExpireDoc;
-}
-
-std::string MRZ::getCheckDateExpireDoc()
-{
-    return checkDateExpireDoc;
-}
-
-std::string MRZ::getOptionalData()
-{
-    return optionalData;
 }
 
 
@@ -97,16 +22,9 @@ void MRZ::printMRZ()
 }
 
 
-void MRZ::assignMRZ(std::vector<std::vector<Character>> mrzChar, int numLineOfMRZ)
-{
-    mrz = mrzChar;
-    numLines = numLineOfMRZ;
-}
-
-
 void MRZ::printMRZFields()
 {
-    std::cout << "MRZ fields detected: " << std::endl;
+    std::cout << "\nMRZ fields detected:" << std::endl;
     std::cout << "Document type: " << docType << std::endl;
     std::cout << "State: " << state << std::endl;
     std::cout << "Surname: " << surname << std::endl;
@@ -121,7 +39,8 @@ void MRZ::printMRZFields()
 
 bool MRZ::check(std::string field, std::string checkDigit)
 {
-    int sum = 0, i = 0;
+    int sum = 0;
+    size_t i = 0;
     extern std::unordered_map<char, unsigned> digit_conversion;
 
     std::vector<int> weight;
@@ -143,7 +62,7 @@ bool MRZ::check(std::string field, std::string checkDigit)
 }
 
 
-bool MRZ::CheckOverAll(std::string checkOverall)
+bool MRZ::checkOverall(std::string overallDigit)
 {
     std::string stringForCheckOverall;
     for(int i = 0; i < 10; ++i)
@@ -154,11 +73,6 @@ bool MRZ::CheckOverAll(std::string checkOverall)
 
     for(int i = 21; i < 43; ++i)
         stringForCheckOverall += mrz[1][i].getLabel();
-        
-    if(!check(stringForCheckOverall, checkOverall))
-        std::cout << "Check overall faild." << std::endl;
-    else
-        std::cout << "Check overall OK." << std::endl;
     
-    return check(stringForCheckOverall, checkOverall);
+    return check(stringForCheckOverall, overallDigit);
 }

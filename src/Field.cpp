@@ -1,35 +1,17 @@
 #include "../include/Field.h"
 
 
-Field::Field(std::vector<Character> chars):
-    originalCluster(chars){}
-
-
 void Field::setField(float x, Character point)
 {
     field.emplace(x, point);
 }
 
-std::multimap<float, Character> Field::getField()
-{
-    return field;
-}
-
-std::vector<Character> Field::getOriginalCluster()
-{
-    return originalCluster;
-}
-
 std::vector<Character> Field::getCharacters()
 {
-    for(auto & character: field)
-    {
-        orderedField.push_back(character.second);
-    }
-    return orderedField;
+    return orderedCharacters;
 }
 
-void Field::setisPartOfMRZ(bool isPart)
+void Field::setIsPartOfMRZ(bool isPart)
 {
     partOfMRZ = isPart;
 }
@@ -37,16 +19,6 @@ void Field::setisPartOfMRZ(bool isPart)
 bool Field::getIsPartOfMRZ()
 {
     return partOfMRZ;
-}
-
-void Field::setTypeOfData(std::string t)
-{
-    typeOfData = t;
-}
-
-std::string Field::getTypeOfData()
-{
-    return typeOfData;
 }
 
 void Field::setData(std::string d)
@@ -83,10 +55,8 @@ void Field::computeMeanY()
 }
 
 
-void Field::print()
+void Field::computeOrderedCharacters()
 {
-    for(auto it = field.begin(); it != field.end(); ++it)
-    {
-        std::cout << ((*it).second).getLabel();
-    }
+    for(auto & character: field)
+        orderedCharacters.push_back(character.second);
 }

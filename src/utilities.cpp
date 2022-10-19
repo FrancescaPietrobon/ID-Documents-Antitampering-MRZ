@@ -35,6 +35,26 @@ std::pair<matrix2D, std::vector<float>> predictFromModel(Document & document, st
 }
 
 
+matrix2D computeCenters(matrix2D boxes, matrix2D anchorBoxes)
+{
+    matrix2D center = boxes;
+    for(size_t i = 0; i < boxes.size(); ++i)
+    {
+        center[i][0] = boxes[i][0] * anchorBoxes[i][2] + anchorBoxes[i][0];
+        center[i][1] = boxes[i][1] * anchorBoxes[i][3] + anchorBoxes[i][1];
+        center[i][2] = std::exp(boxes[i][2]) *  anchorBoxes[i][2];
+        center[i][3] = std::exp(boxes[i][3]) *  anchorBoxes[i][3]; 
+    }
+    return center;
+}
+
+
+bool isNumber(const std::string& str)
+{
+    return str.find_first_not_of("0123456789") == std::string::npos;
+}
+
+
 void savePredictionImage(cv::Mat img, matrix2D boxes, std::vector<float> classes, std::string img_name)
 {
     cv::Mat new_image = img;
@@ -71,24 +91,4 @@ void saveCentersPredictionImage(cv::Mat img, std::vector<Character> centers, std
         cv::circle(new_image, cv::Point(centers[i].getX(), centers[i].getY()), 0, cv::Scalar(0, 0, color[i]*20), thickness, lineType);
     }
     cv::imwrite(img_name, new_image);
-}
-
-
-matrix2D computeCenters(matrix2D boxes, matrix2D anchorBoxes)
-{
-    matrix2D center = boxes;
-    for(size_t i = 0; i < boxes.size(); ++i)
-    {
-        center[i][0] = boxes[i][0] * anchorBoxes[i][2] + anchorBoxes[i][0];
-        center[i][1] = boxes[i][1] * anchorBoxes[i][3] + anchorBoxes[i][1];
-        center[i][2] = std::exp(boxes[i][2]) *  anchorBoxes[i][2];
-        center[i][3] = std::exp(boxes[i][3]) *  anchorBoxes[i][3]; 
-    }
-    return center;
-}
-
-
-bool isNumber(const std::string& str)
-{
-    return str.find_first_not_of("0123456789") == std::string::npos;
 }

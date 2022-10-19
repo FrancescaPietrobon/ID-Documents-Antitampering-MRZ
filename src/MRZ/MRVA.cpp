@@ -1,14 +1,14 @@
 #include "../include/MRZ/MRVA.h"
 
 
-MRVA::MRVA(std::vector<std::vector<Character>> characters, int nl):
-    MRZ(characters, nl){}
+MRVA::MRVA(std::vector<std::vector<Character>> characters):
+    MRZ(characters){}
 
 
 void MRVA::printMRZFields()
 {
+    std::cout << "\nMRZ fields detected in MRVA MRZ:" << std::endl;
     std::cout << "Document type: " << docType << std::endl;
-    std::cout << "Passport type: " << passportType << std::endl;
     std::cout << "State: " << state << std::endl;
     std::cout << "Surname: " << surname << std::endl;
     std::cout << "Name: " << name << std::endl;
@@ -26,22 +26,21 @@ void MRVA::printMRZFields()
 
 void MRVA::extractFields()
 {
+    detection det;
+
     // First line
 
     docType = mrz[0][0].getLabel();
-    allFields.insert(std::pair<std::string, std::string>("docType", docType));
-    allFieldsInv.insert(std::pair<std::string, std::string>(docType, "docType"));
-
     if(mrz[0][1].getLabel() != "<")
-        passportType = mrz[0][1].getLabel();
-    else
-        passportType = "NULL";
-    allFields.insert(std::pair<std::string, std::string>("passportType", passportType));
-    allFieldsInv.insert(std::pair<std::string, std::string>(passportType, "passportType"));
+        docType = docType + mrz[0][1].getLabel();
+    det.fieldMRZ = docType;
+    det.typeFieldMRZ = "docType";
+    allFields.push_back(det);
 
     state = mrz[0][2].getLabel() + mrz[0][3].getLabel() + mrz[0][4].getLabel();
-    allFields.insert(std::pair<std::string, std::string>("state", state));
-    allFieldsInv.insert(std::pair<std::string, std::string>(state, "state"));
+    det.fieldMRZ = state;
+    det.typeFieldMRZ = "state";
+    allFields.push_back(det);
 
     int i = 5;
     for(size_t j = i; j < 44; ++j)
@@ -56,8 +55,9 @@ void MRVA::extractFields()
         else
             surname += mrz[0][j].getLabel();
     }
-    allFields.insert(std::pair<std::string, std::string>("surname", surname.substr(0, surname.size() - 1)));
-    allFieldsInv.insert(std::pair<std::string, std::string>(surname.substr(0, surname.size() - 1), "surname"));
+    det.fieldMRZ = surname;
+    det.typeFieldMRZ = "surname";
+    allFields.push_back(det);
 
     for(size_t j = i; j < 44; ++j)
     {
@@ -68,37 +68,43 @@ void MRVA::extractFields()
         else
             name += mrz[0][j].getLabel();
     }
-    allFields.insert(std::pair<std::string, std::string>("name", name.substr(0, name.size() - 1)));
-    allFieldsInv.insert(std::pair<std::string, std::string>(name.substr(0, name.size() - 1), "name"));
+    det.fieldMRZ = name;
+    det.typeFieldMRZ = "name";
+    allFields.push_back(det);
 
     // Second line
 
     for(size_t i = 0; i < 9 && mrz[1][i].getLabel() != "<"; ++i)
         docNumber += mrz[1][i].getLabel();
-    allFields.insert(std::pair<std::string, std::string>("docNumber", docNumber));
-    allFieldsInv.insert(std::pair<std::string, std::string>(docNumber, "docNumber"));
+    det.fieldMRZ = docNumber;
+    det.typeFieldMRZ = "docNumber";
+    allFields.push_back(det);
 
     checkDocNum = mrz[1][9].getLabel();
     
     nationality = mrz[1][10].getLabel() + mrz[1][11].getLabel() + mrz[1][12].getLabel();
-    allFields.insert(std::pair<std::string, std::string>("nationality", nationality));
-    allFieldsInv.insert(std::pair<std::string, std::string>(nationality, "nationality"));
+    det.fieldMRZ = nationality;
+    det.typeFieldMRZ = "nationality";
+    allFields.push_back(det);
 
     for(size_t i = 13; i < 19; ++i)
         dateBirth += mrz[1][i].getLabel();
-    allFields.insert(std::pair<std::string, std::string>("dateBirth", dateBirth));
-    allFieldsInv.insert(std::pair<std::string, std::string>(dateBirth, "dateBirth"));
+    det.fieldMRZ = dateBirth;
+    det.typeFieldMRZ = "dateBirth";
+    allFields.push_back(det);
 
     checkDateBirth = mrz[1][19].getLabel();
 
     sex = mrz[1][20].getLabel();
-    allFields.insert(std::pair<std::string, std::string>("sex", sex));
-    allFieldsInv.insert(std::pair<std::string, std::string>(sex, "sex"));
+    det.fieldMRZ = sex;
+    det.typeFieldMRZ = "sex";
+    allFields.push_back(det);
 
     for(size_t i = 21; i < 27; ++i)
         dateExpireDoc += mrz[1][i].getLabel();
-    allFields.insert(std::pair<std::string, std::string>("dateExpireDoc", dateExpireDoc));
-    allFieldsInv.insert(std::pair<std::string, std::string>(dateExpireDoc, "dateExpireDoc"));
+    det.fieldMRZ = dateExpireDoc;
+    det.typeFieldMRZ = "dateExpireDoc";
+    allFields.push_back(det);
 
     checkDateExpireDoc = mrz[1][27].getLabel();
 
