@@ -1,8 +1,29 @@
 #include "../include/MRZ/TD2.h"
 
 
-TD2::TD2(std::vector<std::vector<Character>> characters, int nl):
-    MRZ(characters, nl){}
+TD2::TD2(std::vector<std::vector<Character>> characters):
+    MRZ(characters){}
+
+
+void TD2::printMRZFields()
+{
+    std::cout << "\nMRZ fields detected in TD2 MRZ:" << std::endl;
+    std::cout << "Document type: " << docType << std::endl;
+    std::cout << "State: " << state << std::endl;
+    std::cout << "Surname: " << surname << std::endl;
+    std::cout << "Name: " << name << std::endl; 
+    std::cout << "Document number: " << docNumber << std::endl;
+    std::cout << "Check document number: " << checkDocNum << std::endl;
+    std::cout << "Nationality: " << nationality << std::endl;
+    std::cout << "Date of birth: " << dateBirth << std::endl;
+    std::cout << "Check date of birth: " << checkDateBirth << std::endl;
+    std::cout << "Sex: " << sex << std::endl;
+    std::cout << "Date of expire: " << dateExpireDoc << std::endl;
+    std::cout << "Check date of expire: " << checkDateExpireDoc << std::endl;
+    std::cout << "Optional data: " << optionalData << std::endl;
+    std::cout << "Check optional data: " << checkOptionalData << std::endl;
+    std::cout << "Check overall: " << checkOverallDigit << std::endl;
+}
 
 
 void TD2::extractFields()
@@ -122,7 +143,10 @@ void TD2::extractFields()
             std::cout << "Check in optional data OK." << std::endl;
     }
 
-    checkOverall = mrz[1][35].getLabel();
+    checkOverallDigit = mrz[1][35].getLabel();
 
-    bool finalCheck = CheckOverAll(checkOverall);
+    if(!checkOverall(checkOverallDigit))
+        std::cout << "Check overall faild." << std::endl;
+    else
+        std::cout << "Check overall OK." << std::endl;
 }

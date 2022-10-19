@@ -4,9 +4,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <unordered_map>
-#include <map>
-#include <list>
 #include "Character.h"
 
 
@@ -20,9 +17,7 @@ class MRZ
 {
     protected:
         std::vector<std::vector<Character>> mrz;
-        int numLines;
         std::vector<detection> allFields;
-
         std::string docType;
         std::string state;
         std::string surname;
@@ -37,19 +32,14 @@ class MRZ
         std::string checkDateExpireDoc;
         std::string optionalData;
         bool check(std::string field, std::string checkDigit);
-        bool CheckOverAll(std::string checkOverall); 
+        bool checkOverall(std::string overallDigit); 
 
     public:
-        MRZ(std::vector<std::vector<Character>>, int);
+        MRZ(std::vector<std::vector<Character>>);
         MRZ() = default;
         void printMRZ();
         void printMRZFields();
-        void removeAllFields(std::vector<detection>::iterator);
-
-        void assignMRZ(std::vector<std::vector<Character>>, int);
-        void computeFullMRZ();
         std::vector<detection> getAllFields();
 };
-
 
 #endif

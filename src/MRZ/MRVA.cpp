@@ -1,12 +1,13 @@
 #include "../include/MRZ/MRVA.h"
 
 
-MRVA::MRVA(std::vector<std::vector<Character>> characters, int nl):
-    MRZ(characters, nl){}
+MRVA::MRVA(std::vector<std::vector<Character>> characters):
+    MRZ(characters){}
 
 
 void MRVA::printMRZFields()
 {
+    std::cout << "\nMRZ fields detected in MRVA MRZ:" << std::endl;
     std::cout << "Document type: " << docType << std::endl;
     std::cout << "State: " << state << std::endl;
     std::cout << "Surname: " << surname << std::endl;

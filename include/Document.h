@@ -11,17 +11,6 @@ typedef std::vector<std::vector<float>> matrix2D;
 
 class Document
 {
-    public:
-        Document(const std::string, const int, const int, const float);
-        void preprocessing();
-        cv::Mat getBlob();
-        cv::Mat getDocument();
-        cv::Mat getInputImage();
-        float getXAlter();
-        float getYAlter();
-        int getWidth();
-        int getHeight();
-        
     private:
         const std::string imagePath;
         const int width;
@@ -32,6 +21,17 @@ class Document
         cv::Mat inputImage;
         cv::Mat imagePreprocessed;
         cv::Mat blob;
+
+    public:
+        Document(const std::string, const int, const int, const float);
+        void preprocessing();
+        cv::Mat getBlob();
+        cv::Mat getDocument();
+        cv::Mat getInputImage();
+        float getXAlter();
+        float getYAlter();
+        int getWidth();
+        int getHeight();
 };
 
 #endif

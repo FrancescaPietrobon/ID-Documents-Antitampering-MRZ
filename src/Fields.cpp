@@ -102,32 +102,37 @@ bool Fields::findMRZ()
 
         if(MRZType == "TD1")
         {
-            TD1 mrz(mrzChar, numLineOfMRZ);
+            TD1 mrz(mrzChar);
             mrz.extractFields();
+            mrz.printMRZFields();
             mrzGeneral = mrz;
         }
         else if(MRZType == "TD2")
         {
-            TD2 mrz(mrzChar, numLineOfMRZ);
+            TD2 mrz(mrzChar);
             mrz.extractFields();
+            mrz.printMRZFields();
             mrzGeneral = mrz;
         }
         else if(MRZType == "TD3")
         {
-            TD3 mrz(mrzChar, numLineOfMRZ);
+            TD3 mrz(mrzChar);
             mrz.extractFields();
+            mrz.printMRZFields();
             mrzGeneral = mrz;
         }
         else if(MRZType == "MRVA")
         {
-            MRVA mrz(mrzChar, numLineOfMRZ);
+            MRVA mrz(mrzChar);
             mrz.extractFields();
+            mrz.printMRZFields();
             mrzGeneral = mrz;
         }
         else if(MRZType == "MRVB")
         {
-            MRVB mrz(mrzChar, numLineOfMRZ);
+            MRVB mrz(mrzChar);
             mrz.extractFields();
+            mrz.printMRZFields();
             mrzGeneral = mrz;
         }
         else
@@ -138,8 +143,7 @@ bool Fields::findMRZ()
 
         std::cout << "\nMRZ:" << std::endl;
         mrzGeneral.printMRZ();
-        std::cout << std::endl;
-        mrzGeneral.printMRZFields();
+        //mrzGeneral.printMRZFields();
     }
     else
     {

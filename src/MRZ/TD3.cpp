@@ -1,12 +1,13 @@
 #include "../include/MRZ/TD3.h"
 
 
-TD3::TD3(std::vector<std::vector<Character>> characters, int nl):
-    MRZ(characters, nl){}
+TD3::TD3(std::vector<std::vector<Character>> characters):
+    MRZ(characters){}
 
 
 void TD3::printMRZFields()
 {
+    std::cout << "\nMRZ fields detected in TD3 MRZ:" << std::endl;
     std::cout << "Document type: " << docType << std::endl;
     std::cout << "State: " << state << std::endl;
     std::cout << "Surname: " << surname << std::endl;
@@ -21,7 +22,7 @@ void TD3::printMRZFields()
     std::cout << "Check date of expire: " << checkDateExpireDoc << std::endl;
     std::cout << "Optional data: " << optionalData << std::endl;
     std::cout << "Check optional data: " << checkOptionalData << std::endl;
-    std::cout << "Check overall: " << checkOverall << std::endl;
+    std::cout << "Check overall: " << checkOverallDigit << std::endl;
 }
 
 
@@ -144,7 +145,10 @@ void TD3::extractFields()
             std::cout << "Check in optional data OK." << std::endl;
     }
 
-    checkOverall = mrz[1][43].getLabel();
+    checkOverallDigit = mrz[1][43].getLabel();
 
-    bool finalCheck = CheckOverAll(checkOverall);
+    if(!checkOverall(checkOverallDigit))
+        std::cout << "Check overall faild." << std::endl;
+    else
+        std::cout << "Check overall OK." << std::endl;
 }

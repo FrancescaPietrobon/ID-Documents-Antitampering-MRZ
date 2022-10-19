@@ -11,7 +11,7 @@
 
 class Field
 {
-    protected:
+    private:
         std::multimap<float, Character> field; //it could be deleted after computeOrderedCharacters
         std::vector<Character> orderedCharacters;
         float meanY = 0;
@@ -19,16 +19,16 @@ class Field
         bool partOfMRZ = false;
 
     public:
-        void setField(float x, Character point);
-        bool getIsPartOfMRZ();
-        void setIsPartOfMRZ(bool);
-        void clear();
         void computeMeanY();
         void computeOrderedCharacters();
-        void setData(std::string);
+        void clear();
         std::vector<Character> getCharacters();
         float getMeanY();
-        std::string getData();        
+        std::string getData(); 
+        bool getIsPartOfMRZ();
+        void setField(float x, Character point);
+        void setIsPartOfMRZ(bool);
+        void setData(std::string);
 };
 
 #endif

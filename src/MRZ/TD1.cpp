@@ -1,8 +1,31 @@
 #include "../include/MRZ/TD1.h"
 
 
-TD1::TD1(std::vector<std::vector<Character>> characters, int nl):
-    MRZ(characters, nl){}
+TD1::TD1(std::vector<std::vector<Character>> characters):
+    MRZ(characters){}
+
+
+void TD1::printMRZFields()
+{
+    std::cout << "\nMRZ fields detected in TD1 MRZ:" << std::endl;
+    std::cout << "Document type: " << docType << std::endl;
+    std::cout << "State: " << state << std::endl;
+    std::cout << "Document number: " << docNumber << std::endl;
+    std::cout << "Check document number: " << checkDocNum << std::endl;
+    std::cout << "Optional data: " << optionalData << std::endl;
+    std::cout << "Check optional data: " << checkOptionalData << std::endl;
+    std::cout << "Date of birth: " << dateBirth << std::endl;
+    std::cout << "Check date of birth: " << checkDateBirth << std::endl;
+    std::cout << "Sex: " << sex << std::endl;
+    std::cout << "Date of expire: " << dateExpireDoc << std::endl;
+    std::cout << "Check date of expire: " << checkDateExpireDoc << std::endl;
+    std::cout << "Nationality: " << nationality << std::endl;
+    std::cout << "Second optional data: " << secondOptionalData << std::endl;
+    std::cout << "Check first two lines: " << checkFirstTwoLines << std::endl;
+    std::cout << "Surname: " << surname << std::endl;
+    std::cout << "Name: " << name << std::endl;  
+}
+
 
 void TD1::extractFields()
 {
@@ -76,7 +99,7 @@ void TD1::extractFields()
     else
     {
         for(size_t i = 18; i < 29 && mrz[1][i].getLabel() != "<"; ++i)
-            optionalData += mrz[1][i].getLabel();
+            secondOptionalData += mrz[1][i].getLabel();
     }
 
     checkFirstTwoLines = mrz[1][29].getLabel();

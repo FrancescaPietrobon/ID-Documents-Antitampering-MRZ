@@ -19,6 +19,7 @@ class Character
 
     public:
         Character(float c_x, float c_y, float label, int cl);
+        float distance(Character);
         float getX();
         float getY();
         std::string getLabel();
@@ -26,8 +27,7 @@ class Character
         int getCountPts();
         int getCluster();
         void setCountPts(int);
-        void setCluster(int);
-        float distance(Character);  
+        void setCluster(int);   
 };
 
 #endif
