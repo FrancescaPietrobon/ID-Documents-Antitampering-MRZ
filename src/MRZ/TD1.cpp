@@ -6,20 +6,27 @@ TD1::TD1(std::vector<std::vector<Character>> characters, int nl):
 
 void TD1::extractFields()
 {
+    detection det;
+
     // First line
 
     docType = mrz[0][0].getLabel();
-    allFields.insert(std::pair<std::string, std::string>("docType", docType));
-    allFieldsInv.insert(std::pair<std::string, std::string>(docType, "docType"));
+    if(mrz[0][1].getLabel() != "<")
+        docType = docType + mrz[0][1].getLabel();
+    det.fieldMRZ = docType;
+    det.typeFieldMRZ = "docType";
+    allFields.push_back(det);
 
     state = mrz[0][2].getLabel() + mrz[0][3].getLabel() + mrz[0][4].getLabel();
-    allFields.insert(std::pair<std::string, std::string>("state", state));
-    allFieldsInv.insert(std::pair<std::string, std::string>(state, "state"));
+    det.fieldMRZ = state;
+    det.typeFieldMRZ = "state";
+    allFields.push_back(det);
 
     for(size_t i = 5; i < 14 && mrz[0][i].getLabel() != "<"; ++i)
         docNumber += mrz[0][i].getLabel();
-    allFields.insert(std::pair<std::string, std::string>("docNumber", docNumber));
-    allFieldsInv.insert(std::pair<std::string, std::string>(docNumber, "docNumber"));
+    det.fieldMRZ = docNumber;
+    det.typeFieldMRZ = "docNumber";
+    allFields.push_back(det);
 
     checkDocNum = mrz[0][14].getLabel();
 
@@ -40,25 +47,29 @@ void TD1::extractFields()
 
     for(size_t i = 0; i < 6; ++i)
         dateBirth += mrz[1][i].getLabel();
-    allFields.insert(std::pair<std::string, std::string>("dateBirth", dateBirth));
-    allFieldsInv.insert(std::pair<std::string, std::string>(dateBirth, "dateBirth"));
+    det.fieldMRZ = dateBirth;
+    det.typeFieldMRZ = "dateBirth";
+    allFields.push_back(det);
 
     checkDateBirth = mrz[1][6].getLabel();
 
     sex = mrz[1][7].getLabel();
-    allFields.insert(std::pair<std::string, std::string>("sex", sex));
-    allFieldsInv.insert(std::pair<std::string, std::string>(sex, "sex"));
+    det.fieldMRZ = sex;
+    det.typeFieldMRZ = "sex";
+    allFields.push_back(det);
 
     for(size_t i = 8; i < 14; ++i)
         dateExpireDoc += mrz[1][i].getLabel();
-    allFields.insert(std::pair<std::string, std::string>("dateExpireDoc", dateExpireDoc));
-    allFieldsInv.insert(std::pair<std::string, std::string>(dateExpireDoc, "dateExpireDoc"));
+    det.fieldMRZ = dateExpireDoc;
+    det.typeFieldMRZ = "dateExpireDoc";
+    allFields.push_back(det);
 
     checkDateExpireDoc = mrz[1][14].getLabel();
 
     nationality = mrz[1][15].getLabel() + mrz[1][16].getLabel() + mrz[1][17].getLabel();
-    allFields.insert(std::pair<std::string, std::string>("nationality", nationality));
-    allFieldsInv.insert(std::pair<std::string, std::string>(nationality, "nationality"));
+    det.fieldMRZ = nationality;
+    det.typeFieldMRZ = "nationality";
+    allFields.push_back(det);
 
     if(mrz[1][18].getLabel() == "<")
         secondOptionalData = "NULL";
@@ -85,8 +96,9 @@ void TD1::extractFields()
         else
             surname += mrz[2][j].getLabel();
     }
-    allFields.insert(std::pair<std::string, std::string>("surname", surname.substr(0, surname.size() - 1)));
-    allFieldsInv.insert(std::pair<std::string, std::string>(surname.substr(0, surname.size() - 1), "surname")); 
+    det.fieldMRZ = surname;
+    det.typeFieldMRZ = "surname";
+    allFields.push_back(det);
 
     for(size_t j = i; j < 30; ++j)
     {
@@ -97,6 +109,7 @@ void TD1::extractFields()
         else
             name += mrz[2][j].getLabel();
     }
-    allFields.insert(std::pair<std::string, std::string>("name", name.substr(0, name.size() - 1)));
-    allFieldsInv.insert(std::pair<std::string, std::string>(name.substr(0, name.size() - 1), "name")); 
+    det.fieldMRZ = name;
+    det.typeFieldMRZ = "name";
+    allFields.push_back(det);
 }

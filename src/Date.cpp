@@ -77,6 +77,8 @@ bool Date::checkAlphanumericDate()
 
     newDate = year + month + day;
 
+    std::cout << "Date " << data << " converted in " << newDate << "\n" << std::endl;
+
     return true;
 }
 
@@ -97,6 +99,8 @@ bool Date::checkNumericDate()
     year += data[data.size()-1];
 
     newDate = year + month + day;
+
+    std::cout << "Date " << data << " converted in " << newDate << "\n" << std::endl;
 
     return true;
 }

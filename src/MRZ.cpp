@@ -3,38 +3,16 @@
 MRZ::MRZ(std::vector<std::vector<Character>> characters, int nl):
     mrz(characters), numLines(nl){}
 
-std::multimap<std::string, std::string> MRZ::getAllFieldsInv()
-{
-    return allFieldsInv;
-}
-
-std::multimap<std::string, std::string> MRZ::getAllFields()
+std::vector<detection> MRZ::getAllFields()
 {
     return allFields;
 }
 
-std::vector<detection> MRZ::getAllFieldsStruct()
-{
-    return allFieldsStruct;
-}
-
-void MRZ::removeFieldInv(std::multimap<std::string, std::string>::iterator it)
-{
-    allFieldsInv.erase(it->first);
-    allFields.erase(it->second);
-}
-
-void MRZ::removeField(std::multimap<std::string, std::string>::iterator it)
-{
-    allFieldsInv.erase(it->second);
-    allFields.erase(it->first);
-}
-
-void MRZ::removeAllFieldsStruct(std::vector<detection>::iterator i)
+void MRZ::removeAllFields(std::vector<detection>::iterator i)
 {
     std::cout << "erase " << (*i).fieldMRZ << " " << (*i).typeFieldMRZ << std::endl;
-    allFieldsStruct.erase(i);
-    std::cout << allFieldsStruct.size() << std::endl;
+    allFields.erase(i);
+    std::cout << allFields.size() << std::endl;
 }
 
 

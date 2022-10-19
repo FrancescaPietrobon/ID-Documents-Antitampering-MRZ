@@ -49,6 +49,12 @@ matrix2D computeCenters(matrix2D boxes, matrix2D anchorBoxes)
 }
 
 
+bool isNumber(const std::string& str)
+{
+    return str.find_first_not_of("0123456789") == std::string::npos;
+}
+
+
 void savePredictionImage(cv::Mat img, matrix2D boxes, std::vector<float> classes, std::string img_name)
 {
     cv::Mat new_image = img;
@@ -85,10 +91,4 @@ void saveCentersPredictionImage(cv::Mat img, std::vector<Character> centers, std
         cv::circle(new_image, cv::Point(centers[i].getX(), centers[i].getY()), 0, cv::Scalar(0, 0, color[i]*20), thickness, lineType);
     }
     cv::imwrite(img_name, new_image);
-}
-
-
-bool isNumber(const std::string& str)
-{
-    return str.find_first_not_of("0123456789") == std::string::npos;
 }

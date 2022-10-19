@@ -20,15 +20,10 @@ float Fields::getConfFinal()
 {
     return confFinal;
 }
- 
-std::map<std::string, std::pair<std::pair<std::string,std::string>, float>> Fields::getFinalAssociations()
-{
-    return finalAssociation;
-}
 
-MRZ Fields::getMRZ()
+std::vector<association> Fields::getDoubtfulFields()
 {
-    return mrzGeneral;
+    return doubtfulAss;
 }
 
 
@@ -92,7 +87,6 @@ bool Fields::findMRZ()
             break;
         if(field.getIsPartOfMRZ())
         {
-            field.setTypeOfData("MRZ");
             splittedMRZ.emplace(field.getMeanY(), field);
             ++count;
         }
@@ -193,96 +187,57 @@ void Fields::printOrderedFields()
 }
 
 
-void Fields::compare()
+void Fields::compareMRZFields(metricsType metric)
 {
-    std::vector<detection> mrzFields = mrzGeneral.getAllFieldsStruct();
-    float currentComp = 0;
+    std::vector<detection> mrzFields = mrzGeneral.getAllFields();
+    float currentConf = 0, maxConf = 0;
     std::string bestTypeField, bestField;
+
+    std::cout << "\nCompare fields:";
+
     for(auto & field: fields)
     {
         if(!field.getIsPartOfMRZ())
         {
+            std::cout << "\nField: " << field.getData() << "\n" << std::endl;
+
             if((field.getData().size() >= 6) && (field.getData().size() <= 12))
                 checkDate(field);
 
-            float minComp = distanceLevenshtein(field.getData(), (*mrzFields.begin()).fieldMRZ);
+            maxConf = 0;
+
+            std::cout << std::left << std::setw(20) << "MRZ FIELD";
+            std::cout << std::left << std::setw(20) << "MRZ FIELD TYPE";
+            std::cout << std::left << std::setw(20) << "CONFIDENCE" << std::endl;
 
             for(size_t itFields = 0; itFields < mrzFields.size(); ++itFields)
             {
-                std::cout << "Field: " << field.getData() << "   MRZ Field: " << mrzFields[itFields].fieldMRZ;
-                std::cout << "   MRZ Field type: " << mrzFields[itFields].typeFieldMRZ;
-                currentComp = distanceLevenshtein(field.getData(), mrzFields[itFields].fieldMRZ);
-                std::cout << "   Comp: " << currentComp << std::endl;
-                if(currentComp <= minComp)
+                currentConf = computeConfidence(metric, field.getData(), mrzFields[itFields].fieldMRZ);
+
+                std::cout << std::left << std::setw(20) << mrzFields[itFields].fieldMRZ;
+                std::cout << std::left << std::setw(20) << mrzFields[itFields].typeFieldMRZ;
+                std::cout << std::left << std::setw(20) << currentConf << std::endl;
+
+                if(currentConf > maxConf)
                 {
                     //std::cout << mrzFields[itFields].typeFieldMRZ << " new best " << std::endl;
-                    minComp = currentComp;
+                    maxConf = currentConf;
                     bestTypeField = mrzFields[itFields].typeFieldMRZ;
                     bestField = mrzFields[itFields].fieldMRZ;
                 }
-                if(currentComp == 0)
+                if(currentConf == 1)
                 {
-                    //std::cout << "Field to remove: " << field.getData() << "   MRZ Field: " << mrzFields[itFields].fieldMRZ << "   MRZ Field type: " << mrzGeneral.getAllFieldsStruct()[itFields].typeFieldMRZ << std::endl;
+                    //std::cout << "Field to remove: " << field.getData() << "   MRZ Field: " << mrzFields[itFields].fieldMRZ << "   MRZ Field type: " << mrzGeneral.getAllFields()[itFields].typeFieldMRZ << std::endl;
                     mrzFields.erase(mrzFields.begin()+itFields);
                     ++itFields;
                     break;
                 }
             }
-            float conf = 1 - static_cast<float>(std::max(static_cast<float>(0.), minComp/(field.getData().size())));
-            std::cout << "Confidence: " << conf << std::endl;
+            std::cout << "Best confidence: " << maxConf << std::endl;
 
-            int exists = 0;
-            for(size_t itDoubtFilds = 0; itDoubtFilds < doubtfulAss.size(); ++itDoubtFilds)
-            {
-                //std::cout << "Doubtful field type: "<< doubtfulAss[itDoubtFilds].fieldType << "\t conf: " << doubtfulAss[itDoubtFilds].confidence << std::endl;
-                if((doubtfulAss[itDoubtFilds].fieldType == bestTypeField))
-                {
-                    exists = 1;
-                    if(doubtfulAss[itDoubtFilds].confidence < conf)
-                    {
-                        std::cout << "Prev conf: "<< doubtfulAss[itDoubtFilds].confidence << "\t curr conf: " << conf << std::endl;
-                        //std::cout << "Field to remove: " << doubtfulAss[itDoubtFilds].dataField << "   MRZ Field: " << doubtfulAss[itDoubtFilds].mrzDataField << "   MRZ Field type: " << doubtfulAss[itDoubtFilds].fieldType << std::endl;
-                        doubtfulAss.erase(doubtfulAss.begin()+itDoubtFilds);
-                        ++itDoubtFilds;
-                        association ass;
-                        ass.dataField = field.getData();
-                        ass.mrzDataField = bestField;
-                        ass.fieldType = bestTypeField;
-                        ass.confidence = conf;
-
-                        if(conf == 1)
-                        {
-                            std::cout << "Added in final association: " << field.getData() << " - " << bestField << std::endl;
-                            finAss.push_back(ass);
-                        }
-                        else
-                        {
-                            std::cout << "Added in doubtful association: " << field.getData() << " - " << bestField  << std::endl;
-                            doubtfulAss.push_back(ass);
-                        }
-                        break;
-                    }
-                }
-            }
-            if((exists == 0) && (conf > 0))
-            {
-                association ass;
-                ass.dataField = field.getData();
-                ass.mrzDataField = bestField;
-                ass.fieldType = bestTypeField;
-                ass.confidence = conf;
-
-                if(conf == 1)
-                {
-                    std::cout << "Added in final association: " << field.getData() << " - " << bestField  << std::endl;
-                    finAss.push_back(ass);
-                }
-                else
-                {
-                    std::cout << "Added in doubtful association: " << field.getData() << " - " << bestField  << std::endl;
-                    doubtfulAss.push_back(ass);
-                }
-            }
+            if(!findField(field.getData(), bestField, bestTypeField, maxConf) && (maxConf > 0))
+                addAssociation(field.getData(), bestField, bestTypeField, maxConf);
+    
         }
         std::cout << std::endl;
     }
@@ -291,7 +246,63 @@ void Fields::compare()
 }
 
 
-void Fields::printFinAss()
+void Fields::checkDate(Field & field)
+{
+    Date date(field.getData());
+    
+    // If it is a date, it is refactorized in format yymmdd.
+    if(date.isDate())
+        field.setData(date.getNewDate());
+}
+
+
+void Fields::addAssociation(std::string dataField, std::string& mrzDataField, std::string& fieldType, float confidence)
+{
+    association ass;
+    ass.dataField = dataField;
+    ass.mrzDataField = mrzDataField;
+    ass.fieldType = fieldType;
+    ass.confidence = confidence;
+
+    if(confidence == 1)
+    {
+        std::cout << "Added in final association: " << dataField << " - " << mrzDataField << std::endl;
+        finAss.push_back(ass);
+    }
+    else
+    {
+        std::cout << "Added in doubtful association: " << dataField << " - " << mrzDataField  << std::endl;
+        doubtfulAss.push_back(ass);
+    }
+}
+
+
+bool Fields::findField(std::string dataField, std::string& mrzDataField, std::string& fieldType, float confidence)
+{
+    bool found = false;
+    for(size_t itDoubtFilds = 0; itDoubtFilds < doubtfulAss.size(); ++itDoubtFilds)
+    {
+        //std::cout << "Doubtful field type: "<< doubtfulAss[itDoubtFilds].fieldType << "\t conf: " << doubtfulAss[itDoubtFilds].confidence << std::endl;
+        if((doubtfulAss[itDoubtFilds].fieldType == fieldType))
+        {
+            found = true;
+            if(doubtfulAss[itDoubtFilds].confidence < confidence)
+            {
+                std::cout << "Prev conf: "<< doubtfulAss[itDoubtFilds].confidence << "\t curr conf: " << confidence << std::endl;
+                //std::cout << "Field to remove: " << doubtfulAss[itDoubtFilds].dataField << "   MRZ Field: " << doubtfulAss[itDoubtFilds].mrzDataField << "   MRZ Field type: " << doubtfulAss[itDoubtFilds].fieldType << std::endl;
+                doubtfulAss.erase(doubtfulAss.begin()+itDoubtFilds);
+                ++itDoubtFilds;
+
+                addAssociation(dataField, mrzDataField, fieldType, confidence);
+                break;
+            }
+        }
+    }
+    return found;
+}
+
+
+void Fields::printAssociations()
 {
     std::cout << "\nAssociations:" << std::endl;
     for(auto ass: finAss)
@@ -304,16 +315,21 @@ void Fields::printFinAss()
 }
 
 
-void Fields::printDoubtfulAss()
+void Fields::printDoubtfulFields()
 {
-    std::cout << "\nDoubtful fields:" << std::endl;
-    for(auto ass: doubtfulAss)
+    if(numDoubtfulFields != 0)
     {
-        std::cout << "\nField: " << ass.fieldType << std::endl;
-        std::cout << "data-field: " << ass.dataField << std::endl;
-        std::cout << "mrz-data-field: " << ass.mrzDataField << std::endl;
-        std::cout << "confidence: " << ass.confidence << std::endl;
+        std::cout << "\nDoubtful fields:" << std::endl;
+        for(auto ass: doubtfulAss)
+        {
+            std::cout << "\nField: " << ass.fieldType << std::endl;
+            std::cout << "data-field: " << ass.dataField << std::endl;
+            std::cout << "mrz-data-field: " << ass.mrzDataField << std::endl;
+            std::cout << "confidence: " << ass.confidence << std::endl;
+        }
     }
+    else
+        std::cout << "No doubtful fields" << std::endl;
 }
 
 
@@ -330,381 +346,3 @@ void Fields::computeConfFinal()
     if(confFinal < confThreshold)
         result = false;
 }
-
-// DA RIGUARDARE!!
-
-void Fields::compareMRZFields(metricsType metricType)
-{
-    for(auto & field: fields)
-    {
-        if((field.getData().size() >= 6) && (field.getData().size() <= 12))
-            checkDate(field);
-        std::string nameFiled = field.getData();
-
-        for(auto it = mrzGeneral.getAllFieldsStruct().begin(); it != mrzGeneral.getAllFieldsStruct().end(); ++it)
-        {
-
-        }
-
-
-
-        std::cout << nameFiled << std::endl;
-        auto search = std::find_if(mrzGeneral.getAllFieldsStruct().begin(), mrzGeneral.getAllFieldsStruct().end(), 
-                       [nameFiled] (const detection& d) { std::cout << d.fieldMRZ << std::endl; return (d.fieldMRZ == nameFiled);});
-        std::cout << "\nField: " << field.getData() << " type of data: " << field.getTypeOfData() << std::endl;
-        if(search != mrzGeneral.getAllFieldsStruct().end())
-        {
-            if (field.getTypeOfData() == "None")
-            {
-                std::cout << "Equal" << std::endl;
-                std::cout << "Field: " << field.getData() << " ";
-                std::cout << " Find: " << search->fieldMRZ << " " << search->typeFieldMRZ << std::endl;
-                field.setTypeOfData(search->typeFieldMRZ);
-                //finalAssociation.emplace(search->typeFieldMRZ, std::make_pair(std::make_pair(field.getData(), search->fieldMRZ), 1.));
-                association ass;
-                ass.dataField = field.getData();
-                ass.mrzDataField = search->fieldMRZ;
-                ass.fieldType = search->typeFieldMRZ;
-                ass.confidence = 1;
-                finAss.push_back(ass);
-                std::cout << "Associated with " << search->fieldMRZ << std::endl;
-                mrzGeneral.removeAllFieldsStruct(search);
-                std::cout << "post remove" << std::endl;
-            } 
-        }
-        //else if(field.getTypeOfData() != "MRZ")
-        //    mostCompatible(field, metricType);   
-    }
-    std::cout << std::endl;
-    
-    for(auto &association: finalAssociation)
-    {
-        if(association.second.second != 1)
-            numDoubtfulFields++;
-    }
-    /*
-    for(auto &association: finAss)
-    {
-        if(association.confidence != 1)
-            numDoubtfulFields++;
-    }
-    */
-    computeConfFinal();
-}
-
-/*
-void Fields::compareMRZFieldsOLD(metricsType metricType)
-{
-    for(auto & field: fields)
-    {
-        if((field.getData().size() >= 6) && (field.getData().size() <= 12))
-            checkDate(field);
-        auto search = mrzGeneral.getAllFieldsInv().find(field.getData());
-        //mrzGeneral.getAllFieldsStruct()
-        std::cout << "\nField: " << field.getData() << std::endl;
-        if((search != mrzGeneral.getAllFieldsInv().end()) && (field.getTypeOfData() == ""))
-        {
-            if(field.getData() == search->first)
-            {
-                std::cout << "Equal" << std::endl;
-                std::cout << "Field: " << field.getData() << " ";
-                std::cout << " Find: " << search->first << " " << search->second << std::endl;
-                field.setTypeOfData(search->second);
-                finalAssociation.emplace(search->second, std::make_pair(std::make_pair(field.getData(), search->first), 1.));
-                association ass;
-                ass.dataField = field.getData();
-                ass.mrzDataField = search->first;
-                ass.fieldType = search->second;
-                ass.confidence = 1;
-                finAss.push_back(ass);
-                std::cout << "Associated with " << search->first << std::endl;
-                mrzGeneral.removeFieldInv(search); //NEW
-            }
-            else
-                mostCompatible(field, metricType);
-            
-        }      
-    }
-    std::cout << std::endl;
-    
-    for(auto &association: finalAssociation)
-    {
-        if(association.second.second != 1)
-            numDoubtfulFields++;
-    }
-    
-    //for(auto &association: finAss)
-    //{
-    //    if(association.confidence != 1)
-    //        numDoubtfulFields++;
-    //}
-    
-    computeConfFinal();
-}
-*/
-
-
-void Fields::checkDate(Field & field)
-{
-    Date date(field.getData());
-    
-    // REQUIRED DATE DETECTED CORRECTLY
-    // If it is a date, it is refactorized in format yymmdd.
-    if(date.isDate())
-        field.setData(date.getNewDate());
-}
-
-
-void Fields::mostCompatible(Field & field, metricsType metricType)
-{
-    float currentComp = 0;
-    std::string bestTypeField = mrzGeneral.getAllFieldsStruct().begin()->typeFieldMRZ;
-    std::string bestField = mrzGeneral.getAllFieldsStruct().begin()->fieldMRZ;
-    //std::string bestField = mrzGeneral.getAllFieldsInv().begin()->second;
-    //std::string bestField = "None";
-    if(metricType == pairs)
-    {
-        float maxComp = 0;
-        for(auto mrzField: mrzGeneral.getAllFieldsStruct())
-        {
-            std::cout << "Field: " << field.getData() << "   MRZ Field: " << mrzField.fieldMRZ;
-            currentComp = countPairs(field.getData(), mrzField.fieldMRZ);
-            std::cout << "   Comp: " << currentComp << std::endl;
-            if(currentComp > maxComp)
-            {
-                maxComp = currentComp;
-                bestTypeField = mrzField.typeFieldMRZ;
-                bestField = mrzField.fieldMRZ;
-            }
-        }
-        float conf = static_cast<float>(maxComp/(field.getData().size()));
-
-        auto search = std::find_if(mrzGeneral.getAllFieldsStruct().begin(), mrzGeneral.getAllFieldsStruct().end(), 
-                       [bestTypeField] (const detection& d) { 
-                          return (d.fieldMRZ == bestTypeField); 
-                       });
-        if(finalAssociation.find(bestTypeField) == finalAssociation.end())
-        {
-            
-            finalAssociation.emplace(bestTypeField, std::make_pair(std::make_pair(field.getData(), search->typeFieldMRZ), conf));
-            //finalAssociation.emplace(bestField, std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf));
-            /*
-            association ass;
-            ass.dataField = field.getData();
-            ass.mrzDataField = search->first;
-            ass.fieldType = search->second;
-            ass.confidence = 1;
-            finAss.push_back(ass);
-            */
-            field.setTypeOfData(bestTypeField);
-            std::cout << "Associated with " << mrzGeneral.getAllFields().find(bestTypeField)->second << std::endl;
-            std::cout << "Associated with " << search->typeFieldMRZ << std::endl;
-        }
-        else if(finalAssociation.find(bestTypeField)->second.second < conf)
-        {
-            std::cout << "Prev conf: "<< finalAssociation.find(bestTypeField)->second.second << "\t curr conf: " << conf << std::endl;
-            //finalAssociation.find(bestField)->second = std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf);
-            finalAssociation.find(bestTypeField)->second = std::make_pair(std::make_pair(field.getData(), search->typeFieldMRZ), conf);
-            //std::cout << "Associated with " << mrzGeneral.getAllFields().find(bestField)->second << std::endl;
-            std::cout << "Associated with " << search->typeFieldMRZ << std::endl;
-        }
-    }
-    else if(metricType == distLev)
-    {
-        float minComp = distanceLevenshtein(field.getData(), (*mrzGeneral.getAllFieldsStruct().begin()).fieldMRZ);
-        //for(auto mrzField: mrzGeneral.getAllFieldsInv())
-        for(auto it = mrzGeneral.getAllFieldsStruct().begin(); it != mrzGeneral.getAllFieldsStruct().end(); ++it)
-        {
-            //std::cout << "Field: " << field.getData() << "   MRZ Field: " << mrzField.first;
-            std::cout << "Field: " << field.getData() << "   MRZ Field: " << (*it).fieldMRZ;
-            //currentComp = distanceLevenshtein(field.getData(), mrzField.first);
-            currentComp = distanceLevenshtein(field.getData(), (*it).fieldMRZ);
-            std::cout << "   Comp: " << currentComp << std::endl;
-            if(currentComp < minComp)
-            {
-                minComp = currentComp;
-                //bestField = mrzField.second;
-                bestTypeField = (*it).typeFieldMRZ;
-                bestField = (*it).fieldMRZ;
-                std::cout << bestTypeField << " new best " << std::endl;
-            }
-            if(currentComp == 0)
-            {
-                //mrzGeneral.removeFieldInv(mrzGeneral.getAllFieldsInv().upper_bound(mrzField.first)); //NEW
-                //mrzGeneral.removeFieldInv((it)); //NEW
-                mrzGeneral.removeAllFieldsStruct(it);
-                break;
-            } 
-        }
-        float conf = 1 - static_cast<float>(minComp/(field.getData().size()));
-        std::cout << "conf: " << conf << std::endl;
-
-        auto searchType = std::find_if(finAss.begin(), finAss.end(), 
-                       [bestTypeField] (const association& a) { 
-                            //std::cout << "mrz f: " << d.typeFieldMRZ << " fieldbest: " << bestField << std::endl; 
-                          return (a.fieldType == bestTypeField); 
-                       });
-        if(searchType == finAss.end()) //!!!!
-        {
-            association ass;
-            ass.dataField = field.getData();
-            ass.mrzDataField = bestField;
-            ass.fieldType = bestTypeField;
-            ass.confidence = conf;
-            finAss.push_back(ass);
-            std::cout << "Associated with " << bestField << std::endl;
-        }
-        else if(searchType->confidence < conf)
-        {
-            std::cout << "Prev conf: "<< searchType->confidence << "\t curr conf: " << conf << std::endl;
-            searchType->dataField = field.getData();
-            searchType->mrzDataField = bestField;
-            searchType->fieldType = bestTypeField;
-            searchType->confidence = conf;
-
-            std::cout << "Associated with " << searchType->mrzDataField << std::endl;
-        }        
-    }
-}
-
-/*
-void Fields::mostCompatibleOLD(Field & field, metricsType metricType)
-{
-    float currentComp = 0;
-    std::string bestField = mrzGeneral.getAllFieldsInv().begin()->second;
-    //std::string bestField = "None";
-    if(metricType == pairs)
-    {
-        float maxComp = 0;
-        for(auto mrzField: mrzGeneral.getAllFieldsInv())
-        {
-            std::cout << "Field: " << field.getData() << "   MRZ Field: " << mrzField.first;
-            currentComp = countPairs(field.getData(), mrzField.first);
-            std::cout << "   Comp: " << currentComp << std::endl;
-            if(currentComp > maxComp)
-            {
-                maxComp = currentComp;
-                bestField = mrzField.second;
-            }
-        }
-        float conf = static_cast<float>(maxComp/(field.getData().size()));
-
-        if(finalAssociation.find(bestField) == finalAssociation.end())
-        {
-            finalAssociation.emplace(bestField, std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf));
-            
-            association ass;
-            ass.dataField = field.getData();
-            ass.mrzDataField = search->first;
-            ass.fieldType = search->second;
-            ass.confidence = 1;
-            finAss.push_back(ass);
-            
-            field.setTypeOfData(bestField);
-            std::cout << "Associated with " << mrzGeneral.getAllFields().find(bestField)->second << std::endl;
-        }
-        else if(finalAssociation.find(bestField)->second.second < conf)
-        {
-            std::cout << "Prev conf: "<< finalAssociation.find(bestField)->second.second << "\t curr conf: " << conf << std::endl;
-            finalAssociation.find(bestField)->second = std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf);
-            std::cout << "Associated with " << mrzGeneral.getAllFields().find(bestField)->second << std::endl;
-        }
-    }
-    else if(metricType == distLev)
-    {
-        float minComp = distanceLevenshtein(field.getData(), (*mrzGeneral.getAllFieldsInv().begin()).first);
-        for(auto mrzField: mrzGeneral.getAllFieldsInv())
-        {
-            std::cout << "Field: " << field.getData() << "   MRZ Field: " << mrzField.first;
-            currentComp = distanceLevenshtein(field.getData(), mrzField.first);
-            std::cout << "   Comp: " << currentComp << std::endl;
-            if(currentComp < minComp)
-            {
-                minComp = currentComp;
-                bestField = mrzField.second;
-            }
-        }
-        float conf = 1 - static_cast<float>(minComp/(field.getData().size()));
-        if(mrzGeneral.getAllFields().find(bestField) != mrzGeneral.getAllFields().end()) //!!!!
-        {
-            if(finalAssociation.find(bestField) == finalAssociation.end())
-            {
-                finalAssociation.emplace(bestField, std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf));
-                field.setTypeOfData(bestField);
-                std::cout << "Associated with " << mrzGeneral.getAllFields().find(bestField)->second << std::endl;
-            }
-            else if(finalAssociation.find(bestField)->second.second < conf)
-            {
-                std::cout << "Prev conf: "<< finalAssociation.find(bestField)->second.second << "\t curr conf: " << conf << std::endl;
-                finalAssociation.find(bestField)->second = std::make_pair(std::make_pair(field.getData(), mrzGeneral.getAllFields().find(bestField)->second), conf);
-                std::cout << "Associated with " << mrzGeneral.getAllFields().find(bestField)->second << std::endl;
-            }
-        }
-        
-    }
-}
-*/
-
-void Fields::printNotFilledAndFilledFields()
-{
-    std::cout << "\nNot filled fields:" << std::endl;
-    for(auto & field: fields)
-        if(field.getTypeOfData() == "")
-            std::cout << "None: " << field.getData() << std::endl;
-
-    std::cout << std::endl;        
-    
-    std::cout << "Filled fields:" << std::endl;
-    for(auto & field: fields)
-        if(field.getTypeOfData() != "")
-            std::cout << field.getTypeOfData() << ": " << field.getData() << std::endl;
-    std::cout << std::endl;
-}
-
-
-void Fields::printAssociations()
-{
-    std::cout << "\nAssociated fields:" << std::endl;
-    for(auto & association: finalAssociation)
-    {
-        std::cout << "\nField: " << association.first << std::endl;
-        std::cout << "data-field: " << association.second.first.first << std::endl;
-        std::cout << "mrz-data-field: " << association.second.first.second << std::endl;
-        std::cout << "confidence: " << association.second.second << std::endl;
-    }
-}
-
-
-void Fields::printDoubtfulFields()
-{
-    std::cout << "\nDoubtful fields:" << std::endl;
-    bool existDubField = false;
-    for(auto & association: finalAssociation)
-    {
-        if(association.second.second != 1.)
-        {
-            std::cout << "\nField: " << association.first << std::endl;
-            std::cout << "data-field: " << association.second.first.first << std::endl;
-            std::cout << "mrz-data-field: " << association.second.first.second << std::endl;
-            std::cout << "confidence: " << association.second.second << std::endl;
-            existDubField = true;
-        }
-    }
-    
-    if(!existDubField)
-        std::cout << "None"<< std::endl;
-}
-
-/*
-void Fields::computeConfFinalOLD()
-{
-    float sum = 0;
-    for(auto & association: finalAssociation)
-        sum += association.second.second;
-    
-    confFinal = sum / finalAssociation.size();
-
-    if(confFinal < confThreshold)
-        result = false;
-}
-*/

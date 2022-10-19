@@ -1,5 +1,14 @@
 #include "../include/Metrics.h"
 
+
+float computeConfidence(metricsType metric, const std::string& s1, const std::string& s2)
+{
+    if(metric == pairs)
+        return confCountPairs(s1, s2);
+    else if(metric == WER)
+        return confWER(s1, s2);
+}
+
 //https://github.com/bangxiang/LevenshteinDistance/blob/master/LevenshteinDistance.hh
 
 int min3(int a, int b, int c) {
@@ -7,10 +16,10 @@ int min3(int a, int b, int c) {
 }
 
 
-int distanceLevenshtein(const std::string& s0, const std::string& s1)
+int computeWER(const std::string& s1, const std::string& s2)
 {
-    unsigned m = s0.size();
-    unsigned n = s1.size();
+    unsigned m = s1.size();
+    unsigned n = s2.size();
     // d is a table with m+1 rows and n+1 columns
     int *d = new int[(m+1) * (n + 1)];
     #define d(i,j)  d[(i)*(n+1) + (j)]
@@ -25,7 +34,7 @@ int distanceLevenshtein(const std::string& s0, const std::string& s1)
 
     for( unsigned j = 1; j <= n; ++j) {
       for (unsigned i = 1; i <= m; ++i) {
-            if (s0[i - 1] == s1[j - 1]) {
+            if (s1[i - 1] == s2[j - 1]) {
                 d(i, j) = d(i-1, j-1);
             } else {
                 d(i, j) = min3(
@@ -38,11 +47,19 @@ int distanceLevenshtein(const std::string& s0, const std::string& s1)
     }
     int dist = d(m,n);
     delete [] d;
+
     return dist;
 }
 
+float confWER(const std::string& s1, const std::string& s2)
+{
+    int error = computeWER(s1, s2);
+    int maxLenght = std::max(s1.size(), s2.size());
+    return 1 - static_cast<float>(error)/static_cast<float>(maxLenght);
+}
 
-int countPairs(std::string s1, std::string s2)
+
+int countPairs(const std::string& s1, const std::string& s2)
 {
     extern std::unordered_map<std::string, unsigned> inverse_dictionary;
 
@@ -71,4 +88,11 @@ int countPairs(std::string s1, std::string s2)
         count += (std::min(freq1[i], freq2[i]));
  
     return count;
+}
+
+float confCountPairs(const std::string& s1, const std::string& s2)
+{
+    int count = countPairs(s1, s2);
+    int maxLenght = std::max(s1.size(), s2.size());
+    return static_cast<float>(count)/static_cast<float>(maxLenght);
 }

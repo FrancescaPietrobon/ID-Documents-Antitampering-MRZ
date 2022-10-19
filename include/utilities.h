@@ -13,6 +13,8 @@
 #include "XMLBoxes.h"
 #include "ModelBoxes.h"
 #include "Anchors.h"
+#include "Field.h"
+#include "Fields.h"
 
 typedef std::vector<std::vector<float>> matrix2D;
 

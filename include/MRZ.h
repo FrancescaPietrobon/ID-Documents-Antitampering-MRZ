@@ -21,12 +21,9 @@ class MRZ
     protected:
         std::vector<std::vector<Character>> mrz;
         int numLines;
-        std::multimap<std::string, std::string> allFieldsInv;
-        std::vector<detection> allFieldsStruct;
+        std::vector<detection> allFields;
 
-        std::multimap<std::string, std::string> allFields;
         std::string docType;
-        std::string passportType;
         std::string state;
         std::string surname;
         std::string name;
@@ -47,15 +44,11 @@ class MRZ
         MRZ() = default;
         void printMRZ();
         void printMRZFields();
-        std::multimap<std::string, std::string> getAllFieldsInv();
-        void removeField(std::multimap<std::string, std::string>::iterator);
-        void removeFieldInv(std::multimap<std::string, std::string>::iterator);
-        void removeAllFieldsStruct(std::vector<detection>::iterator);
+        void removeAllFields(std::vector<detection>::iterator);
 
         void assignMRZ(std::vector<std::vector<Character>>, int);
         void computeFullMRZ();
-        std::multimap<std::string, std::string> getAllFields();
-        std::vector<detection> getAllFieldsStruct();
+        std::vector<detection> getAllFields();
 };
 
 

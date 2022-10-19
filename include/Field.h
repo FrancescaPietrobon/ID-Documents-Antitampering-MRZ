@@ -17,9 +17,6 @@ class Field
         float meanY = 0;
         std::string data = "";
         bool partOfMRZ = false;
-        std::string typeOfData = "None";
-
-        bool operator == (const Field & other) const;
 
     public:
         void setField(float x, Character point);
@@ -29,10 +26,8 @@ class Field
         void computeMeanY();
         void computeOrderedCharacters();
         void setData(std::string);
-        void setTypeOfData(std::string);
         std::vector<Character> getCharacters();
         float getMeanY();
-        std::string getTypeOfData();
         std::string getData();        
 };
 

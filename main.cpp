@@ -54,7 +54,7 @@ int main()
     Document document(imagePath, FEATURE_WIDTH, FEATURE_HEIGHT, DENOISE_PARAM);
 
     // Choose the metric type (pairs or distLev)
-    metricsType metric = distLev;
+    metricsType metric = WER;
     
 
     // Predict from XML boxes
@@ -94,37 +94,18 @@ int main()
     if(fields.findMRZ())
     {
         fields.printOrderedFields();
-        fields.compare();
-        fields.printFinAss();
-        fields.printDoubtfulAss();
-        //fields.compareMRZFields(metric);
-
-        //fields.printNotFilledAndFilledFields();
-        //fields.printAssociations();
-
-
-        // Useful outputs
-        
-        std::cout << "\n\nFINAL OUTPUT" <<std::endl;
-
-        std::cout << "\nImage name: " << imagePath << std::endl;
-
-        std::cout << "\nResult: " << std::boolalpha << fields.getResult() << std::endl;
-        std::cout << "\nConfidence threshold: " << CONF_THRESHOLD << std::endl;
-        std::cout << "\nConfidence: " << fields.getConfFinal() << std::endl;
-        fields.printDoubtfulAss();
-    
-        std::cout << "\nNumber of doubtful fields: " << fields.getNumDoubtfulFields() << std::endl;
-        
+        fields.compareMRZFields(metric);
+        fields.printAssociations();
+        fields.printDoubtfulFields();
 
         // Compact output
-        //OcrMrzResponseResult res = fillResponse(imagePath, fields, CONF_THRESHOLD);
+        OcrMrzResponseResult res = fillResponse(imagePath, fields, CONF_THRESHOLD);
+        printResponse(res);
     }
     
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
     std::cout << "\nTime taken by the complete application: " << duration.count() << " milliseconds" << std::endl;
-    
 
     return 0;
 }

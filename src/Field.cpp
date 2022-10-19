@@ -21,16 +21,6 @@ bool Field::getIsPartOfMRZ()
     return partOfMRZ;
 }
 
-void Field::setTypeOfData(std::string t)
-{
-    typeOfData = t;
-}
-
-std::string Field::getTypeOfData()
-{
-    return typeOfData;
-}
-
 void Field::setData(std::string d)
 {
     data = d;
@@ -69,10 +59,4 @@ void Field::computeOrderedCharacters()
 {
     for(auto & character: field)
         orderedCharacters.push_back(character.second);
-}
-
-
-bool Field::operator == (const Field & other) const
-{
-    
 }
