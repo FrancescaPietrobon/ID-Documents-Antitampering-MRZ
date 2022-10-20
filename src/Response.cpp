@@ -45,12 +45,15 @@ void printResponse(OcrMrzResponseResult res)
     std::cout << "\nResult: " << std::boolalpha << res.result << std::endl;
     std::cout << "\nConfidence threshold: " << res.confidence_threshold << std::endl;
     std::cout << "\nConfidence: " << res.confidence << std::endl;
-    std::cout << "\nNumber of doubtful fields: " << res.doubtful_fields->doubdtful_fields_size << std::endl;
-    std::cout << "\nDoubtful fields: "<< std::endl;
-    
-    for(size_t i = 0; i < res.doubtful_fields->doubdtful_fields_size; ++i)
+    if(res.confidence > res.confidence_threshold)
     {
-        std::cout << "\ndata-field: " << res.doubtful_fields->fields->data_field << std::endl;
-        std::cout << "mrz-data-field: " << res.doubtful_fields->fields->mrz_data_field << std::endl;
-    } 
+        std::cout << "\nNumber of doubtful fields: " << res.doubtful_fields->doubdtful_fields_size << std::endl;
+        std::cout << "\nDoubtful fields: "<< std::endl;
+        
+        for(size_t i = 0; i < res.doubtful_fields->doubdtful_fields_size; ++i)
+        {
+            std::cout << "\ndata-field: " << res.doubtful_fields->fields[i].data_field << std::endl;
+            std::cout << "mrz-data-field: " << res.doubtful_fields->fields[i].mrz_data_field << std::endl;
+        } 
+    }
 }

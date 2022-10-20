@@ -30,19 +30,23 @@ std::vector<association> Fields::getDoubtfulFields()
 void Fields::fillFields()
 {
     Field field;
+    size_t countLower = 0;
     for(int i = 0; i <= numClusters; ++i)
     {
+        countLower = 0;
         for(size_t j = 0; j < originalCluster.size(); ++j)
         {
             if(originalCluster[j].getCluster() == i)
             {
                 field.setField(originalCluster[j].getX(), originalCluster[j]);
-                if(!field.getIsPartOfMRZ() && originalCluster[j].getLabel() == "<")
-                {
-                    field.setIsPartOfMRZ(true);
-                    ++numLineOfMRZ;
-                }
+                if(originalCluster[j].getLabel() == "<")
+                    ++countLower;
             }
+        }
+        if(countLower > 3) //the treshold of 3 "<" can be changed
+        {
+            field.setIsPartOfMRZ(true);
+            ++numLineOfMRZ;
         }
         fields.push_back(field);
         field.clear();
