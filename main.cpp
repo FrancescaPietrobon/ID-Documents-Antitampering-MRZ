@@ -33,7 +33,7 @@
 #define THRESHOLD_NMS 0.005    //0.005
 
 // DBSCAN params:
-#define EPS 27 // it depends on the image
+#define EPS 10 // it depends on the image
 #define MIN_PTS 1
 
 typedef std::vector<std::vector<float>> matrix2D;
@@ -57,7 +57,6 @@ int main()
     //savePredictionImage(document.getInputImage(), XMLResult.first, XMLResult.second, "../pred_xml.jpg");
 
     // Predict from model
-
     std::string networkPath = "../models/Frozen_graph_lnorm_5e6_156img.pb";
     
     std::pair<matrix2D, std::vector<float>> modelResult = predictFromModel(document, networkPath, NUM_CLASSES, THRESHOLD_IOU, THRESHOLD_NMS);

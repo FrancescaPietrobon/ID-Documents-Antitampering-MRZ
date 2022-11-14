@@ -51,6 +51,8 @@ void Character::setCluster(int cl)
 
 float Character::distance(Character point)
 {
-    return std::sqrt((xCenter - point.getX()) * (xCenter - point.getX()) +
+    return std::sqrt(0.05 * (xCenter - point.getX()) * (xCenter - point.getX()) +
                      (yCenter - point.getY()) * (yCenter - point.getY()));
+    //return std::sqrt((xCenter - point.getX()) * (xCenter - point.getX()) +
+    //                 (yCenter - point.getY()) * (yCenter - point.getY()));
 }
