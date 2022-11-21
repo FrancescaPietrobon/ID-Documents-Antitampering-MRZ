@@ -1,13 +1,13 @@
-#include "../include/MRZ/MRVB.h"
+#include "../../include/MRZ/MRVA.h"
 
 
-MRVB::MRVB(std::vector<std::vector<Character>> characters):
+MRVA::MRVA(std::vector<std::vector<Character>> characters):
     MRZ(characters){}
 
 
-void MRVB::printMRZFields()
+void MRVA::printMRZFields()
 {
-    std::cout << "\nMRZ fields detected in MRVB MRZ:" << std::endl;
+    std::cout << "\nMRZ fields detected in MRVA MRZ:" << std::endl;
     std::cout << "Document type: " << docType << std::endl;
     std::cout << "State: " << state << std::endl;
     std::cout << "Surname: " << surname << std::endl;
@@ -24,7 +24,7 @@ void MRVB::printMRZFields()
 }
 
 
-void MRVB::extractFields()
+void MRVA::extractFields()
 {
     detection det;
 
@@ -43,7 +43,7 @@ void MRVB::extractFields()
     allFields.push_back(det);
 
     int i = 5;
-    for(size_t j = i; j < 36; ++j)
+    for(size_t j = i; j < 44; ++j)
     {
         if(mrz[0][j].getLabel() == "<" && mrz[0][j-1].getLabel() == "<")
         {
@@ -59,7 +59,7 @@ void MRVB::extractFields()
     det.typeFieldMRZ = "surname";
     allFields.push_back(det);
 
-    for(size_t j = i; j < 36; ++j)
+    for(size_t j = i; j < 44; ++j)
     {
         if(mrz[0][j].getLabel() == "<" && mrz[0][j-1].getLabel() == "<")
             break;
@@ -112,7 +112,7 @@ void MRVB::extractFields()
         optionalData = "NULL";
     else
     {
-        for(size_t i = 28; i < 36; ++i)
+        for(size_t i = 28; i < 44; ++i)
         {
             if(mrz[1][i].getLabel() == "<" && mrz[1][i-1].getLabel() == "<")
                 break;

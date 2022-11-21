@@ -1,4 +1,4 @@
-#include "../include/MRZ/TD3.h"
+#include "../../include/MRZ/TD3.h"
 
 
 TD3::TD3(std::vector<std::vector<Character>> characters):
