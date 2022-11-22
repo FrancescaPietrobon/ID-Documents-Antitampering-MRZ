@@ -1,3 +1,6 @@
-build/
-models/
 .vscode/
+build/
+antitampering_mrz/models/
+antitampering_mrz/data/
+antitampering_mrz/build/
+test_package/build/

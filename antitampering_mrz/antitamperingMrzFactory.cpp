@@ -3,9 +3,9 @@
 int main()
 {
 
-    std::string networkPath = "../models/Frozen_graph_lnorm_5e6_156img.pb";
+    std::string networkPath = "../antitampering_mrz/models/Frozen_graph_lnorm_5e6_156img.pb";
 
-    std::string imagePath = "../data/AFG_AO_01001_FRONT.JPG"; //TD3 eps = 27   IOU = 0.3  NMS = 0.005 P
+    std::string imagePath = "../antitampering_mrz/data/AFG_AO_01001_FRONT.JPG"; //TD3 eps = 27   IOU = 0.3  NMS = 0.005 P
     //std::string imagePath = "../data/JPN_AO_02003_FRONT.jpg"; //TD3 eps = 27  IOU = 0.06  NMS = 0.005 NP
     //std::string imagePath = "../data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30  IOU = 0.05  NMS = 0.01 NF
     
