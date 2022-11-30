@@ -51,10 +51,11 @@ class AntitamperingMrzEuclDist : public AntitamperingMrz {
     public:
         AntitamperingMrzEuclDist(const std::string& OCRModelFilename);
         virtual OcrMrzResponseResult check(const AntitamperingMrzData& data);
+        std::pair<matrix2D, std::vector<float>> predictFromModel(Document &document, int numClasses, float thresholdIOU, float thresholdNMS);
     protected:
         std::string modelPath;
         std::pair<matrix2D, std::vector<float>> predictFromXML(Document &document, const char* XMLPath);
-        std::pair<matrix2D, std::vector<float>> predictFromModel(Document &document, int numClasses, float thresholdIOU, float thresholdNMS);
+        
 };
 
 #endif /* _ANTITAMPERING_MRZ_EUCLDIST_H_ */

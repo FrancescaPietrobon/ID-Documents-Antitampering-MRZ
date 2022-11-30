@@ -51,7 +51,7 @@ OcrMrzResponseResult AntitamperingMrzEuclDist::check(const AntitamperingMrzData&
     std::string imagePath = data.imageName;
 
     Document document(imagePath, FEATURE_WIDTH, FEATURE_HEIGHT, DENOISE_PARAM);
-    cv::Mat preprocessedImage = document.preprocessing(imagePath, DENOISE_PARAM);
+    cv::Mat preprocessedImage = document.preprocessing();
 
     // Choose the metric type (pairs or WER)
     metricsType metric = WER;
@@ -63,7 +63,7 @@ OcrMrzResponseResult AntitamperingMrzEuclDist::check(const AntitamperingMrzData&
 
     // Predict from model  
     std::pair<matrix2D, std::vector<float>> modelResult = predictFromModel(document, NUM_CLASSES, THRESHOLD_IOU, THRESHOLD_NMS);
-    
+
     // Aggregate boxes using DBSCAN
     SPDLOG_INFO("Run DBSCAN");
     DBSCAN cluster(EPS, modelResult);
@@ -92,7 +92,7 @@ OcrMrzResponseResult AntitamperingMrzEuclDist::check(const AntitamperingMrzData&
         SPDLOG_INFO("Check MRZ  ends");
         return res;
     }
-*/
+    */
     OcrMrzResponseResult res;
     SPDLOG_INFO("Check MRZ ends");
     return res;

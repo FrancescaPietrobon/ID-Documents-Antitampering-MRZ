@@ -4,7 +4,7 @@ Document::Document(const std::string path, const int w, const int h, const float
     imagePath(path), width(w), height(h), denoiseParam(dp){}
 
 
-cv::Mat Document::preprocessing(std::string imagePath, float denoiseParam)
+cv::Mat Document::preprocessing()
 {
     inputImage = cv::imread(imagePath);
     float imgWidth = inputImage.size[1];
@@ -16,11 +16,6 @@ cv::Mat Document::preprocessing(std::string imagePath, float denoiseParam)
     cv::resize(imagePreprocessed, imagePreprocessed, cv::Size(width, height), 0, 0, cv::INTER_CUBIC);
 
     return imagePreprocessed;
-}
-
-cv::Mat Document::getBlob()
-{
-    return blob;
 }
 
 cv::Mat Document::getDocument()

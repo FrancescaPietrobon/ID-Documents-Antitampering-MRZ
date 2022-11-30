@@ -24,8 +24,7 @@ class Document
 
     public:
         Document(const std::string, const int, const int, const float);
-        cv::Mat preprocessing(std::string InputImage, float denoiseParam);
-        cv::Mat getBlob();
+        cv::Mat preprocessing();
         cv::Mat getDocument();
         cv::Mat getInputImage();
         float getXAlter();
