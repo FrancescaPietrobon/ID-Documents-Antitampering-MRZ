@@ -19,8 +19,8 @@ make
 To extract the prediction:
 
     
-    ./antitampering_mrz/app
+    ./app
     
 And to make unit tests:
 
-    ./test_package/TestRunner
+    ./TestRunner

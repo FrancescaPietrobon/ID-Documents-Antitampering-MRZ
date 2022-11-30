@@ -1,0 +1,37 @@
+#ifndef _DATE_H_
+#define _DATE_H_
+
+#include <iostream>
+#include <string>
+#include <map>
+#include "utilities.h"
+
+
+class Date
+{
+    private:
+        std::string data;
+        std::string possibleMonth = "None";
+        size_t index = 0;
+        bool possibleDate = "None";
+        std::string year = "None";
+        std::string month = "None";
+        std::string day = "None";
+        std::string newDate;
+        bool dayOk();
+        bool monthOk();
+        bool checkNumericDate();
+        bool checkAlphanumericDate();
+        void findMonth();
+        void searchMonth(std::string field, std::map<std::string, std::string> months);
+
+    public:
+        Date(std::string d);
+        bool isDate();
+        std::string getNewDate();     
+};
+
+
+
+
+#endif
