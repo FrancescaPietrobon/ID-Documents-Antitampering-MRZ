@@ -17,10 +17,10 @@
 
 class AntitamperingMrzFactory {
     public: 
-        std::shared_ptr<AntitamperingMrz> initialize(std::string& modelPath);
+        static std::shared_ptr<AntitamperingMrz> createAntitamperingMrz(const std::string& modelPath);
 };
 
-std::shared_ptr<AntitamperingMrz> AntitamperingMrzFactory::initialize(std::string& modelPath)
+std::shared_ptr<AntitamperingMrz> AntitamperingMrzFactory::createAntitamperingMrz(const std::string& modelPath)
 {
     SPDLOG_INFO("Loading model");
     char* antitamperingMrzTypeEnvVar = std::getenv(ANTITAMPERING_MRZ_TYPE_ENV_VAR);

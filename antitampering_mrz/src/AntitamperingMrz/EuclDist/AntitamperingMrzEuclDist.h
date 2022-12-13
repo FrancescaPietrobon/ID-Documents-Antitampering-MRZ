@@ -50,7 +50,7 @@ typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 class AntitamperingMrzEuclDist : public AntitamperingMrz {
     public:
         AntitamperingMrzEuclDist(const std::string& OCRModelFilename);
-        virtual OcrMrzResponseResult check(const AntitamperingMrzData& data);
+        virtual OcrMrzResultDetail check(const AntitamperingMrzData& data);
         std::pair<matrix2D, std::vector<float>> predictFromModel(Document &document, int numClasses, float thresholdIOU, float thresholdNMS);
     protected:
         std::string modelPath;

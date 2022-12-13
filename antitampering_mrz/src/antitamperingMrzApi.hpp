@@ -11,6 +11,13 @@
 
 // RESPONSE
 
+struct Coordinates {
+    float top_left_x;
+    float top_left_y;
+    float bottom_right_x;
+    float bottom_right_y;
+};
+
 /*
 struct IncorrectDataField {
     char* data_field;
@@ -23,7 +30,7 @@ struct DoubtfulFields {
     size_t doubdtful_fields_size;
 };
 
-struct OcrMrzResponseResult {
+struct OcrMrzResultDetail {
     char* image;
     bool result;
     float confidence_threshold;
@@ -35,7 +42,7 @@ struct OcrMrzResponseResult {
 
 struct OcrMrzResponse {
     bool result;
-    OcrMrzResponseResult* result_details;
+    OcrMrzResultDetail* result_details;
     size_t result_details_size;
 };
 */
@@ -44,8 +51,10 @@ struct OcrMrzResponse {
 
 extern "C" {
 
-    OcrMrzResponse process(char **arr_image, char **arr_content_type, char **arr_content_base64, char **arr_json, float* confidence_threshold, size_t arr_size);
+    OcrMrzResponse process(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, size_t arr_size, float* confidence_threshold, char* algorithm_type);
 
 } // extern "C"
+
+OcrMrzResponse process(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, float* arr_confidence_threshold, size_t arr_size, std::shared_ptr<AntitamperingMrz> detector);
 
 #endif

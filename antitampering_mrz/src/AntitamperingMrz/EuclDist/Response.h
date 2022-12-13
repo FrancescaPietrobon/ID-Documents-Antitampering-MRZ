@@ -21,7 +21,7 @@ struct DoubtfulFields {
     size_t doubdtful_fields_size;
 };
 
-struct OcrMrzResponseResult {
+struct OcrMrzResultDetail {
     char* image;
     bool result;
     float confidence_threshold;
@@ -33,13 +33,13 @@ struct OcrMrzResponseResult {
 
 struct OcrMrzResponse {
     bool result;
-    OcrMrzResponseResult* result_details;
+    OcrMrzResultDetail* result_details;
     size_t result_details_size;
 };
 
 char* convertStringtoCharPtr(std::string str);
 
-OcrMrzResponseResult fillResponse(std::string image, Fields fields, float confidence_threshold);
-void printResponse(OcrMrzResponseResult res);
+OcrMrzResultDetail fillResponse(std::string image, Fields fields, float confidence_threshold);
+void printResponse(OcrMrzResultDetail res);
 
 #endif

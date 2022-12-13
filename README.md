@@ -23,4 +23,4 @@ To extract the prediction:
     
 And to make unit tests:
 
-    ./TestRunner
+    ./TesteExecutable

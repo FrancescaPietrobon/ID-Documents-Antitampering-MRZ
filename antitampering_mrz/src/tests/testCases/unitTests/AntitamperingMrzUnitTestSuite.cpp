@@ -9,7 +9,7 @@
 class MockAntitamperingMrz : public AntitamperingMrz
 {
     public:
-        MOCK_METHOD(OcrMrzResponseResult, check, (const AntitamperingMrzData& data), (override));
+        MOCK_METHOD(OcrMrzResultDetail, check, (const AntitamperingMrzData& data), (override));
 };
 */
 

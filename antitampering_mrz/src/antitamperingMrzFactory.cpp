@@ -15,7 +15,7 @@ int main()
     document.confidenceThreshold = confidenceThreshold;
 
     AntitamperingMrzFactory antitamperingMrzFactory;
-    std::shared_ptr<AntitamperingMrz> antitamperingMrz = antitamperingMrzFactory.initialize(networkPath);
+    std::shared_ptr<AntitamperingMrz> antitamperingMrz = antitamperingMrzFactory.createAntitamperingMrz(networkPath);
     antitamperingMrz->check(document);
     return 0;
 }

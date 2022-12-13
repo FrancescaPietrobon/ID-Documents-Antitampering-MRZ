@@ -9,9 +9,9 @@ char* convertStringtoCharPtr(std::string str)
 } 
 
 
-OcrMrzResponseResult fillResponse(std::string image, Fields fields, float confidence_threshold)
+OcrMrzResultDetail fillResponse(std::string image, Fields fields, float confidence_threshold)
 {
-    OcrMrzResponseResult response;
+    OcrMrzResultDetail response;
     std::vector<association> doubtfulFields = fields.getDoubtfulFields();
     response.image = convertStringtoCharPtr(image);
     response.result = fields.getResult();
@@ -36,7 +36,7 @@ OcrMrzResponseResult fillResponse(std::string image, Fields fields, float confid
     return response;
 }
 
-void printResponse(OcrMrzResponseResult res)
+void printResponse(OcrMrzResultDetail res)
 {
     std::cout << "\n\nFINAL RESPONSE" <<std::endl;
 

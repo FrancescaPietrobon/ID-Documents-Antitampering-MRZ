@@ -16,7 +16,7 @@ class AntitamperingMrz {
     public:
         AntitamperingMrz(){};
         virtual ~AntitamperingMrz(){};
-        virtual OcrMrzResponseResult check(const AntitamperingMrzData& data) = 0;
+        virtual OcrMrzResultDetail check(const AntitamperingMrzData& data) = 0;
 };
 
 #endif /* _ANTITAMPERING_MRZ_H_ */

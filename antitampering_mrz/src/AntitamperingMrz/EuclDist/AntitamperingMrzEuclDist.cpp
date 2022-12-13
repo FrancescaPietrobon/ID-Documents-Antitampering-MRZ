@@ -44,7 +44,7 @@ std::pair<matrix2D, std::vector<float>> AntitamperingMrzEuclDist::predictFromMod
 }
 
 
-OcrMrzResponseResult AntitamperingMrzEuclDist::check(const AntitamperingMrzData& data)
+OcrMrzResultDetail AntitamperingMrzEuclDist::check(const AntitamperingMrzData& data)
 {
     SPDLOG_INFO("Check MRZ starts");
 
@@ -87,13 +87,13 @@ OcrMrzResponseResult AntitamperingMrzEuclDist::check(const AntitamperingMrzData&
         fields.printDoubtfulFields();
 
         // Compact output
-        OcrMrzResponseResult res = fillResponse(imagePath, fields, CONF_THRESHOLD);
+        OcrMrzResultDetail res = fillResponse(imagePath, fields, CONF_THRESHOLD);
         printResponse(res);
         SPDLOG_INFO("Check MRZ  ends");
         return res;
     }
     */
-    OcrMrzResponseResult res;
+    OcrMrzResultDetail res;
     SPDLOG_INFO("Check MRZ ends");
     return res;
 }
