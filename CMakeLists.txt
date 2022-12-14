@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(BINARY ${CMAKE_PROJECT_NAME})
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug) #Release
 endif()
@@ -47,7 +49,7 @@ target_link_libraries(antitampering_mrz PRIVATE
 )
 
 add_executable(app)
-target_sources(app PRIVATE antitampering_mrz/src/antitamperingMrzFactory.cpp)
+target_sources(app PRIVATE antitampering_mrz/src/antitampering/mrz/antitamperingMrzFactory.cpp)
 
 target_link_libraries(app PRIVATE antitampering_mrz)
 

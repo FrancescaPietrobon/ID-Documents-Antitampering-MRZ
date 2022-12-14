@@ -1,6 +1,6 @@
 #include "AntitamperingMrzUnitTestSuite.hpp"
-#include "src/AntitamperingMrz/EuclDist/Document.h"
-#include "src/AntitamperingMrz/EuclDist/AntitamperingMrzEuclDist.h"
+#include "src/antitampering/mrz/AntitamperingMrz/EuclDist/Document.h"
+#include "src/antitampering/mrz/AntitamperingMrz/EuclDist/AntitamperingMrzEuclDist.h"
 
 #include <opencv2/core/utility.hpp>
 #include <spdlog/cfg/env.h>
@@ -27,7 +27,7 @@ class AntitamperingMrzTestFixture : public ::testing::Test {
 };
 
 
-TEST_F(AntitamperingMrzTestFixture, imagePreprocessingUnitTest)
+GTEST_TEST_F(AntitamperingMrzTestFixture, imagePreprocessingUnitTest)
 {
     //Set Up
     std::string imagePath = "testData/images/AFG_AO_01001_FRONT.JPG";
@@ -43,7 +43,7 @@ TEST_F(AntitamperingMrzTestFixture, imagePreprocessingUnitTest)
 
 
 
-TEST_F(AntitamperingMrzTestFixture, predictFromModelUnitTest)
+GTEST_TEST_F(AntitamperingMrzTestFixture, predictFromModelUnitTest)
 {
     //Set Up
     std::string networkPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/antitampering_mrz/models/Frozen_graph_lnorm_5e6_156img.pb";

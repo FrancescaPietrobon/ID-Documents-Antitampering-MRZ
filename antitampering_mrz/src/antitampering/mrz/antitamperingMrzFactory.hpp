@@ -3,7 +3,7 @@
 
 #include "AntitamperingMrz/AntitamperingMrz.h"
 #include "AntitamperingMrz/EuclDist/AntitamperingMrzEuclDist.h"
-#include "exceptions/Exceptions.hpp"
+#include "src/antitampering/mrz/exceptions/Exceptions.hpp"
 //#include <json/writer.h>
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE

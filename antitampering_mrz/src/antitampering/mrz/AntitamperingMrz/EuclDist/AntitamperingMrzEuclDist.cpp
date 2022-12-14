@@ -1,5 +1,5 @@
 #include "AntitamperingMrzEuclDist.h"
-#include "src/exceptions/Exceptions.hpp"
+#include "src/antitampering/mrz/exceptions/Exceptions.hpp"
 
 #include "opencv2/highgui/highgui_c.h"
 
