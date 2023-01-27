@@ -4,7 +4,6 @@
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #define SPDLOG_FMT_EXTERNAL 1
 #include <spdlog/fmt/fmt.h>
-//#include <spdlog/spdlog.h>
 
 int main(int argc, char **argv) {
     setenv("OPENCV_THREADS_NUM", "1" ,1);

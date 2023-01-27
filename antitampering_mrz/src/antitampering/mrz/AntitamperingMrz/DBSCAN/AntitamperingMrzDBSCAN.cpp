@@ -1,4 +1,4 @@
-#include "AntitamperingMrzEuclDist.h"
+#include "AntitamperingMrzDBSCAN.h"
 #include "src/antitampering/mrz/exceptions/Exceptions.hpp"
 
 #include "opencv2/highgui/highgui_c.h"
@@ -7,14 +7,14 @@
 #include <spdlog/spdlog.h>
 
 
-AntitamperingMrzEuclDist::AntitamperingMrzEuclDist(const std::string& OCRModelFilename): AntitamperingMrz()
+AntitamperingMrzDBSCAN::AntitamperingMrzDBSCAN(const std::string& OCRModelFilename): AntitamperingMrz()
 {
     SPDLOG_INFO("Creating AntitamperingMrz Object");
     modelPath = OCRModelFilename;
 }
 
 
-std::pair<matrix2D, std::vector<float>> AntitamperingMrzEuclDist::predictFromXML(Document & document, const char* XMLPath)
+std::pair<matrix2D, std::vector<float>> AntitamperingMrzDBSCAN::predictFromXML(Document & document, const char* XMLPath)
 {
     XMLBoxes xmlBoxes(document, XMLPath);
     xmlBoxes.extractBoxes();
@@ -23,7 +23,7 @@ std::pair<matrix2D, std::vector<float>> AntitamperingMrzEuclDist::predictFromXML
 }
 
 
-std::pair<matrix2D, std::vector<float>> AntitamperingMrzEuclDist::predictFromModel(Document & document, int numClasses, float thresholdIOU, float thresholdNMS)
+std::pair<matrix2D, std::vector<float>> AntitamperingMrzDBSCAN::predictFromModel(Document & document, int numClasses, float thresholdIOU, float thresholdNMS)
 {
     SPDLOG_INFO("Load network");
     cv::dnn::Net network = cv::dnn::readNetFromTensorflow(modelPath);
@@ -44,7 +44,7 @@ std::pair<matrix2D, std::vector<float>> AntitamperingMrzEuclDist::predictFromMod
 }
 
 
-OcrMrzResultDetail AntitamperingMrzEuclDist::check(const AntitamperingMrzData& data)
+OcrMrzResultDetail AntitamperingMrzDBSCAN::check(const AntitamperingMrzData& data)
 {
     SPDLOG_INFO("Check MRZ starts");
 

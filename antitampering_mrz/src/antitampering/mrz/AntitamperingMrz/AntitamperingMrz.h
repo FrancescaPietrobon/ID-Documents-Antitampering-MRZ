@@ -3,7 +3,7 @@
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include <spdlog/spdlog.h>
-#include "EuclDist/Response.h"
+#include "DBSCAN/Response.h"
 
 struct AntitamperingMrzData {
   char* imageName;

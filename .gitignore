@@ -2,3 +2,8 @@
 build/
 antitampering_mrz/models/
 antitampering_mrz/data/
+CMakeUserPresents.json
+conan.lock
+conanbuildinfo.txt
+conaninfo.txt
+graph_info.json

@@ -1,5 +1,5 @@
-#ifndef _ANTITAMPERING_MRZ_EUCLDIST_H_
-#define _ANTITAMPERING_MRZ_EUCLDIST_H_
+#ifndef _ANTITAMPERING_MRZ_DBSCAN_H_
+#define _ANTITAMPERING_MRZ_DBSCAN_H_
 
 #include "../AntitamperingMrz.h"
 
@@ -47,9 +47,9 @@ typedef std::vector<std::vector<float>> matrix2D;
 typedef std::vector<std::vector<std::vector<float>>> matrix3D;
 typedef std::vector<std::vector<std::vector<std::vector<float>>>> matrix4D;
 
-class AntitamperingMrzEuclDist : public AntitamperingMrz {
+class AntitamperingMrzDBSCAN : public AntitamperingMrz {
     public:
-        AntitamperingMrzEuclDist(const std::string& OCRModelFilename);
+        AntitamperingMrzDBSCAN(const std::string& OCRModelFilename);
         virtual OcrMrzResultDetail check(const AntitamperingMrzData& data);
         std::pair<matrix2D, std::vector<float>> predictFromModel(Document &document, int numClasses, float thresholdIOU, float thresholdNMS);
     protected:
@@ -58,4 +58,4 @@ class AntitamperingMrzEuclDist : public AntitamperingMrz {
         
 };
 
-#endif /* _ANTITAMPERING_MRZ_EUCLDIST_H_ */
+#endif /* _ANTITAMPERING_MRZ_DBSCAN_H_ */

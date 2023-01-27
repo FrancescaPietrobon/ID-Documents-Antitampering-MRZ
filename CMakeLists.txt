@@ -49,7 +49,9 @@ target_link_libraries(antitampering_mrz PRIVATE
 )
 
 add_executable(app)
-target_sources(app PRIVATE antitampering_mrz/src/antitampering/mrz/antitamperingMrzFactory.cpp)
+#target_sources(app PRIVATE antitampering_mrz/src/antitampering/mrz/antitamperingMrzFactory.cpp)
+#target_sources(app PRIVATE antitampering_mrz/src/appFactory.cpp)
+target_sources(app PRIVATE antitampering_mrz/src/ocr/OcrFactory.cpp)
 
 target_link_libraries(app PRIVATE antitampering_mrz)
 

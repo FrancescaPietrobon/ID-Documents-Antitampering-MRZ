@@ -1,6 +1,6 @@
 #include "AntitamperingMrzUnitTestSuite.hpp"
-#include "src/antitampering/mrz/AntitamperingMrz/EuclDist/Document.h"
-#include "src/antitampering/mrz/AntitamperingMrz/EuclDist/AntitamperingMrzEuclDist.h"
+#include "src/antitampering/mrz/AntitamperingMrz/DBSCAN/Document.h"
+#include "src/antitampering/mrz/AntitamperingMrz/DBSCAN/AntitamperingMrzDBSCAN.h"
 
 #include <opencv2/core/utility.hpp>
 #include <spdlog/cfg/env.h>
@@ -52,7 +52,7 @@ GTEST_TEST_F(AntitamperingMrzTestFixture, predictFromModelUnitTest)
     Document document(imagePath, 800, 800, 10);
     cv::Mat imagePreprocessed = document.preprocessing();
 
-    AntitamperingMrzEuclDist antitampering(networkPath);
+    AntitamperingMrzDBSCAN antitampering(networkPath);
 
     //Testing
     std::pair<matrix2D, std::vector<float>> result = antitampering.predictFromModel(document, 63, 0.3, 0.005);
