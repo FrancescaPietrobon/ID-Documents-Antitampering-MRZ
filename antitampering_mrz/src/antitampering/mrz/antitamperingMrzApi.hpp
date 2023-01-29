@@ -51,10 +51,10 @@ struct OcrMrzResponse {
 
 extern "C" {
 
-    OcrMrzResponse process(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, size_t arr_size, float* confidence_threshold, char* algorithm_type);
+    OcrMrzResponse processOld(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, size_t arr_size, float* confidence_threshold, char* algorithm_type);
 
 } // extern "C"
 
-OcrMrzResponse process(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, float* arr_confidence_threshold, size_t arr_size, std::shared_ptr<AntitamperingMrz> detector);
+OcrMrzResponse processOld(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, float* arr_confidence_threshold, size_t arr_size, std::shared_ptr<AntitamperingMrz> detector);
 
 #endif

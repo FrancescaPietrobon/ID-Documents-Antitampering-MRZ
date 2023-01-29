@@ -24,7 +24,7 @@ OcrMrzResponse buildGlobalErrorResponse(const AntitamperingMrzException& excepti
 
 extern "C" {
 
-    OcrMrzResponse process(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, size_t arr_size, float* arr_confidence_threshold, char* modelPath)
+    OcrMrzResponse processOld(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, size_t arr_size, float* arr_confidence_threshold, char* modelPath)
     {
         OcrMrzResponse res;
         std::shared_ptr<AntitamperingMrz> detector = nullptr;
@@ -38,13 +38,13 @@ extern "C" {
             res = buildGlobalErrorResponse(e);
             return res;
         }
-        res = process(arr_image, arr_content_base64, arr_coordinates, arr_confidence_threshold, arr_size, detector);
+        res = processOld(arr_image, arr_content_base64, arr_coordinates, arr_confidence_threshold, arr_size, detector);
         return res;
     }
 }
 
 
-OcrMrzResponse process(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, size_t arr_size, float* confidence_threshold)
+OcrMrzResponse processOld(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, size_t arr_size, float* confidence_threshold)
 {
     std::string modelsPath = "/usr/share/phygitalai/models";
     std::shared_ptr<AntitamperingMrzFactory> factory = std::shared_ptr<AntitamperingMrzFactory>(new AntitamperingMrzFactory());

@@ -6,7 +6,6 @@
 #include "src/antitampering/mrz/exceptions/Exceptions.hpp"
 //#include <json/writer.h>
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include <spdlog/spdlog.h>
 
 #define ANTITAMPERING_MRZ_MODEL_PATH_ENV_VAR "ANTITAMPERING_MRZ_MODEL_PATH"

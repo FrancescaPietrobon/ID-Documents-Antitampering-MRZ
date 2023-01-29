@@ -103,6 +103,7 @@ target_link_libraries(TestExecutable
     Boost::boost
     #Boost::filesystem
     GTest::gmock
+    ${OpenCV_LIBS}
 )
 
 include(GoogleTest)

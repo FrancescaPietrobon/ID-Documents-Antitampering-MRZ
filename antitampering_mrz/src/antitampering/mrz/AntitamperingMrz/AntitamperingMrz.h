@@ -1,7 +1,6 @@
 #ifndef _ANTITAMPERING_MRZ_H_
 #define _ANTITAMPERING_MRZ_H_
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include <spdlog/spdlog.h>
 #include "DBSCAN/Response.h"
 

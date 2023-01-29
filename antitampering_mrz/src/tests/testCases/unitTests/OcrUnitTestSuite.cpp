@@ -1,0 +1,237 @@
+#include "OcrUnitTestSuite.hpp"
+#include "src/ocr/Ocr/Ocr.hpp"
+#include "src/ocr/OcrApi.hpp"
+#include "src/ocr/Ocr/RetinaNet/OcrRetinaNet.hpp"
+#include "src/ocr/OcrFactory.hpp"
+#include "src/ocr/exceptions/Exceptions.hpp"
+#include "src/Base64/base64.h"
+
+#include <opencv2/core/utility.hpp>
+#include <spdlog/cfg/env.h>
+
+
+class MockOcr : public Ocr
+{
+    public:
+        //MOCK_METHOD(OcrResponse, process, (char **arr_image, char **arr_content_type, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size), (override));
+        MOCK_METHOD(std::vector<OcrData>, detect, (const cv::Mat &image, const float confidenceThreshold), (override));
+};
+
+
+class OcrTestFixture : public ::testing::Test {
+    protected:
+    
+    virtual void SetUp() {
+        spdlog::cfg::load_env_levels();
+    }
+
+    std::string getBase64(cv::Mat imahePath);
+
+    virtual void TearDown() {
+    }
+
+};
+
+std::string OcrTestFixture::getBase64(cv::Mat image) //NON VA!
+{
+    std::vector<uchar> buf;
+    cv::imencode(".png", image, buf, {100});
+    unsigned char *castedData = reinterpret_cast<unsigned char *>(buf.data());
+    return base64_encode(castedData, buf.size());
+}
+
+
+// TEST OF UTILITIES
+
+TEST_F(OcrTestFixture, CVMatToMatrix2DUnitTest)
+{
+    const int sz[] = {1, 2, 1, 4}; 
+    float data[10] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    cv::Mat cvMat = cv::Mat(4, sz, CV_32F, data);
+    matrix2D funcMatrix = CVMatToMatrix2D(cvMat);
+
+    std::vector<float> row1 = {1, 2, 3, 4};
+    std::vector<float> row2 = {5, 6, 7, 8};
+    matrix2D myMatrix = {row1, row2};
+    
+    ASSERT_TRUE(myMatrix == funcMatrix) << TestHelper::PrintTo();
+}
+
+TEST_F(OcrTestFixture, convertToConersUnitTest)
+{
+    std::vector<float> xywhBox1 = {2, 2, 2, 2};
+    std::vector<float> xywhBox2 = {3, 4, 2, 4};
+    matrix2D xywhBoxes = {xywhBox1, xywhBox2};
+    matrix2D funcCornersBoxes = convertToConers(xywhBoxes);
+
+    std::vector<float> cornersBox1 = {1, 1, 3, 3};
+    std::vector<float> cornersBox2 = {2, 2, 4, 6};
+    matrix2D myCornersBoxes = {cornersBox1, cornersBox2};
+
+    ASSERT_TRUE(myCornersBoxes == funcCornersBoxes) << TestHelper::PrintTo();
+}
+
+TEST_F(OcrTestFixture, reshapeBoxUnitTest)
+{
+    std::vector<float> box = {2, 2, 2, 2};
+    float xAlter = 2;
+    float yAlter = 1;
+    Coordinates coords = reshapeBox(box, xAlter, yAlter);
+
+    ASSERT_TRUE(coords.topLeftX == 1) << TestHelper::PrintTo();
+    ASSERT_TRUE(coords.topLeftY == 2) << TestHelper::PrintTo();
+    ASSERT_TRUE(coords.bottomRightX == 1) << TestHelper::PrintTo();
+    ASSERT_TRUE(coords.bottomRightY == 2) << TestHelper::PrintTo();
+}
+
+TEST_F(OcrTestFixture, multVarianceUnitTest)
+{
+    std::vector<float> box1 = {2, 2, 2, 2};
+    std::vector<float> box2 = {3, 4, 2, 4};
+    matrix2D boxes = {box1, box2};
+    std::vector<float> variance = {0.1, 0.1, 0.2, 0.2};
+    matrix2D funcBoxes = multVariance(boxes, variance);
+
+    std::vector<float> myBox1 = {0.2, 0.2, 0.4, 0.4};
+    std::vector<float> myBox2 = {0.3, 0.4, 0.4, 0.8};
+    matrix2D myBoxes = {myBox1, myBox2};
+
+    ASSERT_TRUE(myBoxes == funcBoxes) << TestHelper::PrintTo();
+}
+
+TEST_F(OcrTestFixture, applySigmoidUnitTest)
+{
+    std::vector<float> predClass1 = {0.9, 0.1, 0.15};
+    std::vector<float> predClass2 = {0.2, 0.7, 0.3};
+    matrix2D predClasses = {predClass1, predClass2};
+    matrix2D funcPredClasses = applySigmoid(predClasses);
+
+    float threshold = 0.0001;
+    ASSERT_TRUE(abs(funcPredClasses[0][0] - 0.710949) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(funcPredClasses[0][1] - 0.524979) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(funcPredClasses[0][2] - 0.53743) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(funcPredClasses[1][0] - 0.549834) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(funcPredClasses[1][1] - 0.668188) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(funcPredClasses[1][2] - 0.574443) < threshold) << TestHelper::PrintTo();
+}
+
+
+// TESTS OF DETECTION
+
+TEST_F(OcrTestFixture, FirstDetectionUnitTest)
+{
+    cv::Mat inputImage = cv::imread("testData/images/AFG_AO_01001_FRONT.JPG");
+    float confidenceThreshold = 0.3;
+
+    OcrFactory ocrFactory;
+    std::shared_ptr<Ocr> ocr = ocrFactory.createOCR("RetinaNet");
+    std::vector<OcrData> ocrResult = ocr->detect(inputImage, confidenceThreshold);
+
+    float threshold = 0.001;
+    ASSERT_TRUE(ocrResult[0].label == '<') << TestHelper::PrintTo();
+    ASSERT_TRUE(ocrResult[0].labelIndex == 62) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(ocrResult[0].position.topLeftX - 382.913) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(ocrResult[0].position.topLeftY - 381.929) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(ocrResult[0].position.bottomRightX - 394.39) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(ocrResult[0].position.bottomRightY - 394.192) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(ocrResult[0].confidence - 0.999999) < threshold) << TestHelper::PrintTo();
+}
+
+/*
+// METODO PRIVATO, NON SO COME TESTARLO
+TEST_F(OcrTestFixture, imagePreprocessingUnitTest)
+{
+    std::shared_ptr<MockOcr> ocrMock = std::shared_ptr<MockOcr>(new MockOcr());
+    std::shared_ptr<Ocr> detector = ocrMock;
+    
+
+    cv::Mat image = cv::imread("testData/images/AFG_AO_01001_FRONT.JPG");
+    std::string modelPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/antitampering_mrz/models/Frozen_graph_lnorm_5e6_156img.pb"
+    cv::dnn::Net model = cv::dnn::readNetFromTensorflow(modelPath);
+    cv::Size size(800, 800);
+    OcrRetinaNet ocr(const cv::dnn::Net modelmodel, size);
+    
+    cv::Mat imagePreprocessed = imagePreprocessing(image);
+
+    ASSERT_THAT(imagePreprocessed.at<double>(100,100), static_cast<double>(4.7421036049794724e+49)) << TestHelper::PrintTo();
+    ASSERT_THAT(imagePreprocessed.at<double>(10,10), static_cast<double>(-6.5849542761516262e-219)) << TestHelper::PrintTo();    
+}
+*/
+
+
+/*
+
+TEST_F(OcrTestFixture, NoCharactersFoundUnitTest)
+{
+    //cv::Mat image = cv::imread("testData/images/faceComparator/face0.jpg");
+    //float threshold = 0.3;
+    //std::vector<OcrData> result = detect(image, threshold);
+
+    char **images = new char *[1];
+    images[0] = convertStringtoCharPtr("images0");
+    char **contentType = new char *[1];
+    contentType[0] = convertStringtoCharPtr("image/jpeg");
+    char **contentBase64 = new char *[1];
+    //contentBase64[0] = convertStringtoCharPtr(getBase64(cv::imread("testData/images/faceComparator/face0.jpg")));
+    contentBase64[0] = convertStringtoCharPtr(getBase64(cv::imread("testData/images/AFG_AO_01001_FRONT.JPG")));
+    Coordinates *coordinates = new Coordinates[1];
+    coordinates[0] = Coordinates{0, 0, 0, 0};
+    float *thresholds = new float[1];
+    thresholds[0] = 0.3;
+    char *algorithmType = new char[1];
+    algorithmType = convertStringtoCharPtr("RetinaNet");
+
+    OcrResponse result = process(images, contentType, contentBase64, coordinates, thresholds, 2, algorithmType);
+    std::cout << result.result << std::endl;
+    // NON RIESCE A LEGGERE L'IMMAGINE!!
+    //std::cout << result.resultDetails->confidenceThreshold << std::endl;
+    //std::cout << result.resultDetails->result << std::endl;
+    //std::cout << result.resultDetails->error << std::endl;
+    //std::cout << result.resultDetails->errorMessage << std::endl;
+    ASSERT_TRUE(result.result == false) << TestHelper::PrintTo();
+    ASSERT_TRUE(result.resultDetails->confidenceThreshold == -1) << TestHelper::PrintTo();
+    ASSERT_TRUE(result.resultDetails->result == false) << TestHelper::PrintTo();
+    ASSERT_TRUE(result.resultDetails->error == 1002) << TestHelper::PrintTo();
+    ASSERT_TRUE(strcmp(result.resultDetails->errorMessage, "BAD_COORDINATES") == 0) << TestHelper::PrintTo();
+}
+
+GTEST_TEST_F(OcrTestFixture, imagePreprocessingUnitTest)
+{
+    //Set Up
+    std::string imagePath = "testData/images/AFG_AO_01001_FRONT.JPG";
+    
+    Document document(imagePath, 800, 800, 10);
+
+    //Testing
+    cv::Mat imagePreprocessed = document.preprocessing();
+
+    //Assertion
+    ASSERT_THAT(imagePreprocessed.at<double>(100,100), static_cast<double>(4.7421036049794724e+49)) << TestHelper::PrintTo();
+    ASSERT_THAT(imagePreprocessed.at<double>(10,10), static_cast<double>(-6.5849542761516262e-219)) << TestHelper::PrintTo();    
+}
+
+
+GTEST_TEST_F(OcrTestFixture, predictFromModelUnitTest)
+{
+    //Set Up
+    std::string networkPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/antitampering_mrz/models/Frozen_graph_lnorm_5e6_156img.pb";
+    std::string imagePath = "testData/images/AFG_AO_01001_FRONT.JPG";
+
+    Document document(imagePath, 800, 800, 10);
+    cv::Mat imagePreprocessed = document.preprocessing();
+
+    AntitamperingMrzDBSCAN antitampering(networkPath);
+
+    //Testing
+    std::pair<matrix2D, std::vector<float>> result = antitampering.predictFromModel(document, 63, 0.3, 0.005);
+    matrix2D pred = result.first;
+    std::vector<float> probabilities = result.second;
+
+    //Assertion
+    ASSERT_THAT(pred.size(), 185) << TestHelper::PrintTo();
+    ASSERT_THAT(pred[1].size(), 4) << TestHelper::PrintTo();
+    ASSERT_THAT(pred[10][0], 382.317) << TestHelper::PrintTo();
+    ASSERT_THAT(probabilities.size(), 185) << TestHelper::PrintTo();
+    ASSERT_THAT(probabilities[10], 62) << TestHelper::PrintTo(); 
+}
+*/

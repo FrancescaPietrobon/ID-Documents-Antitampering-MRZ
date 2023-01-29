@@ -5,7 +5,6 @@
 #include "Ocr/RetinaNet/OcrRetinaNet.hpp"
 #include "exceptions/Exceptions.hpp"
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include <spdlog/spdlog.h>
 #include <map>
 

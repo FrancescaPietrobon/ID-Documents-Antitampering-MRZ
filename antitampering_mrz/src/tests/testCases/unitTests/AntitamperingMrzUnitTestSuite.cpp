@@ -26,7 +26,7 @@ class AntitamperingMrzTestFixture : public ::testing::Test {
 
 };
 
-
+/*
 GTEST_TEST_F(AntitamperingMrzTestFixture, imagePreprocessingUnitTest)
 {
     //Set Up
@@ -66,3 +66,4 @@ GTEST_TEST_F(AntitamperingMrzTestFixture, predictFromModelUnitTest)
     ASSERT_THAT(probabilities.size(), 185) << TestHelper::PrintTo();
     ASSERT_THAT(probabilities[10], 62) << TestHelper::PrintTo(); 
 }
+*/

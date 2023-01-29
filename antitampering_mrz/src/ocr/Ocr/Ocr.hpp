@@ -1,7 +1,6 @@
 #ifndef _OCR_HPP_
 #define _OCR_HPP_
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include <spdlog/spdlog.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/dnn/dnn.hpp>
@@ -25,7 +24,7 @@ class Ocr {
     public:
         Ocr(){};
         virtual ~Ocr(){};
-        virtual std::vector<OcrData> detect(const cv::Mat image, const float confidenceThreshold) = 0;
+        virtual std::vector<OcrData> detect(const cv::Mat &image, const float confidenceThreshold) = 0;
 };
 
 

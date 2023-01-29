@@ -27,7 +27,7 @@ cv::Mat OcrRetinaNet::inference(const cv::Mat& image)
     }
 }
 
-std::pair<matrix2D, matrix2D> OcrRetinaNet::adjustPredictions(cv::Mat predictions)
+std::pair<matrix2D, matrix2D> OcrRetinaNet::adjustModelPredictions(cv::Mat predictions)
 {
     // Split box and class predictions
     cv::Range boxRange(0, 4);
@@ -42,59 +42,15 @@ std::pair<matrix2D, matrix2D> OcrRetinaNet::adjustPredictions(cv::Mat prediction
 
     // Convert predictions from cv::Mat to matrix2D
     matrix2D boxesPred = CVMatToMatrix2D(boxPredCVMat);
-    boxesPred = multVariance(boxesPred);
-    //printPred(boxPred);
     matrix2D classesPred = CVMatToMatrix2D(classPredCVMat);
+
+    std::vector<float> variance = {VARIANCE_X, VARIANCE_X, VARIANCE_Y, VARIANCE_Y};
+    boxesPred =  multVariance(boxesPred, variance);
+    //printPred(boxPred);
     classesPred = applySigmoid(classesPred);
     //printPred(classPred);
 
     return std::make_pair(boxesPred, classesPred);
-}
-
-matrix2D OcrRetinaNet::CVMatToMatrix2D(cv::Mat cvMat) //TOO SLOW, TRY TO OPTIMIZE!
-{
-    matrix2D matrix;
-    std::vector<float> pred;
-    cv::Vec<int,4> idx;
-    int j = 0;
-    int i = 0;
-    int count = 0;
-    while(count < cvMat.size[1] * cvMat.size[3])
-    {
-        idx = {0, i, 0, j};
-        pred.push_back(cvMat.at<float>(idx));
-        count += 1;
-        if(count % cvMat.size[3] == 0)
-        {
-            i += 1;
-            j = 0;
-            matrix.push_back(pred);
-            pred.clear();
-        }
-        else
-           j += 1; 
-    }
-    return matrix;
-}
-
-matrix2D OcrRetinaNet::multVariance(matrix2D box)
-{
-    for(size_t i = 0; i < box.size(); ++i)
-    {
-        box[i][0] = box[i][0] * 0.1;
-        box[i][1] = box[i][1] * 0.1;
-        box[i][2] = box[i][2] * 0.2;
-        box[i][3] = box[i][3] * 0.2;
-    }
-    return box;
-}
-
-matrix2D OcrRetinaNet::applySigmoid(matrix2D A)
-{
-    for(size_t i = 0; i < A.size(); ++i)
-        for(size_t j = 0; j < A[i].size(); ++j)
-            A[i][j] = 1 / (1 + exp(- A[i][j]));
-    return A;
 }
 
 cv::Mat OcrRetinaNet::imagePreprocessing(const cv::Mat& inputImage)
@@ -111,26 +67,25 @@ cv::Mat OcrRetinaNet::imagePreprocessing(const cv::Mat& inputImage)
     return imagePreprocessed;
 }
 
-std::vector<OcrData> OcrRetinaNet::detect(const cv::Mat image, const float confidenceThreshold)
+std::vector<OcrData> OcrRetinaNet::detect(const cv::Mat &image, const float confidenceThreshold)
 {
     SPDLOG_INFO("Preprocessing input image");
     cv::Mat imagePreprocessed = this -> imagePreprocessing(image);
 
     SPDLOG_INFO("Extracting predictions");
     cv::Mat predictions = this -> inference(imagePreprocessed);
-    matrix2D boxesPred = this -> adjustPredictions(predictions).first;
-    matrix2D classesPred = this -> adjustPredictions(predictions).second;
+    matrix2D modelBoxes = this -> adjustModelPredictions(predictions).first;
+    matrix2D modelClasses = this -> adjustModelPredictions(predictions).second;
 
     SPDLOG_INFO("Constructing Anchors");
     Anchors *anchors = new Anchors(modelInputSize.width, modelInputSize.height);
-    matrix2D boxesAnchor = anchors->anchorsGenerator();
+    matrix2D anchorBoxes = anchors->anchorsGenerator();
 
     SPDLOG_INFO("Adjust boxes");
-    matrix2D boxes = computeCenters(boxesPred, boxesAnchor);
-    boxes = computeBoxes(boxes);
+    matrix2D boxes = computeBoxes(modelBoxes, anchorBoxes);
 
     SPDLOG_INFO("Apply NMS");
-    std::vector<OcrData> characters = nonMaximaSuppression(boxes, classesPred, confidenceThreshold);
+    std::vector<OcrData> characters = nonMaximaSuppression(boxes, modelClasses, confidenceThreshold);
 
     SPDLOG_INFO("Printing result");
     savePredictionImage(image, characters);
@@ -167,7 +122,7 @@ std::vector<OcrData> OcrRetinaNet::nonMaximaSuppression(matrix2D boxesPreNMS, ma
     {
         OcrData currCharacter;
         currCharacter.labelIndex = maxIndices[idx];
-        currCharacter.position = reshapeBox(boxesNew[idx]);
+        currCharacter.position = reshapeBox(boxesNew[idx], xAlter, yAlter);
         currCharacter.confidence = maxAll[idx];
         currCharacter.label = dictionary[int(maxIndices[idx])];
         characters.push_back(currCharacter);
@@ -176,89 +131,21 @@ std::vector<OcrData> OcrRetinaNet::nonMaximaSuppression(matrix2D boxesPreNMS, ma
     return characters;
 }
 
-Coordinates OcrRetinaNet::reshapeBox(std::vector<float> box)
+
+
+matrix2D OcrRetinaNet::computeBoxes(matrix2D modelBoxes, matrix2D anchorBoxes)
 {
-    box[0] = box[0] / xAlter;
-    box[1] = box[1] / yAlter;
-    box[2] = box[2] / xAlter;
-    box[3] = box[3] / yAlter;
-
-    Coordinates boxNew;
-    boxNew.topLeftX = box[0];
-    boxNew.topLeftY = box[1];
-    boxNew.bottomRightX = box[2];
-    boxNew.bottomRightY = box[3];
-
-    return boxNew;
-}
-
-matrix2D OcrRetinaNet::computeCenters(matrix2D boxes, matrix2D anchorBoxes)
-{
-    matrix2D center = boxes;
+    // Extract boxes in format (x, y, w, h)
+    matrix2D boxes = modelBoxes;
     for(size_t i = 0; i < boxes.size(); ++i)
     {
-        center[i][0] = boxes[i][0] * anchorBoxes[i][2] + anchorBoxes[i][0];
-        center[i][1] = boxes[i][1] * anchorBoxes[i][3] + anchorBoxes[i][1];
-        center[i][2] = std::exp(boxes[i][2]) *  anchorBoxes[i][2];
-        center[i][3] = std::exp(boxes[i][3]) *  anchorBoxes[i][3]; 
+        boxes[i][0] = modelBoxes[i][0] * anchorBoxes[i][2] + anchorBoxes[i][0];
+        boxes[i][1] = modelBoxes[i][1] * anchorBoxes[i][3] + anchorBoxes[i][1];
+        boxes[i][2] = std::exp(modelBoxes[i][2]) *  anchorBoxes[i][2];
+        boxes[i][3] = std::exp(modelBoxes[i][3]) *  anchorBoxes[i][3]; 
     }
-    return center;
-}
 
-matrix2D OcrRetinaNet::computeBoxes(matrix2D boxes)
-{
-    matrix2D newBoxes = boxes;
-    for(size_t i = 0; i < boxes.size(); ++i)
-    {
-        newBoxes[i][0] = boxes[i][0] - boxes[i][2] / 2;
-        newBoxes[i][1] = boxes[i][1] - boxes[i][3] / 2;
-        newBoxes[i][2] = boxes[i][0] + boxes[i][2] / 2;
-        newBoxes[i][3] = boxes[i][1] + boxes[i][3] / 2;
-    }
-    return newBoxes;
-}
-
-void OcrRetinaNet::printPredictions(matrix2D pred)
-{
-    for(size_t i = 0; i < pred.size(); ++i)
-    {
-        for(size_t j = 0; j < pred.begin()->size(); ++j)
-            if(i < 5)
-                std::cout << pred[i][j] << " ";
-        if(i < 5)
-            std::cout << " " << std::endl;
-    }
-}
-
-void OcrRetinaNet::savePredictionImage(cv::Mat img, std::vector<OcrData> characters)
-{
-    cv::Mat new_image = img;
-    int lineType = cv::LINE_8;
-    int fontFace = cv::FONT_HERSHEY_SIMPLEX;
-    float fontScale = 0.3;
-    int thickness = 1;
-    int baseline=0;
-    for(OcrData character: characters)
-    {
-        cv::rectangle(new_image,
-                      cv::Point(character.position.topLeftX, character.position.topLeftY),
-                      cv::Point(character.position.bottomRightX, character.position.bottomRightY),
-                      cv::Scalar(255, 0, 0),
-                      thickness, cv::LINE_8);
-
-        std::string label, conf;
-        label.append(1, character.label);
-        conf = fmt::format("{:.1f}", character.confidence);
-
-        // Print labels
-        cv::Size labelSize = cv::getTextSize(label, fontFace, fontScale, thickness, &baseline);
-        cv::Point labelOrg(character.position.topLeftX + labelSize.width/4, character.position.topLeftY - labelSize.height/4);
-        cv::putText(new_image, label, labelOrg, fontFace, fontScale, cv::Scalar(0,0,0), thickness, cv::LINE_AA);
-
-        // Print confidences
-        cv::Size confSize = cv::getTextSize(conf, fontFace, fontScale*0.6, thickness, &baseline);
-        cv::Point confOrg(character.position.topLeftX, character.position.bottomRightY + confSize.height);
-        cv::putText(new_image, conf, confOrg, fontFace, fontScale*0.6, cv::Scalar(0,0,0), thickness, cv::LINE_AA);
-    }
-    cv::imwrite("../OCR.jpg", new_image);
+    // Convert boxes in (x1, y1, x2, y2)
+    boxes = convertToConers(boxes);
+    return boxes;
 }

@@ -11,11 +11,9 @@
 #include <new>
 #include <iostream>
 
-#define DEFAULT_CONFIDENCE_THRESHOLD 0.5
+#define DEFAULT_CONFIDENCE_THRESHOLD 0.3
 
 // IMPLEMENTATION
-
-char *convertStringtoCharPtr(const std::string &str);
 
 OcrResponse buildGlobalErrorResponse(const OcrException &exception);
 
@@ -36,12 +34,12 @@ extern "C"
             return res;
         }
 
-        res = process(arr_image, arr_content_type, arr_content_base64, arr_coordinates, arr_confidence_threshold, arr_size, detector);
+        res = processImage(arr_image, arr_content_type, arr_content_base64, arr_coordinates, arr_confidence_threshold, arr_size, detector);
         return res;
     }
 }
 
-OcrResponse process(char **arr_image, char **arr_content_type, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size, std::shared_ptr<Ocr> detector)
+OcrResponse processImage(char **arr_image, char **arr_content_type, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size, std::shared_ptr<Ocr> detector)
 {
     OcrResponse res;
     res.result = true;

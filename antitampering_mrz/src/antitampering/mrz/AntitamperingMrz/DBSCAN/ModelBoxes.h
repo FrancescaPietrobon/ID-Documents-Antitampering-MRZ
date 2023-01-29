@@ -12,7 +12,6 @@
 #include "Anchors.h"
 #include "utilities.h"
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include <spdlog/spdlog.h>
 
 typedef std::vector<std::vector<float>> matrix2D;
