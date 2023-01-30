@@ -34,8 +34,10 @@ class MrzAntitamperingConan(ConanFile):
         ("spdlog/1.10.0@#5881717ce085871b1a2921361eb79986",),
         ("boost/1.69.0@#77454ea00c6bd18ede03c0eb255e7ccb",),
         ("nlohmann_json/3.10.5@#24f8709158b89f1396614ee07e0827d2",),
-        ("jsoncpp/1.9.5@#2b8f5f13685f844b4b74beac3a796e8d",),
-        ("opencv/4.5.5@#18b6d4ea69d84464117246c73e814cbe",),
+        ("jsoncpp/1.9.5@#9d91be1604af36ced56ae89ee65d53e0",),
+        #("opencv/4.5.5@#18b6d4ea69d84464117246c73e814cbe",),
+        ("opencv/4.5.3@#ab0498fa9f6e6ac35c06fa7100f49dcb",),
+        ("zlib/1.2.13@#13c96f538b52e1600c40b88994de240f",),
         ("gtest/1.11.0@#d99d2af6a53ab52d3c2dd88cdbc1e0fd")
     ]
 

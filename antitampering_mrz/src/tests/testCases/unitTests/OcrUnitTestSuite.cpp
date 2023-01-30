@@ -1,20 +1,21 @@
-#include "OcrUnitTestSuite.hpp"
-#include "src/ocr/Ocr/Ocr.hpp"
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+
+#include "../../TestHelper.hpp"
 #include "src/ocr/OcrApi.hpp"
+#include "src/ocr/Ocr/Ocr.hpp"
 #include "src/ocr/Ocr/RetinaNet/OcrRetinaNet.hpp"
 #include "src/ocr/OcrFactory.hpp"
 #include "src/ocr/exceptions/Exceptions.hpp"
 #include "src/Base64/base64.h"
 
-#include <opencv2/core/utility.hpp>
 #include <spdlog/cfg/env.h>
-
 
 class MockOcr : public Ocr
 {
     public:
         //MOCK_METHOD(OcrResponse, process, (char **arr_image, char **arr_content_type, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size), (override));
-        MOCK_METHOD(std::vector<OcrData>, detect, (const cv::Mat &image, const float confidenceThreshold), (override));
+        MOCK_METHOD(std::vector<Characters>, detect, (const cv::Mat image, const float confidenceThreshold), (override));
 };
 
 
@@ -25,7 +26,7 @@ class OcrTestFixture : public ::testing::Test {
         spdlog::cfg::load_env_levels();
     }
 
-    std::string getBase64(cv::Mat imahePath);
+    std::string getBase64(cv::Mat imagePath);
 
     virtual void TearDown() {
     }
@@ -34,10 +35,10 @@ class OcrTestFixture : public ::testing::Test {
 
 std::string OcrTestFixture::getBase64(cv::Mat image) //NON VA!
 {
-    std::vector<uchar> buf;
-    cv::imencode(".png", image, buf, {100});
-    unsigned char *castedData = reinterpret_cast<unsigned char *>(buf.data());
-    return base64_encode(castedData, buf.size());
+    std::vector<uchar> buffer;
+    cv::imencode(".png", image, buffer);
+    std::string imageBase64 = base64_encode(buffer.data(), buffer.size());
+    return imageBase64;
 }
 
 
@@ -117,7 +118,7 @@ TEST_F(OcrTestFixture, applySigmoidUnitTest)
 
 
 // TESTS OF DETECTION
-
+/*
 TEST_F(OcrTestFixture, FirstDetectionUnitTest)
 {
     cv::Mat inputImage = cv::imread("testData/images/AFG_AO_01001_FRONT.JPG");
@@ -136,6 +137,7 @@ TEST_F(OcrTestFixture, FirstDetectionUnitTest)
     ASSERT_TRUE(abs(ocrResult[0].position.bottomRightY - 394.192) < threshold) << TestHelper::PrintTo();
     ASSERT_TRUE(abs(ocrResult[0].confidence - 0.999999) < threshold) << TestHelper::PrintTo();
 }
+*/
 
 /*
 // METODO PRIVATO, NON SO COME TESTARLO
@@ -159,41 +161,37 @@ TEST_F(OcrTestFixture, imagePreprocessingUnitTest)
 */
 
 
-/*
 
-TEST_F(OcrTestFixture, NoCharactersFoundUnitTest)
+
+TEST_F(OcrTestFixture, CheckPredictionUnitTest)
 {
-    //cv::Mat image = cv::imread("testData/images/faceComparator/face0.jpg");
-    //float threshold = 0.3;
-    //std::vector<OcrData> result = detect(image, threshold);
-
     char **images = new char *[1];
     images[0] = convertStringtoCharPtr("images0");
     char **contentType = new char *[1];
     contentType[0] = convertStringtoCharPtr("image/jpeg");
     char **contentBase64 = new char *[1];
-    //contentBase64[0] = convertStringtoCharPtr(getBase64(cv::imread("testData/images/faceComparator/face0.jpg")));
     contentBase64[0] = convertStringtoCharPtr(getBase64(cv::imread("testData/images/AFG_AO_01001_FRONT.JPG")));
     Coordinates *coordinates = new Coordinates[1];
-    coordinates[0] = Coordinates{0, 0, 0, 0};
+    coordinates[0] = Coordinates{0, 0, 800, 800};
     float *thresholds = new float[1];
     thresholds[0] = 0.3;
-    char *algorithmType = new char[1];
-    algorithmType = convertStringtoCharPtr("RetinaNet");
+    char *algoType = new char;
+    algoType = convertStringtoCharPtr("RetinaNet");
 
-    OcrResponse result = process(images, contentType, contentBase64, coordinates, thresholds, 2, algorithmType);
-    std::cout << result.result << std::endl;
-    // NON RIESCE A LEGGERE L'IMMAGINE!!
-    //std::cout << result.resultDetails->confidenceThreshold << std::endl;
-    //std::cout << result.resultDetails->result << std::endl;
-    //std::cout << result.resultDetails->error << std::endl;
-    //std::cout << result.resultDetails->errorMessage << std::endl;
-    ASSERT_TRUE(result.result == false) << TestHelper::PrintTo();
-    ASSERT_TRUE(result.resultDetails->confidenceThreshold == -1) << TestHelper::PrintTo();
-    ASSERT_TRUE(result.resultDetails->result == false) << TestHelper::PrintTo();
-    ASSERT_TRUE(result.resultDetails->error == 1002) << TestHelper::PrintTo();
-    ASSERT_TRUE(strcmp(result.resultDetails->errorMessage, "BAD_COORDINATES") == 0) << TestHelper::PrintTo();
+    OcrResponse result = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoType);
+
+    float threshold = 0.001;
+    ASSERT_TRUE(result.resultDetails[0].charactersSize == 185) << TestHelper::PrintTo();
+    ASSERT_TRUE(result.resultDetails[0].characters[0].label == '<') << TestHelper::PrintTo();
+    ASSERT_TRUE(result.resultDetails[0].characters[0].labelIndex == 62) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.topLeftX - 382.913) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.topLeftY - 381.929) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.bottomRightX - 394.39) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.bottomRightY - 394.192) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].confidence - 0.999999) < threshold) << TestHelper::PrintTo();
 }
+
+/*
 
 GTEST_TEST_F(OcrTestFixture, imagePreprocessingUnitTest)
 {

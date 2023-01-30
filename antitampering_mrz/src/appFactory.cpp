@@ -1,4 +1,12 @@
 #include "appFactory.hpp"
+/*
+char* convertStringtoCharPtr(std::string str)
+{
+    char *cstr = new char[str.length() + 1];
+    strcpy(cstr, str.c_str());
+    return cstr;
+}
+
 
 int main()
 {
@@ -20,3 +28,4 @@ int main()
     antitamperingMrz->check(document);
     return 0;
 }
+*/

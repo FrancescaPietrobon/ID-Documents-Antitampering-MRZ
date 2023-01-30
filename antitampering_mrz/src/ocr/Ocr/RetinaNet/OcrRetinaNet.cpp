@@ -67,7 +67,7 @@ cv::Mat OcrRetinaNet::imagePreprocessing(const cv::Mat& inputImage)
     return imagePreprocessed;
 }
 
-std::vector<OcrData> OcrRetinaNet::detect(const cv::Mat &image, const float confidenceThreshold)
+std::vector<Characters> OcrRetinaNet::detect(const cv::Mat image, const float confidenceThreshold)
 {
     SPDLOG_INFO("Preprocessing input image");
     cv::Mat imagePreprocessed = this -> imagePreprocessing(image);
@@ -85,7 +85,7 @@ std::vector<OcrData> OcrRetinaNet::detect(const cv::Mat &image, const float conf
     matrix2D boxes = computeBoxes(modelBoxes, anchorBoxes);
 
     SPDLOG_INFO("Apply NMS");
-    std::vector<OcrData> characters = nonMaximaSuppression(boxes, modelClasses, confidenceThreshold);
+    std::vector<Characters> characters = nonMaximaSuppression(boxes, modelClasses, confidenceThreshold);
 
     SPDLOG_INFO("Printing result");
     savePredictionImage(image, characters);
@@ -93,7 +93,7 @@ std::vector<OcrData> OcrRetinaNet::detect(const cv::Mat &image, const float conf
     return characters;
 }
 
-std::vector<OcrData> OcrRetinaNet::nonMaximaSuppression(matrix2D boxesPreNMS, matrix2D classPred, float confidenceThreshold)
+std::vector<Characters> OcrRetinaNet::nonMaximaSuppression(matrix2D boxesPreNMS, matrix2D classPred, float confidenceThreshold)
 {
     std::vector<float> maxIndices, maxAll;
     std::vector<float>::iterator maxIt;
@@ -117,10 +117,10 @@ std::vector<OcrData> OcrRetinaNet::nonMaximaSuppression(matrix2D boxesPreNMS, ma
     std::vector<int> nmsIndices;
     cv::dnn::dnn4_v20220524::NMSBoxes(boxesRect, maxAll, confidenceThreshold, THRESHOLD_NMS, nmsIndices);
     extern std::unordered_map<unsigned, char> dictionary;
-    std::vector<OcrData> characters;
+    std::vector<Characters> characters;
     for(unsigned idx : nmsIndices)
     {
-        OcrData currCharacter;
+        Characters currCharacter;
         currCharacter.labelIndex = maxIndices[idx];
         currCharacter.position = reshapeBox(boxesNew[idx], xAlter, yAlter);
         currCharacter.confidence = maxAll[idx];

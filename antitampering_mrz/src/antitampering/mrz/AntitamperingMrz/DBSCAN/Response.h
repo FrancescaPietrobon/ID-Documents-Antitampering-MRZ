@@ -37,7 +37,7 @@ struct OcrMrzResponse {
     size_t result_details_size;
 };
 
-char* convertStringtoCharPtr(std::string str);
+//char* convertStringtoCharPtr(std::string str);
 
 OcrMrzResultDetail fillResponse(std::string image, Fields fields, float confidence_threshold);
 void printResponse(OcrMrzResultDetail res);

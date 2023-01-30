@@ -56,5 +56,6 @@ extern "C" {
 } // extern "C"
 
 OcrMrzResponse processOld(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, float* arr_confidence_threshold, size_t arr_size, std::shared_ptr<AntitamperingMrz> detector);
+char* convertStringtoCharPtr2(std::string str);
 
 #endif

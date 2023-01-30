@@ -1,3 +1,6 @@
+#ifndef _OCR_UTILS_HPP_
+#define _OCR_UTILS_HPP_
+
 #include "../exceptions/Exceptions.hpp"
 
 #include <opencv2/core.hpp>
@@ -58,3 +61,5 @@ cv::Mat prepareImage(const Coordinates coordinates, const cv::Mat& image)
     }
     return preparedImage;
 }
+
+#endif

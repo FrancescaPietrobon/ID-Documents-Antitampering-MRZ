@@ -1,4 +1,5 @@
 #include "antitamperingMrzFactory.hpp"
+#include "antitamperingMrzApi.hpp"
 
 int main()
 {
@@ -11,7 +12,7 @@ int main()
     float confidenceThreshold = 0.5;
 
     AntitamperingMrzData document;
-    document.imageName = convertStringtoCharPtr(imagePath);
+    document.imageName = convertStringtoCharPtr2(imagePath);
     document.confidenceThreshold = confidenceThreshold;
 
     AntitamperingMrzFactory antitamperingMrzFactory;

@@ -83,7 +83,7 @@ void printPredictions(matrix2D pred)
     }
 }
 
-void savePredictionImage(cv::Mat img, std::vector<OcrData> characters)
+void savePredictionImage(cv::Mat img, std::vector<Characters> characters)
 {
     cv::Mat new_image = img;
     int lineType = cv::LINE_8;
@@ -91,7 +91,7 @@ void savePredictionImage(cv::Mat img, std::vector<OcrData> characters)
     float fontScale = 0.3;
     int thickness = 1;
     int baseline=0;
-    for(OcrData character: characters)
+    for(Characters character: characters)
     {
         cv::rectangle(new_image,
                       cv::Point(character.position.topLeftX, character.position.topLeftY),

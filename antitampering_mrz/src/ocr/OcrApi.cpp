@@ -42,7 +42,6 @@ extern "C"
 OcrResponse processImage(char **arr_image, char **arr_content_type, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size, std::shared_ptr<Ocr> detector)
 {
     OcrResponse res;
-    res.result = true;
     res.resultDetailsSize = arr_size;
     res.resultDetails = new OcrResultDetail[res.resultDetailsSize];
     for (std::size_t i = 0; i < res.resultDetailsSize; i++)
@@ -51,53 +50,52 @@ OcrResponse processImage(char **arr_image, char **arr_content_type, char **arr_c
         res.resultDetails[i].confidenceThreshold = arr_confidence_threshold[i] != -1.0 ? arr_confidence_threshold[i] : DEFAULT_CONFIDENCE_THRESHOLD;
         res.resultDetails[i].error = 0;
         res.resultDetails[i].errorMessage = convertStringtoCharPtr("");
-        std::vector<OcrData> ocrResults;
+        std::vector<Characters> ocrResults;
         try
         {
             cv::Mat image = fromBase64toCvMat(arr_content_base64[i]);
+            cv::imwrite("../pre_cut.jpg", image);
             Coordinates characterRect = arr_coordinates[i];
             image = prepareImage(characterRect, image);
+            cv::imwrite("../post_cut.jpg", image);
             ocrResults = detector->detect(image, res.resultDetails[i].confidenceThreshold);
         }
         catch (OcrException &ex)
         {
-            res.resultDetails[i].detectedCharactersSize = 0;
-            res.resultDetails[i].result = false;
+            res.resultDetails[i].charactersSize = 0;
             res.resultDetails[i].error = ex.getCode();
             res.resultDetails[i].errorMessage = convertStringtoCharPtr(ex.getMessage());
-            res.result = false;
             continue;
         }
-        res.resultDetails[i].detectedCharactersSize = ocrResults.size();
-        res.resultDetails[i].detectedCharacters = new Characters[res.resultDetails[i].detectedCharactersSize];
-        res.resultDetails[i].result = (ocrResults.size() > 0);
+        res.resultDetails[i].charactersSize = ocrResults.size();
+        res.resultDetails[i].characters = new Characters[res.resultDetails[i].charactersSize];
         for (std::size_t j = 0; j < ocrResults.size(); j++)
         {
-            res.resultDetails[i].detectedCharacters[j].detectedCharacter = ocrResults[j].label;
-            res.resultDetails[i].detectedCharacters[j].detectedCharacterIndex = ocrResults[j].labelIndex;
-            res.resultDetails[i].detectedCharacters[j].characterPosition = ocrResults[j].position;
-            res.resultDetails[i].detectedCharacters[j].confindence = ocrResults[j].confidence;
+            res.resultDetails[i].characters[j].label = ocrResults[j].label;
+            res.resultDetails[i].characters[j].labelIndex = ocrResults[j].labelIndex;
+            res.resultDetails[i].characters[j].position = ocrResults[j].position;
+            res.resultDetails[i].characters[j].confidence = ocrResults[j].confidence;
         }
     }
     return res;
 }
 
-char *convertStringtoCharPtr(const std::string &str)
+char *convertStringtoCharPtr(std::string str)
 {
     char *cstr = new char[str.length() + 1];
     strcpy(cstr, str.c_str());
     return cstr;
 }
 
+
 OcrResponse buildGlobalErrorResponse(const OcrException &exception)
 {
     OcrResponse res;
-    res.result = false;
     res.resultDetailsSize = 1;
     res.resultDetails = new OcrResultDetail[res.resultDetailsSize];
     res.resultDetails[0].image = convertStringtoCharPtr("");
     res.resultDetails[0].confidenceThreshold = -1;
-    res.resultDetails[0].detectedCharactersSize = 0;
+    res.resultDetails[0].charactersSize = 0;
     res.resultDetails[0].error = exception.getCode();
     res.resultDetails[0].errorMessage = convertStringtoCharPtr(exception.getMessage());
     return res;

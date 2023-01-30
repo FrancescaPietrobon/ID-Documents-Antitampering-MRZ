@@ -18,6 +18,6 @@ Coordinates reshapeBox(std::vector<float> box, float xAlter, float yAlter);
 matrix2D convertToConers(matrix2D boxes);
 
 void printPredictions(matrix2D pred);
-void savePredictionImage(cv::Mat img, std::vector<OcrData> characters);
+void savePredictionImage(cv::Mat img, std::vector<Characters> characters);
 
 #endif

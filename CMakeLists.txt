@@ -51,7 +51,7 @@ target_link_libraries(antitampering_mrz PRIVATE
 add_executable(app)
 #target_sources(app PRIVATE antitampering_mrz/src/antitampering/mrz/antitamperingMrzFactory.cpp)
 #target_sources(app PRIVATE antitampering_mrz/src/appFactory.cpp)
-target_sources(app PRIVATE antitampering_mrz/src/ocr/OcrFactory.cpp)
+target_sources(app PRIVATE antitampering_mrz/src/ocr/OcrMain.cpp)
 
 target_link_libraries(app PRIVATE antitampering_mrz)
 
@@ -101,6 +101,8 @@ find_package(Boost REQUIRED)
 target_link_libraries(TestExecutable
     antitampering_mrz
     Boost::boost
+    jsoncpp_lib
+    #nlohmann_json::nlohmann_json
     #Boost::filesystem
     GTest::gmock
     ${OpenCV_LIBS}

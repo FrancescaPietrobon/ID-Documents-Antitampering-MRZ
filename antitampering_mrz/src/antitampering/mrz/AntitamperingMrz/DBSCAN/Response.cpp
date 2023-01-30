@@ -1,7 +1,7 @@
 #include "Response.h"
 
 
-char* convertStringtoCharPtr(std::string str)
+char* convertStringtoCharPtr3(std::string str)
 {
     char *cstr = new char[str.length() + 1];
     strcpy(cstr, str.c_str());
@@ -13,12 +13,12 @@ OcrMrzResultDetail fillResponse(std::string image, Fields fields, float confiden
 {
     OcrMrzResultDetail response;
     std::vector<association> doubtfulFields = fields.getDoubtfulFields();
-    response.image = convertStringtoCharPtr(image);
+    response.image = convertStringtoCharPtr3(image);
     response.result = fields.getResult();
     response.confidence_threshold = confidence_threshold;
     response.confidence = fields.getConfFinal();
     response.error = 0;
-    response.error_message = convertStringtoCharPtr("");
+    response.error_message = convertStringtoCharPtr3("");
     response.doubtful_fields = new DoubtfulFields;
     response.doubtful_fields->doubdtful_fields_size = doubtfulFields.size();
     response.doubtful_fields->fields = new IncorrectDataField[response.doubtful_fields->doubdtful_fields_size];
@@ -28,8 +28,8 @@ OcrMrzResultDetail fillResponse(std::string image, Fields fields, float confiden
         size_t i = 0;
         for(auto ass: doubtfulFields)
         {
-            response.doubtful_fields->fields[i].data_field = convertStringtoCharPtr(ass.dataField);
-            response.doubtful_fields->fields[i].mrz_data_field = convertStringtoCharPtr(ass.mrzDataField);
+            response.doubtful_fields->fields[i].data_field = convertStringtoCharPtr3(ass.dataField);
+            response.doubtful_fields->fields[i].mrz_data_field = convertStringtoCharPtr3(ass.mrzDataField);
             ++i;
         }
     }

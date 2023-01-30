@@ -1,5 +1,5 @@
-#ifndef _ANCHORS_Hpp_
-#define _ANCHORS_Hpp_
+#ifndef _ANCHORS_HPP_
+#define _ANCHORS_HPP_
 
 #include <iostream>
 #include <vector>

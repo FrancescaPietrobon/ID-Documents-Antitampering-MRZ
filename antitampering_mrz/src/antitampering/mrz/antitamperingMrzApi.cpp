@@ -9,14 +9,14 @@
 #include <new>
 #include <iostream>
 
-/*
-char* convertStringtoCharPtr(std::string str)
+
+char* convertStringtoCharPtr2(std::string str)
 {
     char *cstr = new char[str.length() + 1];
     strcpy(cstr, str.c_str());
     return cstr;
 }
-*/
+
 
 // IMPLEMENTATION
 
@@ -56,12 +56,12 @@ OcrMrzResponse processOld(char **arr_image, char **arr_content_base64, Coordinat
     res.result_details = new OcrMrzResultDetail[res.result_details_size];
     for(unsigned i = 0; i < res.result_details_size; i++)
     {
-        res.result_details[i].image =  convertStringtoCharPtr(arr_image[i]);
+        res.result_details[i].image =  convertStringtoCharPtr2(arr_image[i]);
         res.result_details[i].result = false;
         res.result_details[i].confidence_threshold = confidence_threshold[i];
         res.result_details[i].confidence = 0.6;
         res.result_details[i].error = 0;
-        res.result_details[i].error_message = convertStringtoCharPtr("");
+        res.result_details[i].error_message = convertStringtoCharPtr2("");
         res.result_details[i].doubtful_fields = new DoubtfulFields;
         res.result_details[i].doubtful_fields -> doubdtful_fields_size = 2;
         res.result_details[i].doubtful_fields -> fields = new IncorrectDataField[res.result_details[i].doubtful_fields -> doubdtful_fields_size];
@@ -83,11 +83,11 @@ OcrMrzResponse buildGlobalErrorResponse(const AntitamperingMrzException& excepti
     res.result = false;
     res.result_details_size = 1;
     res.result_details = new OcrMrzResultDetail[res.result_details_size];
-    res.result_details[0].image = convertStringtoCharPtr("");
+    res.result_details[0].image = convertStringtoCharPtr2("");
     res.result_details[0].result = false;
     res.result_details[0].confidence_threshold = -1;
     res.result_details[0].confidence = 0.6;
     res.result_details[0].error = exception.getCode();
-    res.result_details[0].error_message = convertStringtoCharPtr(exception.getMessage());
+    res.result_details[0].error_message = convertStringtoCharPtr2(exception.getMessage());
     return res;
 }
