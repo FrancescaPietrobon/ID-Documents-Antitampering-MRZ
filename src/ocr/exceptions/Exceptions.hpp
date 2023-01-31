@@ -17,6 +17,10 @@ class OcrException
 public:
   OcrException (int code, const std::string &message, const Json::Value &data = Json::Value::null)
   {
+    this->code = code;
+    this->message = message;
+    this->data = data;
+    
     if (data.isNull () ) {
       std::string errorType;
 

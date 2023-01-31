@@ -12,7 +12,7 @@
 
 enum AlgorithmType
 {
-    RetinaNet,
+    RetinaNet = 1,
     //Yolov7
 };
 

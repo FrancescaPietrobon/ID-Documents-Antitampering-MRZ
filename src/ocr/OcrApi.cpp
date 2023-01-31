@@ -57,7 +57,6 @@ OcrResponse processImage(char **arr_image, char **arr_content_type, char **arr_c
             cv::imwrite("../pre_cut.jpg", image);
             Coordinates characterRect = arr_coordinates[i];
             image = prepareImage(characterRect, image);
-            cv::imwrite("../post_cut.jpg", image);
             ocrResults = detector->detect(image, res.resultDetails[i].confidenceThreshold);
         }
         catch (OcrException &ex)

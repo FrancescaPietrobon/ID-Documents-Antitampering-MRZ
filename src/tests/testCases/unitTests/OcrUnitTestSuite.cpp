@@ -118,6 +118,83 @@ TEST_F(OcrTestFixture, applySigmoidUnitTest)
 
 
 // TESTS OF DETECTION
+
+TEST_F(OcrTestFixture, CheckPredictionUnitTest)
+{
+    char **images = new char *[1];
+    images[0] = convertStringtoCharPtr("images0");
+    char **contentType = new char *[1];
+    contentType[0] = convertStringtoCharPtr("image/jpeg");
+    char **contentBase64 = new char *[1];
+    contentBase64[0] = convertStringtoCharPtr(getBase64(cv::imread("testData/images/AFG_AO_01001_FRONT.JPG")));
+    Coordinates *coordinates = new Coordinates[1];
+    coordinates[0] = Coordinates{0, 0, 800, 800};
+    float *thresholds = new float[1];
+    thresholds[0] = 0.3;
+    char *algoType = new char;
+    algoType = convertStringtoCharPtr("RetinaNet");
+
+    OcrResponse result = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoType);
+
+    float threshold = 0.001;
+    ASSERT_TRUE(result.resultDetails[0].charactersSize == 185) << TestHelper::PrintTo();
+    ASSERT_TRUE(result.resultDetails[0].characters[0].label == '<') << TestHelper::PrintTo();
+    ASSERT_TRUE(result.resultDetails[0].characters[0].labelIndex == 62) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.topLeftX - 382.914) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.topLeftY - 381.942) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.bottomRightX - 394.38) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.bottomRightY - 394.204) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].confidence - 0.999999) < threshold) << TestHelper::PrintTo();
+}
+
+TEST_F(OcrTestFixture, BadCoordinatesUnitTest)
+{
+    char **images = new char *[1];
+    images[0] = convertStringtoCharPtr("images0");
+    char **contentType = new char *[1];
+    contentType[0] = convertStringtoCharPtr("image/jpeg");
+    char **contentBase64 = new char *[1];
+    contentBase64[0] = convertStringtoCharPtr(getBase64(cv::imread("testData/images/AFG_AO_01001_FRONT.JPG")));
+    Coordinates *coordinates = new Coordinates[1];
+    coordinates[0] = Coordinates{0, 0, 0, 0};
+    float *thresholds = new float[1];
+    thresholds[0] = 0.3;
+    char *algoType = new char;
+    algoType = convertStringtoCharPtr("RetinaNet");
+
+    OcrResponse result = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoType);
+
+    ASSERT_TRUE(result.resultDetailsSize == 1) << TestHelper::PrintTo();
+    ASSERT_TRUE(result.resultDetails[0].charactersSize == 0) << TestHelper::PrintTo();
+    ASSERT_TRUE(result.resultDetails[0].error == 1002) << TestHelper::PrintTo();
+    ASSERT_TRUE(strcmp(result.resultDetails[0].errorMessage, "Not able to find compliant image with provided metadata") == 0) << TestHelper::PrintTo();
+}
+
+TEST_F(OcrTestFixture, OcrTypeNotFoundUnitTest)
+{
+    char **images = new char *[1];
+    images[0] = convertStringtoCharPtr("images0");
+    char **contentType = new char *[1];
+    contentType[0] = convertStringtoCharPtr("image/jpeg");
+    char **contentBase64 = new char *[1];
+    contentBase64[0] = convertStringtoCharPtr(getBase64(cv::imread("testData/images/AFG_AO_01001_FRONT.JPG")));
+    Coordinates *coordinates = new Coordinates[1];
+    coordinates[0] = Coordinates{0, 0, 0, 0};
+    float *thresholds = new float[1];
+    thresholds[0] = 0.3;
+    char *algoType = new char;
+    algoType = convertStringtoCharPtr("NewType");
+
+    OcrResponse result = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoType);
+
+    ASSERT_TRUE(result.resultDetailsSize == 1) << TestHelper::PrintTo();
+    ASSERT_TRUE(strcmp(result.resultDetails[0].image, "") == 0) << TestHelper::PrintTo();
+    ASSERT_TRUE(result.resultDetails[0].confidenceThreshold == -1) << TestHelper::PrintTo();
+    ASSERT_TRUE(result.resultDetails[0].charactersSize == 0) << TestHelper::PrintTo();
+    ASSERT_TRUE(result.resultDetails[0].error == 1004) << TestHelper::PrintTo();
+    ASSERT_TRUE(strcmp(result.resultDetails[0].errorMessage, "Algorithm Type not handled") == 0) << TestHelper::PrintTo();
+}
+
 /*
 TEST_F(OcrTestFixture, FirstDetectionUnitTest)
 {
@@ -163,33 +240,7 @@ TEST_F(OcrTestFixture, imagePreprocessingUnitTest)
 
 
 
-TEST_F(OcrTestFixture, CheckPredictionUnitTest)
-{
-    char **images = new char *[1];
-    images[0] = convertStringtoCharPtr("images0");
-    char **contentType = new char *[1];
-    contentType[0] = convertStringtoCharPtr("image/jpeg");
-    char **contentBase64 = new char *[1];
-    contentBase64[0] = convertStringtoCharPtr(getBase64(cv::imread("testData/images/AFG_AO_01001_FRONT.JPG")));
-    Coordinates *coordinates = new Coordinates[1];
-    coordinates[0] = Coordinates{0, 0, 800, 800};
-    float *thresholds = new float[1];
-    thresholds[0] = 0.3;
-    char *algoType = new char;
-    algoType = convertStringtoCharPtr("RetinaNet");
 
-    OcrResponse result = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoType);
-
-    float threshold = 0.001;
-    ASSERT_TRUE(result.resultDetails[0].charactersSize == 185) << TestHelper::PrintTo();
-    ASSERT_TRUE(result.resultDetails[0].characters[0].label == '<') << TestHelper::PrintTo();
-    ASSERT_TRUE(result.resultDetails[0].characters[0].labelIndex == 62) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.topLeftX - 382.914) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.topLeftY - 381.942) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.bottomRightX - 394.38) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.bottomRightY - 394.204) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].confidence - 0.999999) < threshold) << TestHelper::PrintTo();
-}
 
 /*
 
