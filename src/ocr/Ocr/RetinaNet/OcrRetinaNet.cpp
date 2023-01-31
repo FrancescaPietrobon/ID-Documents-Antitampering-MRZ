@@ -119,7 +119,6 @@ std::vector<Characters> OcrRetinaNet::nonMaximaSuppression(matrix2D boxesPreNMS,
     }
     SPDLOG_INFO("{} Characters Detected pre NMS", boxesRect.size());
     std::vector<int> nmsIndices;
-    //cv::dnn::dnn4_v20220524::NMSBoxes(boxesRect, maxAll, confidenceThreshold, THRESHOLD_NMS, nmsIndices);
     cv::dnn::NMSBoxes(boxesRect, maxAll, confidenceThreshold, THRESHOLD_NMS, nmsIndices);
     extern std::unordered_map<unsigned, char> dictionary;
     std::vector<Characters> characters;
@@ -135,8 +134,6 @@ std::vector<Characters> OcrRetinaNet::nonMaximaSuppression(matrix2D boxesPreNMS,
     SPDLOG_INFO("{} Characters Detected post NMS", nmsIndices.size());
     return characters;
 }
-
-
 
 matrix2D OcrRetinaNet::computeBoxes(matrix2D modelBoxes, matrix2D anchorBoxes)
 {

@@ -20,14 +20,11 @@ struct Characters {
     float confidence;
 };
 
-
 class Ocr {
     public:
         Ocr(){};
         virtual ~Ocr(){};
         virtual std::vector<Characters> detect(const cv::Mat image, const float confidenceThreshold) = 0;
 };
-
-
 
 #endif /* _OCR_HPP_ */

@@ -4,10 +4,9 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/dnn/dnn.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <vector>
 
 #include "../Ocr.hpp"
-
-#include <vector>
 
 typedef std::vector<std::vector<float>> matrix2D;
 

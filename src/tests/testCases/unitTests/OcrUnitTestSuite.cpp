@@ -18,7 +18,6 @@ class MockOcr : public Ocr
         MOCK_METHOD(std::vector<Characters>, detect, (const cv::Mat image, const float confidenceThreshold), (override));
 };
 
-
 class OcrTestFixture : public ::testing::Test {
     protected:
     
@@ -194,93 +193,3 @@ TEST_F(OcrTestFixture, OcrTypeNotFoundUnitTest)
     ASSERT_TRUE(result.resultDetails[0].error == 1004) << TestHelper::PrintTo();
     ASSERT_TRUE(strcmp(result.resultDetails[0].errorMessage, "Algorithm Type not handled") == 0) << TestHelper::PrintTo();
 }
-
-/*
-TEST_F(OcrTestFixture, FirstDetectionUnitTest)
-{
-    cv::Mat inputImage = cv::imread("testData/images/AFG_AO_01001_FRONT.JPG");
-    float confidenceThreshold = 0.3;
-
-    OcrFactory ocrFactory;
-    std::shared_ptr<Ocr> ocr = ocrFactory.createOCR("RetinaNet");
-    std::vector<OcrData> ocrResult = ocr->detect(inputImage, confidenceThreshold);
-
-    float threshold = 0.001;
-    ASSERT_TRUE(ocrResult[0].label == '<') << TestHelper::PrintTo();
-    ASSERT_TRUE(ocrResult[0].labelIndex == 62) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(ocrResult[0].position.topLeftX - 382.913) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(ocrResult[0].position.topLeftY - 381.929) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(ocrResult[0].position.bottomRightX - 394.39) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(ocrResult[0].position.bottomRightY - 394.192) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(ocrResult[0].confidence - 0.999999) < threshold) << TestHelper::PrintTo();
-}
-*/
-
-/*
-// METODO PRIVATO, NON SO COME TESTARLO
-TEST_F(OcrTestFixture, imagePreprocessingUnitTest)
-{
-    std::shared_ptr<MockOcr> ocrMock = std::shared_ptr<MockOcr>(new MockOcr());
-    std::shared_ptr<Ocr> detector = ocrMock;
-    
-
-    cv::Mat image = cv::imread("testData/images/AFG_AO_01001_FRONT.JPG");
-    std::string modelPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/antitampering_mrz/models/Frozen_graph_lnorm_5e6_156img.pb"
-    cv::dnn::Net model = cv::dnn::readNetFromTensorflow(modelPath);
-    cv::Size size(800, 800);
-    OcrRetinaNet ocr(const cv::dnn::Net modelmodel, size);
-    
-    cv::Mat imagePreprocessed = imagePreprocessing(image);
-
-    ASSERT_THAT(imagePreprocessed.at<double>(100,100), static_cast<double>(4.7421036049794724e+49)) << TestHelper::PrintTo();
-    ASSERT_THAT(imagePreprocessed.at<double>(10,10), static_cast<double>(-6.5849542761516262e-219)) << TestHelper::PrintTo();    
-}
-*/
-
-
-
-
-
-
-/*
-
-GTEST_TEST_F(OcrTestFixture, imagePreprocessingUnitTest)
-{
-    //Set Up
-    std::string imagePath = "testData/images/AFG_AO_01001_FRONT.JPG";
-    
-    Document document(imagePath, 800, 800, 10);
-
-    //Testing
-    cv::Mat imagePreprocessed = document.preprocessing();
-
-    //Assertion
-    ASSERT_THAT(imagePreprocessed.at<double>(100,100), static_cast<double>(4.7421036049794724e+49)) << TestHelper::PrintTo();
-    ASSERT_THAT(imagePreprocessed.at<double>(10,10), static_cast<double>(-6.5849542761516262e-219)) << TestHelper::PrintTo();    
-}
-
-
-GTEST_TEST_F(OcrTestFixture, predictFromModelUnitTest)
-{
-    //Set Up
-    std::string networkPath = "/home/f_pietrobon/thesis/MRZ_Antitampering/antitampering_mrz/models/Frozen_graph_lnorm_5e6_156img.pb";
-    std::string imagePath = "testData/images/AFG_AO_01001_FRONT.JPG";
-
-    Document document(imagePath, 800, 800, 10);
-    cv::Mat imagePreprocessed = document.preprocessing();
-
-    AntitamperingMrzDBSCAN antitampering(networkPath);
-
-    //Testing
-    std::pair<matrix2D, std::vector<float>> result = antitampering.predictFromModel(document, 63, 0.3, 0.005);
-    matrix2D pred = result.first;
-    std::vector<float> probabilities = result.second;
-
-    //Assertion
-    ASSERT_THAT(pred.size(), 185) << TestHelper::PrintTo();
-    ASSERT_THAT(pred[1].size(), 4) << TestHelper::PrintTo();
-    ASSERT_THAT(pred[10][0], 382.317) << TestHelper::PrintTo();
-    ASSERT_THAT(probabilities.size(), 185) << TestHelper::PrintTo();
-    ASSERT_THAT(probabilities[10], 62) << TestHelper::PrintTo(); 
-}
-*/

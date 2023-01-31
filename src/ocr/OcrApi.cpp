@@ -86,7 +86,6 @@ char *convertStringtoCharPtr(std::string str)
     return cstr;
 }
 
-
 OcrResponse buildGlobalErrorResponse(const OcrException &exception)
 {
     OcrResponse res;

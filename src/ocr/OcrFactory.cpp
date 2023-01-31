@@ -6,7 +6,6 @@ std::map<std::string, AlgorithmType> mapAlgorithmType = {
     //{"Yolov7", Yolov7}
 };
 
-
 std::shared_ptr<Ocr> OcrFactory::createOCR(const std::string& algorithmType)
 {
     SPDLOG_INFO("Creating OCR");

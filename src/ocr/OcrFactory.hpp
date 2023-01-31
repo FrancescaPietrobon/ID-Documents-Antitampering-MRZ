@@ -16,7 +16,6 @@ enum AlgorithmType
     //Yolov7
 };
 
-
 class OcrFactory {
     public: 
         static std::shared_ptr<Ocr> createOCR(const std::string& algorithmType);
