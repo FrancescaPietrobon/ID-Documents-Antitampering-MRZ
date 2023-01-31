@@ -1,7 +1,7 @@
 .vscode/
 build/
-antitampering_mrz/models/
-antitampering_mrz/data/
+models/
+data/
 CMakeUserPresents.json
 conan.lock
 conanbuildinfo.txt

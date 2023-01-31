@@ -8,14 +8,13 @@
 #include <spdlog/spdlog.h>
 #include <map>
 
-#define MODELS_FOLDER "/home/f_pietrobon/thesis/MRZ_Antitampering/antitampering_mrz/models/"
+#define MODELS_FOLDER "/home/f_pietrobon/thesis/MRZ_Antitampering/models/"
 
 enum AlgorithmType
 {
     RetinaNet,
     //Yolov7
 };
-
 
 
 class OcrFactory {

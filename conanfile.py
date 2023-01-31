@@ -8,36 +8,42 @@ from conan.tools.system.package_manager import Apt
 
 
 def _are_tests_enabled():
-    if 'LIBPHYGITALAI_TESTS_ENABLED' in os.environ:
-        if os.environ['LIBPHYGITALAI_TESTS_ENABLED']  == 'True':
+    if 'LIBDOCUMENTVALIDATOR_TESTS_ENABLED' in os.environ:
+        if os.environ['LIBDOCUMENTVALIDATOR_TESTS_ENABLED']  == 'True':
             return True
     return False
 
 def _are_packages_enabled():
-    if 'LIBPHYGITALAI_PACKAGES_ENABLED' in os.environ:
-        if os.environ['LIBPHYGITALAI_PACKAGES_ENABLED'] == 'True':
+    if 'LIBDOCUMENTVALIDATOR_PACKAGES_ENABLED' in os.environ:
+        if os.environ['LIBDOCUMENTVALIDATOR_PACKAGES_ENABLED'] == 'True':
             return True
     return False
 
+def _is_coverage_enabled():
+    if 'LIBDOCUMENTVALIDATOR_COVERAGE_ENABLED' in os.environ:
+        if os.environ['LIBDOCUMENTVALIDATOR_COVERAGE_ENABLED'] == 'True':
+            return True
+    return False
+
+
 class MrzAntitamperingConan(ConanFile):
-    name = "lib_antitampering_mrz"
+    name = "lib_document_validator"
 
     # Optional metadata
     license = "EULA"
     author = "Pietrobon Francesca"
     url = "https://github.com/FrancescaPietrobon/MRZ_Antitampering"
-    description = "Library for MRZ antitampering"
+    description = "Library for document validation"
     topics = ("AI", "computer-vision")
 
     # Dependencies
     requires = [
         ("spdlog/1.10.0@#5881717ce085871b1a2921361eb79986",),
-        ("boost/1.69.0@#77454ea00c6bd18ede03c0eb255e7ccb",),
+        ("boost/1.78.0@#662597c4e834b1f6e67b4ee6d7d634bd",),
         ("nlohmann_json/3.10.5@#24f8709158b89f1396614ee07e0827d2",),
-        ("jsoncpp/1.9.5@#9d91be1604af36ced56ae89ee65d53e0",),
-        #("opencv/4.5.5@#18b6d4ea69d84464117246c73e814cbe",),
+        ("jsoncpp/1.9.5@#2b8f5f13685f844b4b74beac3a796e8d",),
         ("opencv/4.5.3@#ab0498fa9f6e6ac35c06fa7100f49dcb",),
-        ("zlib/1.2.13@#13c96f538b52e1600c40b88994de240f",),
+        ("zlib/1.2.13@#13c96f538b52e1600c40b88994de240f", "override"),
         ("gtest/1.11.0@#d99d2af6a53ab52d3c2dd88cdbc1e0fd")
     ]
 
@@ -101,41 +107,32 @@ class MrzAntitamperingConan(ConanFile):
             raise ConanInvalidConfiguration("This library is not compatible with Windows")
 
     def package_info(self):
-        self.cpp_info.name = "lib_antitampering_mrz"
+        self.cpp_info.name = "lib_document_validator"
 
-        self.cpp_info.components["core"].requires = [
+        self.cpp_info.components["ocr"].requires = [
             "spdlog::spdlog",
             "boost::boost",
-            "nlohmann_json::nlohmann_json",
+            "opencv::opencv",
             "jsoncpp::jsoncpp",
-            "opencv::opencv",
-        ]
-        self.cpp_info.components["core"].libs = ["antitampering_mrz"]
-        self.cpp_info.components["core"].libdirs = ["lib/x86_64-linux-gnu"]
-        #self.cpp_info.components["core"].includedirs = ["include", "include/phygitalai"]
-        self.cpp_info.components["core"].cmake_target_name = "core"
-
-        self.cpp_info.components["ocr_server"].requires = [
-            "spdlog::spdlog",
-            "boost::boost",
-            "opencv::opencv",
             "nlohmann_json::nlohmann_json"
         ]
-        self.cpp_info.components["ocr_server"].libs = ["ocr_server"]
-        self.cpp_info.components["ocr_server"].libdirs = ["lib/x86_64-linux-gnu"]
+        self.cpp_info.components["ocr"].libs = ["document_validator_ocr"]
+        self.cpp_info.components["ocr"].libdirs = ["lib/x86_64-linux-gnu"]
+        self.cpp_info.components["ocr"].includedirs = ["include", "include/document_validator"]
 
         self.cpp_info.components["antitampering_mrz"].requires = [
             "spdlog::spdlog",
             "boost::boost",
             "opencv::opencv",
+            "jsoncpp::jsoncpp",
             "nlohmann_json::nlohmann_json"
         ]
-        self.cpp_info.components["antitampering_mrz"].libs = ["antitampering_mrz"]
+        self.cpp_info.components["antitampering_mrz"].libs = ["document_validator_antitampering_mrz"]
         self.cpp_info.components["antitampering_mrz"].libdirs = ["lib/x86_64-linux-gnu"]
-        #self.cpp_info.components["antitampering_mrz"].includedirs = ["include", "include/phygitalai"]
+        self.cpp_info.components["antitampering_mrz"].includedirs = ["include", "include/document_validator"]
         
     def set_version(self):
-        self.version = os.environ.get("ANTITAMPERING_MRZ_VERSION", "1.0")
+        self.version = os.environ.get("DOCUMENT_VALIDATOR_VERSION", "1.0")
 
     def layout(self):
         cmake_layout(self)
@@ -144,6 +141,8 @@ class MrzAntitamperingConan(ConanFile):
         deps = CMakeDeps(self)
         deps.generate()
         tc = CMakeToolchain(self)
+        if _is_coverage_enabled():
+            tc.variables["COVERAGE_ENABLED"] = True
         tc.generate()
 
     def build(self):
@@ -159,7 +158,7 @@ class MrzAntitamperingConan(ConanFile):
     def package(self):
         cmake = CMake(self)
         cmake.install()
-    
+
     '''
     @staticmethod
     def _is_local_env():

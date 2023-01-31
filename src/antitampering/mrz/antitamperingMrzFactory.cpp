@@ -1,3 +1,4 @@
+/*
 #include "antitamperingMrzFactory.hpp"
 #include "antitamperingMrzApi.hpp"
 
@@ -20,3 +21,4 @@ int main()
     antitamperingMrz->check(document);
     return 0;
 }
+*/

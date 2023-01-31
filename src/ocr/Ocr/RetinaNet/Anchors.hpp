@@ -20,7 +20,6 @@ class Anchors
         const std::vector<float> scales = {0.4, 0.6, 0.8};
         const std::vector<float> areasDims = {30., 40., 50., 60., 70.};
         const std::vector<float> stridesRange = {3, 4, 5, 6, 7};
-
         int width;
         int height;
         std::vector<float> areas;
@@ -33,10 +32,11 @@ class Anchors
         Anchors(int width, int height);
         void computeDims();
         matrix3D meshgrid(int level);
-        void printAnchors(matrix3D A, matrix3D B);
         matrix2D resizeAnchors(matrix3D A);
         matrix3D concatenate(matrix3D A, matrix3D B);
         matrix2D anchorsGenerator();
+
+        void printAnchors(matrix3D A, matrix3D B);
         void printAnchorShapesTransf(matrix3D grid, matrix3D areaExp, matrix3D concatenation, matrix2D resizedAnchors, int level);
 };
 

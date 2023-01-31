@@ -3,7 +3,7 @@
 
 #include "AntitamperingMrz/AntitamperingMrz.h"
 #include "AntitamperingMrz/DBSCAN/AntitamperingMrzDBSCAN.h"
-#include "src/antitampering/mrz/exceptions/Exceptions.hpp"
+#include "exceptions/Exceptions.hpp"
 //#include <json/writer.h>
 
 #include <spdlog/spdlog.h>

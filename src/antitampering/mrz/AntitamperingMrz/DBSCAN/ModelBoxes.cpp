@@ -149,8 +149,9 @@ std::pair<matrix2D, std::vector<float>> ModelBoxes::computeNMS(matrix2D boxesPre
 
     std::cout << "Number of chars detected pre NMS: " << boxesRect.size() << std::endl;
     std::vector<int> nmsIndices;
-    cv::dnn::dnn4_v20220524::NMSBoxes(boxesRect, maxAll, threshold, threshold_nms, nmsIndices);
-    
+    //cv::dnn::dnn4_v20220524::NMSBoxes(boxesRect, maxAll, threshold, threshold_nms, nmsIndices);
+    cv::dnn::NMSBoxes(boxesRect, maxAll, threshold, threshold_nms, nmsIndices);
+
     std::cout << "Number of chars detected after NMS: " << nmsIndices.size() << std::endl;
 
     for(size_t i = 0; i < nmsIndices.size(); ++i)

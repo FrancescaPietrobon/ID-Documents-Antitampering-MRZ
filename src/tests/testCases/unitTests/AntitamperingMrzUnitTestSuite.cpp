@@ -1,6 +1,6 @@
 #include "AntitamperingMrzUnitTestSuite.hpp"
-#include "src/antitampering/mrz/AntitamperingMrz/DBSCAN/Document.h"
-#include "src/antitampering/mrz/AntitamperingMrz/DBSCAN/AntitamperingMrzDBSCAN.h"
+#include "antitampering/mrz/AntitamperingMrz/DBSCAN/Document.h"
+#include "antitampering/mrz/AntitamperingMrz/DBSCAN/AntitamperingMrzDBSCAN.h"
 
 #include <opencv2/core/utility.hpp>
 #include <spdlog/cfg/env.h>

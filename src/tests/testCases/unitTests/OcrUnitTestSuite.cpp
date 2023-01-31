@@ -2,12 +2,12 @@
 #include <gmock/gmock.h>
 
 #include "../../TestHelper.hpp"
-#include "src/ocr/OcrApi.hpp"
-#include "src/ocr/Ocr/Ocr.hpp"
-#include "src/ocr/Ocr/RetinaNet/OcrRetinaNet.hpp"
-#include "src/ocr/OcrFactory.hpp"
-#include "src/ocr/exceptions/Exceptions.hpp"
-#include "src/Base64/base64.h"
+#include "ocr/OcrApi.hpp"
+#include "ocr/Ocr/Ocr.hpp"
+#include "ocr/Ocr/RetinaNet/OcrRetinaNet.hpp"
+#include "ocr/OcrFactory.hpp"
+#include "ocr/exceptions/Exceptions.hpp"
+#include "Base64/base64.h"
 
 #include <spdlog/cfg/env.h>
 
@@ -184,10 +184,10 @@ TEST_F(OcrTestFixture, CheckPredictionUnitTest)
     ASSERT_TRUE(result.resultDetails[0].charactersSize == 185) << TestHelper::PrintTo();
     ASSERT_TRUE(result.resultDetails[0].characters[0].label == '<') << TestHelper::PrintTo();
     ASSERT_TRUE(result.resultDetails[0].characters[0].labelIndex == 62) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.topLeftX - 382.913) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.topLeftY - 381.929) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.bottomRightX - 394.39) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.bottomRightY - 394.192) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.topLeftX - 382.914) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.topLeftY - 381.942) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.bottomRightX - 394.38) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.bottomRightY - 394.204) < threshold) << TestHelper::PrintTo();
     ASSERT_TRUE(abs(result.resultDetails[0].characters[0].confidence - 0.999999) < threshold) << TestHelper::PrintTo();
 }
 

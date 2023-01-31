@@ -1,5 +1,5 @@
 #include "AntitamperingMrzDBSCAN.h"
-#include "src/antitampering/mrz/exceptions/Exceptions.hpp"
+#include "exceptions/Exceptions.hpp"
 
 #include "opencv2/highgui/highgui_c.h"
 
