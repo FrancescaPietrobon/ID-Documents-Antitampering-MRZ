@@ -2,7 +2,7 @@
 #define _OCR_UTILS_HPP_
 
 #include "../exceptions/Exceptions.hpp"
-#include "../../Base64/base64.h"
+#include "../../base64/base64.h"
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>

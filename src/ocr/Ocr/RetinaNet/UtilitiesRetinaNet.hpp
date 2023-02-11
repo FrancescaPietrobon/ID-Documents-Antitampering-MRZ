@@ -2,8 +2,6 @@
 #define _UTILITIES_RETINANET_HPP_
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/dnn/dnn.hpp>
-#include <opencv2/highgui/highgui.hpp>
 #include <vector>
 
 #include "../Ocr.hpp"

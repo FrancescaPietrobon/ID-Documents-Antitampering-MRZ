@@ -7,7 +7,7 @@
 #include "ocr/Ocr/RetinaNet/OcrRetinaNet.hpp"
 #include "ocr/OcrFactory.hpp"
 #include "ocr/exceptions/Exceptions.hpp"
-#include "Base64/base64.h"
+#include "base64/base64.h"
 
 #include <spdlog/cfg/env.h>
 
@@ -32,7 +32,7 @@ class OcrTestFixture : public ::testing::Test {
 
 };
 
-std::string OcrTestFixture::getBase64(cv::Mat image) //NON VA!
+std::string OcrTestFixture::getBase64(cv::Mat image)
 {
     std::vector<uchar> buffer;
     cv::imencode(".png", image, buffer);

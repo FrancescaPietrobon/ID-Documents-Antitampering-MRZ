@@ -1,7 +1,6 @@
 #ifndef _OCR_FACTORY_HPP_
 #define _OCR_FACTORY_HPP_
 
-#include "Ocr/Ocr.hpp"
 #include "Ocr/RetinaNet/OcrRetinaNet.hpp"
 #include "exceptions/Exceptions.hpp"
 

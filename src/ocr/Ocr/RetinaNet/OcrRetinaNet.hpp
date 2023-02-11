@@ -8,9 +8,6 @@
 #include "UtilitiesRetinaNet.hpp"
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/dnn/dnn.hpp>
-#include <opencv2/highgui/highgui.hpp>
-
 #include <vector>
 #include <fmt/core.h>
 

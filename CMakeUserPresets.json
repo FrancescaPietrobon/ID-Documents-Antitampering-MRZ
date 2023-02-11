@@ -4,6 +4,6 @@
         "conan": {}
     },
     "include": [
-        "/home/f_pietrobon/thesis/MRZ_Antitampering/build/generators/CMakePresets.json"
+        "/home/f_pietrobon/thesis/MRZ_Antitampering/build/Release/generators/CMakePresets.json"
     ]
 }

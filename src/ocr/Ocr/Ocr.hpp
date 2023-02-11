@@ -3,8 +3,6 @@
 
 #include <spdlog/spdlog.h>
 #include <opencv2/opencv.hpp>
-#include <opencv2/dnn/dnn.hpp>
-#include <opencv2/highgui/highgui.hpp>
 
 struct Coordinates {
     float topLeftX;
