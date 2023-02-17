@@ -25,7 +25,7 @@ std::shared_ptr<Ocr> OcrFactory::createOCR(const std::string& algorithmType)
         default:
         {
             SPDLOG_ERROR("FATAL: Algorithm Type NOT FOUND,  {}", algorithmType);
-            throw OcrException(OcrErrorCode::OCR_TYPE_NOT_FOUND, std::string("Algorithm Type not handled"));
+            throw Exception(ErrorCode::DETECTOR_TYPE_NOT_FOUND, std::string("Algorithm Type not handled"));
         }
     }
 }

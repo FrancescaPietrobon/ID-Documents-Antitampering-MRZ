@@ -1,7 +1,7 @@
 #include "OcrApi.hpp"
-#include "ocr_utils/ocrUtils.hpp"
 #include "OcrFactory.hpp"
-#include "exceptions/Exceptions.hpp"
+
+#include "common/utils/utils.hpp"
 
 #include <cstdarg>
 #include <cstdint>
@@ -9,13 +9,12 @@
 #include <ostream>
 #include <string>
 #include <new>
-#include <iostream>
 
 #define DEFAULT_CONFIDENCE_THRESHOLD 0.3
 
 // IMPLEMENTATION
 
-OcrResponse buildGlobalErrorResponse(const OcrException &exception);
+OcrResponse buildGlobalErrorResponse(const Exception &exception);
 
 extern "C"
 {
@@ -27,7 +26,7 @@ extern "C"
         {
             detector = OcrFactory::createOCR(std::string(algorithm_type));
         }
-        catch (const OcrException &e)
+        catch (const Exception &e)
         {
             SPDLOG_ERROR("Error Processing Request : {}", e.getMessage());
             res = buildGlobalErrorResponse(e);
@@ -46,24 +45,24 @@ OcrResponse processImage(char **arr_image, char **arr_content_type, char **arr_c
     res.resultDetails = new OcrResultDetail[res.resultDetailsSize];
     for (std::size_t i = 0; i < res.resultDetailsSize; i++)
     {
-        res.resultDetails[i].image = convertStringtoCharPtr(arr_image[i]);
+        res.resultDetails[i].image = utils::convertStringtoCharPtr(arr_image[i]);
         res.resultDetails[i].confidenceThreshold = arr_confidence_threshold[i] != -1.0 ? arr_confidence_threshold[i] : DEFAULT_CONFIDENCE_THRESHOLD;
         res.resultDetails[i].error = 0;
-        res.resultDetails[i].errorMessage = convertStringtoCharPtr("");
+        res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr("");
         std::vector<Characters> ocrResults;
         try
         {
-            cv::Mat image = fromBase64toCvMat(arr_content_base64[i]);
+            cv::Mat image = utils::fromBase64toCvMat(arr_content_base64[i]);
             cv::imwrite("../pre_cut.jpg", image);
             Coordinates characterRect = arr_coordinates[i];
-            image = prepareImage(characterRect, image);
+            image = utils::prepareImage(characterRect, image);
             ocrResults = detector->detect(image, res.resultDetails[i].confidenceThreshold);
         }
-        catch (OcrException &ex)
+        catch (Exception &ex)
         {
             res.resultDetails[i].charactersSize = 0;
             res.resultDetails[i].error = ex.getCode();
-            res.resultDetails[i].errorMessage = convertStringtoCharPtr(ex.getMessage());
+            res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr(ex.getMessage());
             continue;
         }
         res.resultDetails[i].charactersSize = ocrResults.size();
@@ -79,22 +78,15 @@ OcrResponse processImage(char **arr_image, char **arr_content_type, char **arr_c
     return res;
 }
 
-char *convertStringtoCharPtr(std::string str)
-{
-    char *cstr = new char[str.length() + 1];
-    strcpy(cstr, str.c_str());
-    return cstr;
-}
-
-OcrResponse buildGlobalErrorResponse(const OcrException &exception)
+OcrResponse buildGlobalErrorResponse(const Exception &exception)
 {
     OcrResponse res;
     res.resultDetailsSize = 1;
     res.resultDetails = new OcrResultDetail[res.resultDetailsSize];
-    res.resultDetails[0].image = convertStringtoCharPtr("");
+    res.resultDetails[0].image = utils::convertStringtoCharPtr("");
     res.resultDetails[0].confidenceThreshold = -1;
     res.resultDetails[0].charactersSize = 0;
     res.resultDetails[0].error = exception.getCode();
-    res.resultDetails[0].errorMessage = convertStringtoCharPtr(exception.getMessage());
+    res.resultDetails[0].errorMessage = utils::convertStringtoCharPtr(exception.getMessage());
     return res;
 }

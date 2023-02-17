@@ -30,6 +30,5 @@ extern "C"
 } // extern "C"
 
 OcrResponse processImage(char **arr_image, char **arr_content_type, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size, std::shared_ptr<Ocr> detector);
-char *convertStringtoCharPtr(std::string str);
 
 #endif

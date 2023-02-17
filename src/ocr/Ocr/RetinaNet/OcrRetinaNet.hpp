@@ -2,7 +2,7 @@
 #define _OCR_RETINANET_HPP_
 
 #include "../Ocr.hpp"
-#include "../../exceptions/Exceptions.hpp"
+#include "common/exceptions/Exceptions.hpp"
 #include "Anchors.hpp"
 #include "Dictionary.hpp"
 #include "UtilitiesRetinaNet.hpp"

@@ -1,22 +1,24 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "../../TestHelper.hpp"
+#include "TestHelper.hpp"
 #include "ocr/OcrApi.hpp"
 #include "ocr/Ocr/Ocr.hpp"
 #include "ocr/Ocr/RetinaNet/OcrRetinaNet.hpp"
 #include "ocr/OcrFactory.hpp"
-#include "ocr/exceptions/Exceptions.hpp"
+#include "common/exceptions/Exceptions.hpp"
 #include "base64/base64.h"
 
 #include <spdlog/cfg/env.h>
 
+/*
 class MockOcr : public Ocr
 {
     public:
         //MOCK_METHOD(OcrResponse, process, (char **arr_image, char **arr_content_type, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size), (override));
         MOCK_METHOD(std::vector<Characters>, detect, (const cv::Mat image, const float confidenceThreshold), (override));
 };
+*/
 
 class OcrTestFixture : public ::testing::Test {
     protected:
@@ -121,17 +123,17 @@ TEST_F(OcrTestFixture, applySigmoidUnitTest)
 TEST_F(OcrTestFixture, CheckPredictionUnitTest)
 {
     char **images = new char *[1];
-    images[0] = convertStringtoCharPtr("images0");
+    images[0] = utils::convertStringtoCharPtr("images0");
     char **contentType = new char *[1];
-    contentType[0] = convertStringtoCharPtr("image/jpeg");
+    contentType[0] = utils::convertStringtoCharPtr("image/jpeg");
     char **contentBase64 = new char *[1];
-    contentBase64[0] = convertStringtoCharPtr(getBase64(cv::imread("testData/images/AFG_AO_01001_FRONT.JPG")));
+    contentBase64[0] = utils::convertStringtoCharPtr(getBase64(cv::imread("testData/images/ocr/AFG_AO_01001_FRONT.JPG")));
     Coordinates *coordinates = new Coordinates[1];
     coordinates[0] = Coordinates{0, 0, 800, 800};
     float *thresholds = new float[1];
     thresholds[0] = 0.3;
     char *algoType = new char;
-    algoType = convertStringtoCharPtr("RetinaNet");
+    algoType = utils::convertStringtoCharPtr("RetinaNet");
 
     OcrResponse result = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoType);
 
@@ -149,17 +151,17 @@ TEST_F(OcrTestFixture, CheckPredictionUnitTest)
 TEST_F(OcrTestFixture, BadCoordinatesUnitTest)
 {
     char **images = new char *[1];
-    images[0] = convertStringtoCharPtr("images0");
+    images[0] = utils::convertStringtoCharPtr("images0");
     char **contentType = new char *[1];
-    contentType[0] = convertStringtoCharPtr("image/jpeg");
+    contentType[0] = utils::convertStringtoCharPtr("image/jpeg");
     char **contentBase64 = new char *[1];
-    contentBase64[0] = convertStringtoCharPtr(getBase64(cv::imread("testData/images/AFG_AO_01001_FRONT.JPG")));
+    contentBase64[0] = utils::convertStringtoCharPtr(getBase64(cv::imread("testData/images/ocr/AFG_AO_01001_FRONT.JPG")));
     Coordinates *coordinates = new Coordinates[1];
     coordinates[0] = Coordinates{0, 0, 0, 0};
     float *thresholds = new float[1];
     thresholds[0] = 0.3;
     char *algoType = new char;
-    algoType = convertStringtoCharPtr("RetinaNet");
+    algoType = utils::convertStringtoCharPtr("RetinaNet");
 
     OcrResponse result = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoType);
 
@@ -172,17 +174,17 @@ TEST_F(OcrTestFixture, BadCoordinatesUnitTest)
 TEST_F(OcrTestFixture, OcrTypeNotFoundUnitTest)
 {
     char **images = new char *[1];
-    images[0] = convertStringtoCharPtr("images0");
+    images[0] = utils::convertStringtoCharPtr("images0");
     char **contentType = new char *[1];
-    contentType[0] = convertStringtoCharPtr("image/jpeg");
+    contentType[0] = utils::convertStringtoCharPtr("image/jpeg");
     char **contentBase64 = new char *[1];
-    contentBase64[0] = convertStringtoCharPtr(getBase64(cv::imread("testData/images/AFG_AO_01001_FRONT.JPG")));
+    contentBase64[0] = utils::convertStringtoCharPtr(getBase64(cv::imread("testData/images/ocr/AFG_AO_01001_FRONT.JPG")));
     Coordinates *coordinates = new Coordinates[1];
     coordinates[0] = Coordinates{0, 0, 0, 0};
     float *thresholds = new float[1];
     thresholds[0] = 0.3;
     char *algoType = new char;
-    algoType = convertStringtoCharPtr("NewType");
+    algoType = utils::convertStringtoCharPtr("NewType");
 
     OcrResponse result = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoType);
 

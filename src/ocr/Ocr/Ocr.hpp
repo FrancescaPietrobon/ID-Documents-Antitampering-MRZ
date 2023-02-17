@@ -1,15 +1,10 @@
 #ifndef _OCR_HPP_
 #define _OCR_HPP_
 
+#include "common/utils/utils.hpp"
+
 #include <spdlog/spdlog.h>
 #include <opencv2/opencv.hpp>
-
-struct Coordinates {
-    float topLeftX;
-    float topLeftY;
-    float bottomRightX;
-    float bottomRightY;
-};
 
 struct Characters {
     char label;

@@ -2,7 +2,7 @@
 #define _OCR_FACTORY_HPP_
 
 #include "Ocr/RetinaNet/OcrRetinaNet.hpp"
-#include "exceptions/Exceptions.hpp"
+#include "common/exceptions/Exceptions.hpp"
 
 #include <spdlog/spdlog.h>
 #include <map>

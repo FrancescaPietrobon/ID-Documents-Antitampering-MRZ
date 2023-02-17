@@ -23,7 +23,7 @@ cv::Mat OcrRetinaNet::inference(const cv::Mat& image)
     catch(cv::Exception& e)
     {
         SPDLOG_ERROR("Error Running Model : {}", e.what());
-        throw OcrException(OcrErrorCode::GENERAL_ERROR, "Error Running Model : " + std::string(e.what()));
+        throw Exception(ErrorCode::GENERAL_ERROR, "Error Running Model : " + std::string(e.what()));
     }
 }
 
@@ -70,7 +70,7 @@ cv::Mat OcrRetinaNet::imagePreprocessing(const cv::Mat& inputImage)
 std::vector<Characters> OcrRetinaNet::detect(const cv::Mat image, const float confidenceThreshold)
 {
     if(image.empty())
-        throw OcrException(OcrErrorCode::BAD_COORDINATES, "Not able to find compliant image with provided metadata");
+        throw Exception(ErrorCode::BAD_COORDINATES, "Not able to find compliant image with provided metadata");
     cv::imwrite("../post_cut.jpg", image);
 
     SPDLOG_INFO("Preprocessing input image");
