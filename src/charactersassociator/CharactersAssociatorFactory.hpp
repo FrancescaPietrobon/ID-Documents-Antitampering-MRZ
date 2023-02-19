@@ -1,17 +1,20 @@
 #pragma once
 
-#include "charactersassociator/DBSCAN/DBSCAN.hpp"
+#include "CharactersAssociator/DBSCAN/DBSCAN.hpp"
 #include "common/exceptions/Exceptions.hpp"
 
 #include <spdlog/spdlog.h>
 #include <map>
 
-enum AlgorithmType
+#define EPS 27
+
+enum AssociatorType
 {
-    DBSCAN = 1
+    Dbscan,
+    //boh
 };
 
 class CharactersAssociatorFactory {
     public: 
-        static std::shared_ptr<Associator> createAssociator(const std::string& algorithmType);
+        static std::shared_ptr<CharactersAssociator> createAssociator(const std::string& algorithmType);
 };

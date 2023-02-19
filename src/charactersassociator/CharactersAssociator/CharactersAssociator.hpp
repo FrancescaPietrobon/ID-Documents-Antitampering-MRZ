@@ -17,5 +17,5 @@ class CharactersAssociator {
     public:
         CharactersAssociator(){};
         virtual ~CharactersAssociator(){};
-        virtual std::vector<Fields> associate(const OcrResponse ocrResponse) = 0;
+        virtual std::vector<Fields> associateCharacters(const Characters *characters, const size_t charactersSize) = 0;
 };

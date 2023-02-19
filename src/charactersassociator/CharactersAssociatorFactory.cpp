@@ -1,19 +1,18 @@
 #include "CharactersAssociatorFactory.hpp"
 
-std::map<std::string, AlgorithmType> mapAlgorithmType = {
-    {"DBSCAN", DBSCAN}
+std::map<std::string, AssociatorType> mapAssociatorType = {
+    {"Dbscan", Dbscan},
+    //{"boh", boh},
 };
 
-std::shared_ptr<Associator> CharactersAssociatorFactory::createAssociator(const std::string& algorithmType)
+std::shared_ptr<CharactersAssociator> CharactersAssociatorFactory::createAssociator(const std::string& algorithmType)
 {
     SPDLOG_INFO("Creating characters associator");
-    AlgorithmType type = mapAlgorithmType.find(algorithmType)->second;
+    AssociatorType type = mapAssociatorType.find(algorithmType)->second;
     switch (type)
     {
-        case DBSCAN:
-        {
-            return std::shared_ptr<Associator>(std::make_shared<DBSCAN>());
-        }
+        case Dbscan:
+            return std::shared_ptr<CharactersAssociator>(std::make_shared<DBSCAN>(EPS));
         default:
         {
             SPDLOG_ERROR("FATAL: Algorithm Type NOT FOUND,  {}", algorithmType);

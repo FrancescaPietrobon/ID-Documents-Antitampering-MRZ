@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CharactersAssociator/CharactersAssociator.hpp"
+#include "CharactersAssociatorFactory.hpp"
 
 // RESPONSE
 struct AssociatorResultDetail
@@ -24,8 +25,8 @@ struct AssociatorResponse
 extern "C"
 {
 
-    AssociatorResponse process(OcrResponse *ocrResponse, char *algorithm_type);
+    AssociatorResponse associate(OcrResponse ocrResponse, char *algorithm_type);
 
 } // extern "C"
 
-AssociatorResponse process(OcrResponse *ocrResponse, std::shared_ptr<CharactersAssociator> associator);
+AssociatorResponse associateChar(OcrResponse ocrResponse, std::shared_ptr<CharactersAssociator> associator);

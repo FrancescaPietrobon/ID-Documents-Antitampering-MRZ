@@ -1,9 +1,6 @@
 #include "CharactersAssociatorApi.hpp"
-#include "CharactersAssociatorFactory.hpp"
 
 #include "common/utils/utils.hpp"
-
-#include "logging/LogParameters.hpp"
 
 #include <cstdarg>
 #include <cstdint>
@@ -17,7 +14,7 @@ AssociatorResponse buildGlobalErrorResponse(const Exception &exception);
 
 extern "C"
 {
-    AssociatorResponse process(OcrResponse *ocrResponse, char *algorithm_type)
+    AssociatorResponse associate(OcrResponse ocrResponse, char *algorithm_type)
     {
         AssociatorResponse res;
         std::shared_ptr<CharactersAssociator> associator = nullptr;
@@ -32,25 +29,25 @@ extern "C"
             return res;
         }
 
-        res = process(ocrResponse, associator);
+        res = associateChar(ocrResponse, associator);
         return res;
     }
 }
 
-AssociatorResponse process(OcrResponse *ocrResponse, std::shared_ptr<CharactersAssociator> associator)
+AssociatorResponse associateChar(OcrResponse ocrResponse, std::shared_ptr<CharactersAssociator> associator)
 {
     AssociatorResponse res;
-    res.resultDetailsSize = arr_size;
+    res.resultDetailsSize = ocrResponse.resultDetailsSize;
     res.resultDetails = new AssociatorResultDetail[res.resultDetailsSize];
     for (std::size_t i = 0; i < res.resultDetailsSize; i++)
     {
-        res.resultDetails[i].image = utils::convertStringtoCharPtr(arr_image[i]);
+        res.resultDetails[i].image = utils::convertStringtoCharPtr(ocrResponse.resultDetails[i].image);
         res.resultDetails[i].error = 0;
         res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr("");
         std::vector<Fields> associatorResults;
         try
         {
-            associatorResults = detector->associate(ocrResponse);
+            associatorResults = associator->associateCharacters(ocrResponse.resultDetails[i].characters, ocrResponse.resultDetails[i].charactersSize);
         }
         catch (Exception &ex)
         {

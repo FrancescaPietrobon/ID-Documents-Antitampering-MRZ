@@ -19,8 +19,15 @@ else()
     set(CMAKE_CXX_FLAGS "-Wall")
 endif()
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fno-inline -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS_RELEASE "-m64 -O3")
+
 set(CMAKE_INSTALL_LIBDIR "lib/x86_64-linux-gnu")
 set(CMAKE_INSTALL_INCLUDEDIR "include")
+
+message(STATUS "Library installation path: ${CMAKE_INSTALL_LIBDIR}")
+message(STATUS "Headers installation path: ${CMAKE_INSTALL_INCLUDEDIR}")
 
 # ################
 # Find packages #
@@ -30,51 +37,21 @@ find_package(spdlog)
 find_package(jsoncpp)
 find_package(nlohmann_json)
 find_package(GTest REQUIRED)
+find_package(Protobuf REQUIRED)
+
+# Common
+set(COMMON_PATH "src/common" CACHE STRING "Common folder")
+file(GLOB_RECURSE APP_COMMON "${COMMON_PATH}/*.h" "${COMMON_PATH}/*.cpp" "${COMMON_PATH}/*.hpp")
+file(GLOB_RECURSE COMMON_HEADERS "${COMMON_PATH}/*.hpp" "${COMMON_PATH}/*.h")
 
 # Base64
 set(BASE64_PATH "src/base64" CACHE STRING "Base64 folder")
 file(GLOB_RECURSE APP_BASE64 "${BASE64_PATH}/*.h" "${BASE64_PATH}/*.cpp" "${BASE64_PATH}/*.hpp")
 file(GLOB_RECURSE BASE64_HEADERS "${BASE64_PATH}/*.hpp" "${BASE64_PATH}/*.h")
 
-#[===[
-
-# ######
-# Core #
-# ######
-
-add_library(document_validator SHARED
-    ${APP_BASE64}
-)
-
-target_sources(document_validator
-    PUBLIC FILE_SET headers
-    TYPE HEADERS
-    BASE_DIRS "src" FILES
-    ${BASE64_HEADERS}
-)
-
-target_include_directories(document_validator PUBLIC
-    ${BASE64_PATH}
-)
-
-target_link_libraries(document_validator
-    opencv::opencv
-    spdlog::spdlog
-    jsoncpp_lib
-)
-
-install(TARGETS document_validator
-    COMPONENT core
-    RUNTIME DESTINATION bin
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    FILE_SET headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/document_validator
-)
-]===]
-
-# #####
-# Ocr #
-# #####
+# ##########
+# Ocr stub #
+# ##########
 
 set(OCR_PATH "src/ocr" CACHE STRING "Ocr stub folder")
 file(GLOB_RECURSE APP_OCR "${OCR_PATH}/*.h" "${OCR_PATH}/*.cpp" "${OCR_PATH}/*.hpp")
@@ -83,6 +60,7 @@ file(GLOB_RECURSE OCR_HEADERS "${OCR_PATH}/*.hpp" "${OCR_PATH}/*.h")
 add_library(document_validator_ocr SHARED
     ${APP_OCR}
     ${APP_BASE64}
+    ${APP_COMMON}
 )
 
 target_sources(document_validator_ocr
@@ -91,11 +69,13 @@ target_sources(document_validator_ocr
     BASE_DIRS "src" FILES
     ${OCR_HEADERS}
     ${BASE64_HEADERS}
+    ${COMMON_HEADERS}
 )
 
 target_include_directories(document_validator_ocr PUBLIC
     ${OCR_PATH}
     ${BASE64_PATH}
+    ${COMMON_PATH}
 )
 
 target_link_libraries(document_validator_ocr
@@ -113,19 +93,19 @@ install(TARGETS document_validator_ocr
     FILE_SET headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/document_validator
 )
 
-#[===[
 
-# ###########################
+# ############################
 # Characters associator stub #
-# ###########################
+# ############################
 
-set(CHARACTERS_ASSOCIATOR_PATH "src/characters_associator" CACHE STRING "CharactersAssociator stub folder")
+set(CHARACTERS_ASSOCIATOR_PATH "src/charactersassociator" CACHE STRING "CharactersAssociator stub folder")
 file(GLOB_RECURSE APP_CHARACTERS_ASSOCIATOR "${CHARACTERS_ASSOCIATOR_PATH}/*.h" "${CHARACTERS_ASSOCIATOR_PATH}/*.cpp" "${CHARACTERS_ASSOCIATOR_PATH}/*.hpp")
 file(GLOB_RECURSE CHARACTERS_ASSOCIATOR_HEADERS "${CHARACTERS_ASSOCIATOR_PATH}/*.hpp" "${CHARACTERS_ASSOCIATOR_PATH}/*.h")
 
 add_library(document_validator_characters_associator SHARED
     ${APP_CHARACTERS_ASSOCIATOR}
     ${APP_BASE64}
+    ${APP_COMMON}
 )
 
 target_sources(document_validator_characters_associator
@@ -134,11 +114,13 @@ target_sources(document_validator_characters_associator
     BASE_DIRS "src" FILES
     ${CHARACTERS_ASSOCIATOR_HEADERS}
     ${BASE64_HEADERS}
+    ${COMMON_HEADERS}
 )
 
 target_include_directories(document_validator_characters_associator PUBLIC
     ${CHARACTERS_ASSOCIATOR_PATH}
     ${BASE64_PATH}
+    ${COMMON_PATH}
 )
 
 target_link_libraries(document_validator_characters_associator
@@ -155,7 +137,7 @@ install(TARGETS document_validator_characters_associator
     FILE_SET headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/document_validator
 )
 
-]===]
+#[===[
 
 # ###################
 # Antitampering MRZ #
@@ -167,7 +149,7 @@ file(GLOB_RECURSE ANTITAMPERING_MRZ_HEADERS "${ANTITAMPERING_MRZ_PATH}/*.hpp" "$
 
 add_library(document_validator_antitampering_mrz SHARED
     ${APP_ANTITAMPERING_MRZ}
-    ${APP_BASE64}
+    ${APP_COMMON}
 )
 
 target_sources(document_validator_antitampering_mrz
@@ -175,11 +157,11 @@ target_sources(document_validator_antitampering_mrz
     TYPE HEADERS
     BASE_DIRS "src" FILES
     ${ANTITAMPERING_MRZ_HEADERS}
+    ${COMMON_HEADERS}
 )
 
 target_include_directories(document_validator_antitampering_mrz PUBLIC
     ${ANTITAMPERING_MRZ_PATH}
-    ${DATA_PATH}
     ${COMMON_PATH}
 )
 
@@ -198,6 +180,7 @@ install(TARGETS document_validator_antitampering_mrz
     FILE_SET headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/document_validator
 )
 
+]===]
 
 # ###################
 # Standalone runner #
@@ -208,8 +191,8 @@ add_executable(application src/main.cpp)
 target_link_libraries(application
     #document_validator
     document_validator_ocr
-    #document_validator_characters_associator
-    document_validator_antitampering_mrz
+    document_validator_characters_associator
+    #document_validator_antitampering_mrz
 )
 
 # #######
@@ -217,30 +200,71 @@ target_link_libraries(application
 # #######
 
 enable_testing()
-
+include(GoogleTest)
 
 # Unit Tests
-set(UNIT_TESTS_PATH "src/tests/testCases/unitTests" CACHE STRING "Unit tests folder")
-file(GLOB_RECURSE APP_UNIT_TESTS "${UNIT_TESTS_PATH}/*.h" "${UNIT_TESTS_PATH}/*.cpp" "${UNIT_TESTS_PATH}/*.hpp")
+set(TESTS_OCR_PATH "src/tests/testCases/unitTests/ocr/" CACHE STRING "Unit tests folder")
+file(GLOB_RECURSE APP_TESTS_OCR "${TESTS_OCR_PATH}/*.h" "${TESTS_OCR_PATH}/*.cpp" "${TESTS_OCR_PATH}/*.hpp")
+
+#set(TESTS_CHARACTERS_ASSOCIATOR_PATH "src/tests/testCases/unitTests/charactersassociator/" CACHE STRING "Unit tests folder")
+#file(GLOB_RECURSE APP_TESTS_CHARACTERS_ASSOCIATOR "${TESTS_CHARACTERS_ASSOCIATOR_PATH}/*.h" "${TESTS_CHARACTERS_ASSOCIATORG_PATH}/*.cpp" "${TESTS_CHARACTERS_ASSOCIATOR_PATH}/*.hpp")
+
+#set(TESTS_ANTITAMPERING_PATH "src/tests/testCases/unitTests/antitampering/" CACHE STRING "Unit tests folder")
+#file(GLOB_RECURSE APP_TESTS_ANTITAMPERING "${TESTS_ANTITAMPERING_PATH}/*.h" "${TESTS_ANTITAMPERING_PATH}/*.cpp" "${TESTS_ANTITAMPERING_PATH}/*.hpp")
 
 # Test data
 file(COPY "src/tests/testData" DESTINATION ".")
 
-add_executable(TestExecutable
+# Test document_validator_ocr
+add_executable(TestOcr
     src/tests/main.cpp
-    ${APP_UNIT_TESTS}
+    ${APP_TESTS_OCR}
 )
 
-target_include_directories(TestExecutable PUBLIC "src/tests")
+target_include_directories(TestOcr PUBLIC "src/tests")
 
-target_link_libraries(TestExecutable
-    #document_validator
+target_link_libraries(TestOcr
     document_validator_ocr
-    #document_validator_characters_associator
+    GTest::gmock
+)
+
+gtest_discover_tests(TestOcr)
+
+#[===[
+
+# Test document_validator_characters_associator
+add_executable(TestCharactersAssociator
+    src/tests/main.cpp
+    ${APP_TESTS_CHARACTERS_ASSOCIATOR}
+)
+
+target_include_directories(TestCharactersAssociator PUBLIC "src/tests")
+
+target_link_libraries(TestCharactersAssociator
+    document_validator_characters_associator
+    GTest::gmock
+)
+
+gtest_discover_tests(TestCharactersAssociator)
+
+]===]
+
+
+#[===[
+
+# Test document_validator_antitampering_mrz
+add_executable(TestAntitampering
+    src/tests/main.cpp
+    ${APP_TESTS_ANTITAMPERING}
+)
+
+target_include_directories(TestAntitampering PUBLIC "src/tests")
+
+target_link_libraries(TestAntitampering
     document_validator_antitampering_mrz
     GTest::gmock
 )
 
-include(GoogleTest)
+gtest_discover_tests(TestAntitampering)
 
-gtest_discover_tests(TestExecutable)
+]===]

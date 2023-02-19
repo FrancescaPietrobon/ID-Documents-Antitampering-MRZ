@@ -104,7 +104,8 @@ class MrzAntitamperingConan(ConanFile):
 
     def validate(self):
         if self.settings.os == "Windows":
-            raise ConanInvalidConfiguration("This library is not compatible with Windows")
+            raise ConanInvalidConfiguration(
+                "This library is not compatible with Windows")
 
     def package_info(self):
         self.cpp_info.name = "lib_document_validator"
@@ -120,17 +121,30 @@ class MrzAntitamperingConan(ConanFile):
         self.cpp_info.components["ocr"].libdirs = ["lib/x86_64-linux-gnu"]
         self.cpp_info.components["ocr"].includedirs = ["include", "include/document_validator"]
 
-        self.cpp_info.components["antitampering_mrz"].requires = [
+        self.cpp_info.components["characters_associator"].requires = [
             "spdlog::spdlog",
             "boost::boost",
             "opencv::opencv",
             "jsoncpp::jsoncpp",
             "nlohmann_json::nlohmann_json"
         ]
-        self.cpp_info.components["antitampering_mrz"].libs = ["document_validator_antitampering_mrz"]
-        self.cpp_info.components["antitampering_mrz"].libdirs = ["lib/x86_64-linux-gnu"]
-        self.cpp_info.components["antitampering_mrz"].includedirs = ["include", "include/document_validator"]
-        
+        self.cpp_info.components["characters_associator"].libs = ["document_validator_characters_associator"]
+        self.cpp_info.components["characters_associator"].libdirs = ["lib/x86_64-linux-gnu"]
+        self.cpp_info.components["characters_associator"].includedirs = ["include", "include/document_validator"]
+
+        '''
+        self.cpp_info.components["antitampering"].requires = [
+            "spdlog::spdlog",
+            "boost::boost",
+            "opencv::opencv",
+            "jsoncpp::jsoncpp",
+            "nlohmann_json::nlohmann_json"
+        ]
+        self.cpp_info.components["antitampering"].libs = ["document_validator_antitampering"]
+        self.cpp_info.components["antitampering"].libdirs = ["lib/x86_64-linux-gnu"]
+        self.cpp_info.components["antitampering"].includedirs = ["include", "include/document_validator"]
+        '''
+
     def set_version(self):
         self.version = os.environ.get("DOCUMENT_VALIDATOR_VERSION", "1.0")
 

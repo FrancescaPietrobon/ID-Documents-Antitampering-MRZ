@@ -1,4 +1,5 @@
 #include "ocr/OcrApi.hpp"
+#include "charactersassociator/CharactersAssociatorApi.hpp"
 #include "base64/base64.h"
 
 //#include "characters_associator/CharactersAssociator.hpp"
@@ -28,7 +29,7 @@ int main(int argc, char *argv[])
     std::vector<Characters> result = ocr->detect(inputImage, confidenceThreshold);
     */
 
-    std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/DNK_AO_04002_FRONT_2.jpeg";
+    std::string imagePath = "testData/images/ocr/AFG_AO_01001_FRONT.JPG";
 
     char **images = new char *[1];
     images[0] = utils::convertStringtoCharPtr("images0");
@@ -37,13 +38,28 @@ int main(int argc, char *argv[])
     char **contentBase64 = new char *[1];
     contentBase64[0] = utils::convertStringtoCharPtr(getBase64(cv::imread(imagePath)));
     Coordinates *coordinates = new Coordinates[1];
-    coordinates[0] = Coordinates{0, 0, 800, 800};
+    coordinates[0] = Coordinates{0, 0, 2000, 2000};
     float *thresholds = new float[1];
     thresholds[0] = 0.3;
-    char *algoType = new char;
-    algoType = utils::convertStringtoCharPtr("RetinaNet");
+    char *algoTypeOcr = new char;
+    algoTypeOcr = utils::convertStringtoCharPtr("RetinaNet");
 
-    OcrResponse result = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoType);
+    OcrResponse ocrResult = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoTypeOcr);
 
+    char *algoTypeAssociation = new char;
+    algoTypeAssociation = utils::convertStringtoCharPtr("Dbscan");
+    AssociatorResponse associatorResult = associate(ocrResult, algoTypeAssociation);
+
+    std::cout << "\nAssociation result with DBSCAN:\n" << std::endl;
+    for(size_t i = 0; i < associatorResult.resultDetailsSize; ++i)
+    {
+        std::cout << "Image: " << associatorResult.resultDetails[i].image << "\n" << std::endl;
+        for(size_t j = 0; j < associatorResult.resultDetails[i].fieldsSize; ++j)
+        {
+            std::cout << "Label: " << associatorResult.resultDetails[i].fields[j].label << std::endl;
+            std::cout << "Confidence: " << associatorResult.resultDetails[i].fields[j].confidence << "\n" << std::endl;
+        }
+    }
+    
     return 0;
 }
