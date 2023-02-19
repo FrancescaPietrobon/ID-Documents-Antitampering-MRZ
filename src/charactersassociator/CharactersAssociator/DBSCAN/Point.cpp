@@ -43,6 +43,11 @@ char Point::getLabel()
     return character.label;
 }
 
+Coordinates Point::getPosition()
+{
+    return character.position;
+}
+
 float Point::distance(Point point)
 {
     return std::sqrt(0.05 * (xCenter - point.getX()) * (xCenter - point.getX()) +

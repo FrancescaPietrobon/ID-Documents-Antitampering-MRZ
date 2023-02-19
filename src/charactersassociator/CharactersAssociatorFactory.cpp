@@ -2,7 +2,7 @@
 
 std::map<std::string, AssociatorType> mapAssociatorType = {
     {"Dbscan", Dbscan},
-    //{"boh", boh},
+    {"EuclDistance", EuclDistance}
 };
 
 std::shared_ptr<CharactersAssociator> CharactersAssociatorFactory::createAssociator(const std::string& algorithmType)
@@ -12,7 +12,9 @@ std::shared_ptr<CharactersAssociator> CharactersAssociatorFactory::createAssocia
     switch (type)
     {
         case Dbscan:
-            return std::shared_ptr<CharactersAssociator>(std::make_shared<DBSCAN>(EPS));
+            return std::shared_ptr<CharactersAssociator>(std::make_shared<DBSCAN>(epsDbscan));
+        case EuclDistance:
+            return std::shared_ptr<CharactersAssociator>(std::make_shared<EuclideanDistance>(epsEuclDist));
         default:
         {
             SPDLOG_ERROR("FATAL: Algorithm Type NOT FOUND,  {}", algorithmType);

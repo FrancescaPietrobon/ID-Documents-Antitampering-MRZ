@@ -71,7 +71,7 @@ std::vector<Characters> OcrRetinaNet::detect(const cv::Mat image, const float co
 {
     if(image.empty())
         throw Exception(ErrorCode::BAD_COORDINATES, "Not able to find compliant image with provided metadata");
-    cv::imwrite("../post_cut.jpg", image);
+    cv::imwrite("../../printResults/post_cut.jpg", image);
 
     SPDLOG_INFO("Preprocessing input image");
     cv::Mat imagePreprocessed = this -> imagePreprocessing(image);

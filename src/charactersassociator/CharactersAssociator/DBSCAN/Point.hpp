@@ -26,4 +26,5 @@ class Point
         size_t getCountPts();
         float getConfidence();
         char getLabel();
+        Coordinates getPosition();
 };

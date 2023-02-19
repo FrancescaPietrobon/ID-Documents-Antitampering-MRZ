@@ -102,34 +102,52 @@ std::vector<Fields> DBSCAN::computeFields(std::vector<Point> points, std::vector
                 countElements += 1;
             }
         }
-        field = fillField(sumConfidence/countElements, countElements, cluster);
+        std::vector<Point> orderedCharacters = orderCharacters(cluster);
+        field = fillField(sumConfidence/countElements, countElements, orderedCharacters);
         fields.push_back(field);
         cluster.clear();
     }
     return fields;
 }
 
-Fields DBSCAN::fillField(float confidence, size_t labelSize, std::multimap<float, Point> cluster)
+Fields DBSCAN::fillField(float confidence, size_t labelSize, std::vector<Point> orderedCharacters)
 {
+
     Fields field;
     field.confidence = confidence;
     field.labelSize = labelSize;
-    field.label = utils::convertStringtoCharPtr(extractLabel(cluster));
+    field.label = utils::convertStringtoCharPtr(extractLabel(orderedCharacters));
+    field.position = extractPosition(orderedCharacters);
     //std::cout << "label: " << field.label << "\t labelSize: " << field.labelSize << "\t confidence: " << confidence << std::endl;
 
     return field;
 }
 
-std::string DBSCAN::extractLabel(std::multimap<float, Point> cluster)
+std::vector<Point> DBSCAN::orderCharacters(std::multimap<float, Point> cluster)
 {
     // To order wrt x coordinate
     std::vector<Point> orderedCharacters;
     for(auto & character: cluster)
         orderedCharacters.push_back(character.second);
-        
+    return orderedCharacters;
+}
+
+std::string DBSCAN::extractLabel(std::vector<Point> orderedCharacters)
+{
     std::string label;
     for(size_t i = 0; i < orderedCharacters.size(); ++i)
         label.push_back(orderedCharacters[i].getLabel());
 
     return label;
+}
+
+Coordinates DBSCAN::extractPosition(std::vector<Point> orderedCharacters)
+{   
+    Coordinates position;
+    position.topLeftX = orderedCharacters[0].getPosition().topLeftX;
+    position.topLeftY = orderedCharacters[0].getPosition().topLeftY;
+    position.bottomRightX = orderedCharacters[orderedCharacters.size()-1].getPosition().bottomRightX;
+    position.bottomRightY = orderedCharacters[orderedCharacters.size()-1].getPosition().bottomRightY;
+
+    return position;
 }

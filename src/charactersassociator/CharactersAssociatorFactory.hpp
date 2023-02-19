@@ -1,17 +1,19 @@
 #pragma once
 
 #include "CharactersAssociator/DBSCAN/DBSCAN.hpp"
+#include "CharactersAssociator/EuclideanDistance/EuclideanDistance.hpp"
 #include "common/exceptions/Exceptions.hpp"
 
 #include <spdlog/spdlog.h>
 #include <map>
 
-#define EPS 27
+#define epsDbscan 27
+#define epsEuclDist 1
 
 enum AssociatorType
 {
     Dbscan,
-    //boh
+    EuclDistance
 };
 
 class CharactersAssociatorFactory {

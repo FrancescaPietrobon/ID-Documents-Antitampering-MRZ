@@ -113,5 +113,5 @@ void savePredictionImage(cv::Mat img, std::vector<Characters> characters)
         cv::Point confOrg(character.position.topLeftX, character.position.bottomRightY + confSize.height);
         cv::putText(new_image, conf, confOrg, fontFace, fontScale*0.6, cv::Scalar(0,0,0), thickness, lineType);
     }
-    cv::imwrite("../OCR.jpg", new_image);
+    cv::imwrite("../../printResults/OCR.jpg", new_image);
 }

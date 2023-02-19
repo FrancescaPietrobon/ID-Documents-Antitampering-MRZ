@@ -2,7 +2,8 @@
 #include "charactersassociator/CharactersAssociatorApi.hpp"
 #include "base64/base64.h"
 
-//#include "characters_associator/CharactersAssociator.hpp"
+//#include "charactersassociator/CharactersAssociator/DBSCAN/DBSCANUtilities.hpp"
+#include "print/PrintResult.hpp"
 
 std::string getBase64(cv::Mat image)
 {
@@ -60,6 +61,8 @@ int main(int argc, char *argv[])
             std::cout << "Confidence: " << associatorResult.resultDetails[i].fields[j].confidence << "\n" << std::endl;
         }
     }
+
+    printDbscanResult(cv::imread(imagePath), associatorResult.resultDetails->fields, associatorResult.resultDetails->fieldsSize);
     
     return 0;
 }

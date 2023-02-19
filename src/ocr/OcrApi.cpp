@@ -53,7 +53,7 @@ OcrResponse processImage(char **arr_image, char **arr_content_type, char **arr_c
         try
         {
             cv::Mat image = utils::fromBase64toCvMat(arr_content_base64[i]);
-            cv::imwrite("../pre_cut.jpg", image);
+            cv::imwrite("../../printResults/pre_cut.jpg", image);
             Coordinates characterRect = arr_coordinates[i];
             image = utils::prepareImage(characterRect, image);
             ocrResults = detector->detect(image, res.resultDetails[i].confidenceThreshold);

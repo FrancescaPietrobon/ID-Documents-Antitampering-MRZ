@@ -182,6 +182,36 @@ install(TARGETS document_validator_antitampering_mrz
 
 ]===]
 
+# #################
+# Print Utilities #
+# #################
+
+set(PRINT_PATH "src/print" CACHE STRING "Print")
+file(GLOB_RECURSE APP_PRINT "${PRINT_PATH}/*.h" "${PRINT_PATH}/*.cpp" "${PRINT_PATH}/*.hpp")
+file(GLOB_RECURSE PRINT_HEADERS "${PRINT_PATH}/*.hpp" "${PRINT_PATH}/*.h")
+
+add_library(print SHARED
+    ${APP_PRINT}
+    ${APP_COMMON}
+)
+
+target_sources(print
+    PUBLIC FILE_SET headers
+    TYPE HEADERS
+    BASE_DIRS "src" FILES
+    ${PRINT_HEADERS}
+    ${COMMON_HEADERS}
+)
+
+target_include_directories(print PUBLIC
+    ${PRINT_PATH}
+    ${COMMON_PATH}
+)
+
+target_link_libraries(print
+    opencv::opencv
+)
+
 # ###################
 # Standalone runner #
 # ###################
@@ -190,6 +220,7 @@ add_executable(application src/main.cpp)
 
 target_link_libraries(application
     #document_validator
+    print
     document_validator_ocr
     document_validator_characters_associator
     #document_validator_antitampering_mrz
