@@ -91,9 +91,6 @@ std::vector<Characters> OcrRetinaNet::detect(const cv::Mat image, const float co
     SPDLOG_INFO("Apply NMS");
     std::vector<Characters> characters = nonMaximaSuppression(boxes, modelClasses, confidenceThreshold);
 
-    SPDLOG_INFO("Printing result");
-    savePredictionImage(image, characters);
-
     return characters;
 }
 

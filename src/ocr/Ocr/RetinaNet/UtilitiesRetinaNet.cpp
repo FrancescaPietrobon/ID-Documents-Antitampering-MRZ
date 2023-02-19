@@ -82,36 +82,3 @@ void printPredictions(matrix2D pred)
             std::cout << " " << std::endl;
     }
 }
-
-void savePredictionImage(cv::Mat img, std::vector<Characters> characters)
-{
-    cv::Mat new_image = img;
-    int lineType = cv::LINE_AA;
-    int fontFace = cv::FONT_HERSHEY_SIMPLEX;
-    float fontScale = 0.3;
-    int thickness = 1;
-    int baseline=0;
-    for(Characters character: characters)
-    {
-        cv::rectangle(new_image,
-                      cv::Point(character.position.topLeftX, character.position.topLeftY),
-                      cv::Point(character.position.bottomRightX, character.position.bottomRightY),
-                      cv::Scalar(255, 0, 0),
-                      thickness, cv::LINE_8);
-
-        std::string label, conf;
-        label.append(1, character.label);
-        conf = fmt::format("{:.1f}", character.confidence);
-
-        // Print labels
-        cv::Size labelSize = cv::getTextSize(label, fontFace, fontScale, thickness, &baseline);
-        cv::Point labelOrg(character.position.topLeftX + labelSize.width/4, character.position.topLeftY - labelSize.height/4);
-        cv::putText(new_image, label, labelOrg, fontFace, fontScale, cv::Scalar(0,0,0), thickness, lineType);
-
-        // Print confidences
-        cv::Size confSize = cv::getTextSize(conf, fontFace, fontScale*0.6, thickness, &baseline);
-        cv::Point confOrg(character.position.topLeftX, character.position.bottomRightY + confSize.height);
-        cv::putText(new_image, conf, confOrg, fontFace, fontScale*0.6, cv::Scalar(0,0,0), thickness, lineType);
-    }
-    cv::imwrite("../../printResults/OCR.jpg", new_image);
-}

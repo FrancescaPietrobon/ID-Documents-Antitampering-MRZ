@@ -47,6 +47,8 @@ int main(int argc, char *argv[])
 
     OcrResponse ocrResult = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoTypeOcr);
 
+    printOCRResult(cv::imread(imagePath), ocrResult.resultDetails->characters, ocrResult.resultDetails->charactersSize);
+
     char *algoTypeAssociation = new char;
     algoTypeAssociation = utils::convertStringtoCharPtr("Dbscan");
     AssociatorResponse associatorResult = associate(ocrResult, algoTypeAssociation);
