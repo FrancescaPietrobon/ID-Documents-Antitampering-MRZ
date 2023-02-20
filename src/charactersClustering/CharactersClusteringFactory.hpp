@@ -12,7 +12,7 @@
 
 enum ClusteringType
 {
-    DbscanPoints,
+    DbscanPoints = 1,
     DbscanBoxes
 };
 

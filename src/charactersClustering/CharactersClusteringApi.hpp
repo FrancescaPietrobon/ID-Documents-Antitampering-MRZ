@@ -9,6 +9,7 @@ struct ClusteringResultDetail
     char *image;
     Fields *fields;
     size_t fieldsSize;
+    float confidenceThreshold;
     float confidence;
     size_t error;
     char *errorMessage;
@@ -25,7 +26,7 @@ struct ClusteringResponse
 extern "C"
 {
 
-    ClusteringResponse cluster(OcrResponse ocrResponse, char *algorithm_type);
+    ClusteringResponse cluster(OcrResponse ocrResponse, char *algorithmType);
 
 } // extern "C"
 

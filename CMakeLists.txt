@@ -137,13 +137,12 @@ install(TARGETS document_validator_characters_clustering
     FILE_SET headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/document_validator
 )
 
-#[===[
 
 # ###################
 # Antitampering MRZ #
 # ###################
 
-set(ANTITAMPERING_MRZ_PATH "src/antitampering/mrz" CACHE STRING "Antitampering MRZ")
+set(ANTITAMPERING_MRZ_PATH "src/antitampering" CACHE STRING "Antitampering MRZ")
 file(GLOB_RECURSE APP_ANTITAMPERING_MRZ "${ANTITAMPERING_MRZ_PATH}/*.h" "${ANTITAMPERING_MRZ_PATH}/*.cpp" "${ANTITAMPERING_MRZ_PATH}/*.hpp")
 file(GLOB_RECURSE ANTITAMPERING_MRZ_HEADERS "${ANTITAMPERING_MRZ_PATH}/*.hpp" "${ANTITAMPERING_MRZ_PATH}/*.h")
 
@@ -180,7 +179,7 @@ install(TARGETS document_validator_antitampering_mrz
     FILE_SET headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/document_validator
 )
 
-]===]
+
 
 # #################
 # Print Utilities #
