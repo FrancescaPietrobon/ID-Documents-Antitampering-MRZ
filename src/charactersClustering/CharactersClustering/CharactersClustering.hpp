@@ -13,9 +13,9 @@ struct Fields {
     float confidence;
 };
 
-class CharactersAssociator {
+class CharactersClustering {
     public:
-        CharactersAssociator(){};
-        virtual ~CharactersAssociator(){};
-        virtual std::vector<Fields> associateCharacters(const Characters *characters, const size_t charactersSize) = 0;
+        CharactersClustering(){};
+        virtual ~CharactersClustering(){};
+        virtual std::vector<Fields> clusterCharacters(const Characters *characters, const size_t charactersSize) = 0;
 };

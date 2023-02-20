@@ -3,7 +3,7 @@
 DBSCANboxes::DBSCANboxes(float e):
     eps(e){};
 
-std::vector<Fields> DBSCANboxes::associateCharacters(const Characters *characters, const size_t charactersSize)
+std::vector<Fields> DBSCANboxes::clusterCharacters(const Characters *characters, const size_t charactersSize)
 {
     SPDLOG_INFO("Compute Characters Clusters");
     std::vector<CharactersClustered> charactersClustered = fillCharactersClustered(characters, charactersSize);

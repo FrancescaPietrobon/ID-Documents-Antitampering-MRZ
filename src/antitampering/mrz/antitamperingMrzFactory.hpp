@@ -12,6 +12,11 @@
 #define DEFAULT_ANTITAMPERING_MRZ_TYPE "DBSCAN"
 #define ANTITAMPERING_MRZ_TYPE_ENV_VAR "ANTITAMPERING_MRZ_TYPE"
 
+enum AlgorithmType
+{
+    RetinaNet = 1,
+    //Yolov7
+};
 
 class AntitamperingMrzFactory {
     public: 

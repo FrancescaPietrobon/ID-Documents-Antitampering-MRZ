@@ -1,5 +1,5 @@
 #include "ocr/OcrApi.hpp"
-#include "charactersassociator/CharactersAssociatorApi.hpp"
+#include "charactersClustering/CharactersClusteringApi.hpp"
 #include "base64/base64.h"
 
 #include "print/PrintResult.hpp"
@@ -37,24 +37,24 @@ int main(int argc, char *argv[])
 
     printOCRResult(cv::imread(imagePath), ocrResult.resultDetails->characters, ocrResult.resultDetails->charactersSize);
 
-    char *algoTypeAssociation = new char;
-    //algoTypeAssociation = utils::convertStringtoCharPtr("DbscanPoints");
-    algoTypeAssociation = utils::convertStringtoCharPtr("DbscanBoxes");
+    char *algoTypeClustering = new char;
+    //algoTypeClustering = utils::convertStringtoCharPtr("DbscanPoints");
+    algoTypeClustering = utils::convertStringtoCharPtr("DbscanBoxes");
 
-    AssociatorResponse associatorResult = associate(ocrResult, algoTypeAssociation);
+    ClusteringResponse clusteringResult = cluster(ocrResult, algoTypeClustering);
 
-    std::cout << "\nAssociation result with DBSCAN:\n" << std::endl;
-    for(size_t i = 0; i < associatorResult.resultDetailsSize; ++i)
+    std::cout << "\nClustering result with DBSCAN:\n" << std::endl;
+    for(size_t i = 0; i < clusteringResult.resultDetailsSize; ++i)
     {
-        std::cout << "Image: " << associatorResult.resultDetails[i].image << "\n" << std::endl;
-        for(size_t j = 0; j < associatorResult.resultDetails[i].fieldsSize; ++j)
+        std::cout << "Image: " << clusteringResult.resultDetails[i].image << "\n" << std::endl;
+        for(size_t j = 0; j < clusteringResult.resultDetails[i].fieldsSize; ++j)
         {
-            std::cout << "Label: " << associatorResult.resultDetails[i].fields[j].label << std::endl;
-            std::cout << "Confidence: " << associatorResult.resultDetails[i].fields[j].confidence << "\n" << std::endl;
+            std::cout << "Label: " << clusteringResult.resultDetails[i].fields[j].label << std::endl;
+            std::cout << "Confidence: " << clusteringResult.resultDetails[i].fields[j].confidence << "\n" << std::endl;
         }
     }
 
-    printDbscanResult(cv::imread(imagePath), associatorResult.resultDetails->fields, associatorResult.resultDetails->fieldsSize);
+    printDbscanResult(cv::imread(imagePath), clusteringResult.resultDetails->fields, clusteringResult.resultDetails->fieldsSize);
     
     return 0;
 }

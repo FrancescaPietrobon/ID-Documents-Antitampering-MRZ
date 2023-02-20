@@ -95,42 +95,42 @@ install(TARGETS document_validator_ocr
 
 
 # ############################
-# Characters associator stub #
+# Characters clustering stub #
 # ############################
 
-set(CHARACTERS_ASSOCIATOR_PATH "src/charactersassociator" CACHE STRING "CharactersAssociator stub folder")
-file(GLOB_RECURSE APP_CHARACTERS_ASSOCIATOR "${CHARACTERS_ASSOCIATOR_PATH}/*.h" "${CHARACTERS_ASSOCIATOR_PATH}/*.cpp" "${CHARACTERS_ASSOCIATOR_PATH}/*.hpp")
-file(GLOB_RECURSE CHARACTERS_ASSOCIATOR_HEADERS "${CHARACTERS_ASSOCIATOR_PATH}/*.hpp" "${CHARACTERS_ASSOCIATOR_PATH}/*.h")
+set(CHARACTERS_CLUSTERING_PATH "src/charactersClustering" CACHE STRING "CharactersClustering stub folder")
+file(GLOB_RECURSE APP_CHARACTERS_CLUSTERING "${CHARACTERS_CLUSTERING_PATH}/*.h" "${CHARACTERS_CLUSTERING_PATH}/*.cpp" "${CHARACTERS_CLUSTERING_PATH}/*.hpp")
+file(GLOB_RECURSE CHARACTERS_CLUSTERING_HEADERS "${CHARACTERS_CLUSTERING_PATH}/*.hpp" "${CHARACTERS_CLUSTERING_PATH}/*.h")
 
-add_library(document_validator_characters_associator SHARED
-    ${APP_CHARACTERS_ASSOCIATOR}
+add_library(document_validator_characters_clustering SHARED
+    ${APP_CHARACTERS_CLUSTERING}
     ${APP_BASE64}
     ${APP_COMMON}
 )
 
-target_sources(document_validator_characters_associator
+target_sources(document_validator_characters_clustering
     PUBLIC FILE_SET headers
     TYPE HEADERS
     BASE_DIRS "src" FILES
-    ${CHARACTERS_ASSOCIATOR_HEADERS}
+    ${CHARACTERS_CLUSTERING_HEADERS}
     ${BASE64_HEADERS}
     ${COMMON_HEADERS}
 )
 
-target_include_directories(document_validator_characters_associator PUBLIC
-    ${CHARACTERS_ASSOCIATOR_PATH}
+target_include_directories(document_validator_characters_clustering PUBLIC
+    ${CHARACTERS_CLUSTERING_PATH}
     ${BASE64_PATH}
     ${COMMON_PATH}
 )
 
-target_link_libraries(document_validator_characters_associator
+target_link_libraries(document_validator_characters_clustering
     spdlog::spdlog
     jsoncpp_lib
     opencv::opencv
 )
 
-install(TARGETS document_validator_characters_associator
-    COMPONENT characters_associator
+install(TARGETS document_validator_characters_clustering
+    COMPONENT characters_clustering
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -222,7 +222,7 @@ target_link_libraries(application
     #document_validator
     print
     document_validator_ocr
-    document_validator_characters_associator
+    document_validator_characters_clustering
     #document_validator_antitampering_mrz
 )
 
@@ -237,8 +237,8 @@ include(GoogleTest)
 set(TESTS_OCR_PATH "src/tests/testCases/unitTests/ocr/" CACHE STRING "Unit tests folder")
 file(GLOB_RECURSE APP_TESTS_OCR "${TESTS_OCR_PATH}/*.h" "${TESTS_OCR_PATH}/*.cpp" "${TESTS_OCR_PATH}/*.hpp")
 
-#set(TESTS_CHARACTERS_ASSOCIATOR_PATH "src/tests/testCases/unitTests/charactersassociator/" CACHE STRING "Unit tests folder")
-#file(GLOB_RECURSE APP_TESTS_CHARACTERS_ASSOCIATOR "${TESTS_CHARACTERS_ASSOCIATOR_PATH}/*.h" "${TESTS_CHARACTERS_ASSOCIATORG_PATH}/*.cpp" "${TESTS_CHARACTERS_ASSOCIATOR_PATH}/*.hpp")
+#set(TESTS_CHARACTERS_CLUSTERING_PATH "src/tests/testCases/unitTests/charactersClustering/" CACHE STRING "Unit tests folder")
+#file(GLOB_RECURSE APP_TESTS_CHARACTERS_CLUSTERING "${TESTS_CHARACTERS_CLUSTERING_PATH}/*.h" "${TESTS_CHARACTERS_CLUSTERING_PATH}/*.cpp" "${TESTS_CHARACTERS_CLUSTERING_PATH}/*.hpp")
 
 #set(TESTS_ANTITAMPERING_PATH "src/tests/testCases/unitTests/antitampering/" CACHE STRING "Unit tests folder")
 #file(GLOB_RECURSE APP_TESTS_ANTITAMPERING "${TESTS_ANTITAMPERING_PATH}/*.h" "${TESTS_ANTITAMPERING_PATH}/*.cpp" "${TESTS_ANTITAMPERING_PATH}/*.hpp")
@@ -263,20 +263,20 @@ gtest_discover_tests(TestOcr)
 
 #[===[
 
-# Test document_validator_characters_associator
-add_executable(TestCharactersAssociator
+# Test document_validator_characters_clustering
+add_executable(TestCharactersClustering
     src/tests/main.cpp
-    ${APP_TESTS_CHARACTERS_ASSOCIATOR}
+    ${APP_TESTS_CHARACTERS_CLUSTERING}
 )
 
-target_include_directories(TestCharactersAssociator PUBLIC "src/tests")
+target_include_directories(TestCharactersClustering PUBLIC "src/tests")
 
-target_link_libraries(TestCharactersAssociator
-    document_validator_characters_associator
+target_link_libraries(TestCharactersClustering
+    document_validator_characters_clustering
     GTest::gmock
 )
 
-gtest_discover_tests(TestCharactersAssociator)
+gtest_discover_tests(TestCharactersClustering)
 
 ]===]
 

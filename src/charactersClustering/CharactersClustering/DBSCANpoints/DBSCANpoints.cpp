@@ -3,7 +3,7 @@
 DBSCANpoints::DBSCANpoints(float e):
     eps(e){};
 
-std::vector<Fields> DBSCANpoints::associateCharacters(const Characters *characters, const size_t charactersSize)
+std::vector<Fields> DBSCANpoints::clusterCharacters(const Characters *characters, const size_t charactersSize)
 {
     SPDLOG_INFO("Compute Points");
     points = computePointsFromCharacters(characters, charactersSize);

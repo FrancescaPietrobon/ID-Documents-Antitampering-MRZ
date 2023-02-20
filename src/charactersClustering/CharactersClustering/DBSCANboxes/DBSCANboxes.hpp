@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../CharactersAssociator.hpp"
+#include "../CharactersClustering.hpp"
 
 #include <unordered_map>
 
@@ -14,12 +14,12 @@ struct CharactersClustered
     size_t cluster;
 };
 
-class DBSCANboxes : public CharactersAssociator
+class DBSCANboxes : public CharactersClustering
 {
     public:
         DBSCANboxes(const float e);
         virtual ~DBSCANboxes(){};
-        std::vector<Fields> associateCharacters(const Characters *characters, const size_t charactersSize) override;
+        std::vector<Fields> clusterCharacters(const Characters *characters, const size_t charactersSize) override;
 
     private:
         const float eps;
