@@ -9,7 +9,6 @@ std::vector<Fields> DBSCANboxes::associateCharacters(const Characters *character
     std::vector<CharactersClustered> charactersClustered = fillCharactersClustered(characters, charactersSize);
     std::vector<std::vector<size_t>> nearCharacters;
     nearCharacters.resize(charactersSize);
-    std::cout << "nearCharacters size post resize: " << nearCharacters.size() << std::endl;
 
     SPDLOG_INFO("Find near characters");
     nearCharacters = findNearCharacters(charactersClustered, nearCharacters);
@@ -22,7 +21,6 @@ std::vector<Fields> DBSCANboxes::associateCharacters(const Characters *character
     }
     
     SPDLOG_INFO("Compute fields");
-    std::cout << "clusterIdx: " << clusterIdx << std::endl;
     std::vector<Fields> fields = computeFields(charactersClustered, clusterIdx);
 
     return fields;
@@ -38,7 +36,6 @@ std::vector<CharactersClustered> DBSCANboxes::fillCharactersClustered(const Char
         characterClustered.cluster = NOT_ASSIGNED;
         charactersClustered.push_back(characterClustered);
     }
-    std::cout << "charactersClustered size post fill: " << charactersClustered.size() << std::endl;
     return charactersClustered; 
 }
 
@@ -52,7 +49,6 @@ std::vector<std::vector<size_t>> DBSCANboxes::findNearCharacters(std::vector<Cha
             if(computeDistance(characters[i].character, characters[j].character) <= eps)
                 nearCharacters[i].push_back(j);
         }
-    std::cout << "nearCharacters size post findNearCharacters: " << nearCharacters.size() << std::endl;
     return nearCharacters;
 }
 
@@ -60,16 +56,13 @@ float DBSCANboxes::computeDistance(Characters char1, Characters char2)
 {
     Coordinates mostRight = char1.position.topLeftX < char2.position.topLeftX ? char1.position : char2.position;
     Coordinates mostLeft = char2.position.topLeftX < char1.position.topLeftX ? char1.position : char2.position;
-    
     float xDiff = mostRight.bottomRightX - mostLeft.topLeftX;
     
     Coordinates upper = char1.position.topLeftY < char2.position.topLeftY ? char1.position : char2.position;
     Coordinates lower = char2.position.topLeftY < char1.position.topLeftY ? char1.position : char2.position;
-    
     float yDiff = lower.topLeftY - upper.topLeftY;
 
     return std::sqrt(xDiff * xDiff + 10 * yDiff * yDiff);
-    //return std::sqrt(0.05 * xDiff * xDiff + yDiff * yDiff);
 }
 
 std::vector<CharactersClustered> DBSCANboxes::dfs(size_t now, size_t cluster, std::vector<CharactersClustered> characters, std::vector<std::vector<size_t>> nearCharacters)
@@ -90,24 +83,19 @@ std::vector<Fields> DBSCANboxes::computeFields(std::vector<CharactersClustered> 
     std::multimap<float, Characters> cluster;
     float sumConfidence;
     size_t countElements;
-    std::cout << "charactersClustered.size() in compute fields: " << charactersClustered.size() << std::endl;
-    std::cout << "numClusters in compute fields: " << numClusters << std::endl;
     for(size_t i = 0; i <= numClusters; ++i)
     {
-        std::cout << i << std::endl;
         sumConfidence = 0;
         countElements = 0;
         for(size_t j = 0; j < charactersClustered.size(); ++j)
         {
             if(charactersClustered[j].cluster == i)
             {
-                std::cout << "same cluster! " << charactersClustered[j].cluster << " " << i << std::endl;
                 cluster.emplace(charactersClustered[j].character.position.bottomRightX, charactersClustered[j].character);
                 sumConfidence += charactersClustered[j].character.confidence;
                 countElements += 1;
             }
         }
-        std::cout << "post for" << std::endl;
         std::vector<Characters> orderedCharacters = orderCharacters(cluster);
         field = fillField(sumConfidence/countElements, countElements, orderedCharacters);
         fields.push_back(field);
@@ -118,30 +106,25 @@ std::vector<Fields> DBSCANboxes::computeFields(std::vector<CharactersClustered> 
 
 std::vector<Characters> DBSCANboxes::orderCharacters(std::multimap<float, Characters> cluster)
 {
-    std::cout << "Order char" << std::endl;
     // To order wrt x coordinate
     std::vector<Characters> orderedCharacters;
     for(auto & character: cluster)
         orderedCharacters.push_back(character.second);
-    std::cout << "Size of orderedCharacters post Order char: " << orderedCharacters.size() << std::endl;
     return orderedCharacters;
 }
 
 Fields DBSCANboxes::fillField(float confidence, size_t labelSize, std::vector<Characters> orderedCharacters)
 {
-    std::cout << "fillField" << std::endl;
     Fields field;
     field.confidence = confidence;
     field.labelSize = labelSize;
     field.label = utils::convertStringtoCharPtr(extractLabel(orderedCharacters));
     field.position = extractPosition(orderedCharacters);
-    std::cout << "label: " << field.label << "\t labelSize: " << field.labelSize << "\t confidence: " << confidence << std::endl;
     return field;
 }
 
 std::string DBSCANboxes::extractLabel(std::vector<Characters> orderedCharacters)
 {
-    std::cout << "extractLabel" << std::endl;
     std::string label;
     for(size_t i = 0; i < orderedCharacters.size(); ++i)
         label.push_back(orderedCharacters[i].label);
@@ -150,13 +133,10 @@ std::string DBSCANboxes::extractLabel(std::vector<Characters> orderedCharacters)
 
 Coordinates DBSCANboxes::extractPosition(std::vector<Characters> orderedCharacters)
 {   
-    std::cout << "extractPosition" << std::endl;
-    std::cout << "orderedCharacters size: " << orderedCharacters.size() << std::endl;
     Coordinates position;
     position.topLeftX = orderedCharacters[0].position.topLeftX;
     position.topLeftY = orderedCharacters[0].position.topLeftY;
     position.bottomRightX = orderedCharacters[orderedCharacters.size()-1].position.bottomRightX;
     position.bottomRightY = orderedCharacters[orderedCharacters.size()-1].position.bottomRightY;
-    std::cout << "end extractPosition" << std::endl;
     return position;
 }

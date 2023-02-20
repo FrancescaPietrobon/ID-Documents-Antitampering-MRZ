@@ -2,7 +2,6 @@
 #include "charactersassociator/CharactersAssociatorApi.hpp"
 #include "base64/base64.h"
 
-//#include "charactersassociator/CharactersAssociator/DBSCAN/DBSCANUtilities.hpp"
 #include "print/PrintResult.hpp"
 
 std::string getBase64(cv::Mat image)
@@ -39,8 +38,8 @@ int main(int argc, char *argv[])
     printOCRResult(cv::imread(imagePath), ocrResult.resultDetails->characters, ocrResult.resultDetails->charactersSize);
 
     char *algoTypeAssociation = new char;
-    algoTypeAssociation = utils::convertStringtoCharPtr("DbscanPoints");
-    //algoTypeAssociation = utils::convertStringtoCharPtr("DbscanBoxes");
+    //algoTypeAssociation = utils::convertStringtoCharPtr("DbscanPoints");
+    algoTypeAssociation = utils::convertStringtoCharPtr("DbscanBoxes");
 
     AssociatorResponse associatorResult = associate(ocrResult, algoTypeAssociation);
 
