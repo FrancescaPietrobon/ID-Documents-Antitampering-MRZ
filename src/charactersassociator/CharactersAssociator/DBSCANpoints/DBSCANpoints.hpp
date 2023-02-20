@@ -9,11 +9,11 @@ const size_t NOT_CLASSIFIED = -1;
 
 typedef std::vector<std::vector<float>> matrix2D;
 
-class DBSCAN : public CharactersAssociator
+class DBSCANpoints : public CharactersAssociator
 {
     public:
-        DBSCAN(const float e);
-        virtual ~DBSCAN(){};
+        DBSCANpoints(const float e);
+        virtual ~DBSCANpoints(){};
         std::vector<Fields> associateCharacters(const Characters *characters, const size_t charactersSize) override;
 
     private:

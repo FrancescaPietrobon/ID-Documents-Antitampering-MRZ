@@ -1,19 +1,19 @@
 #pragma once
 
-#include "CharactersAssociator/DBSCAN/DBSCAN.hpp"
-#include "CharactersAssociator/EuclideanDistance/EuclideanDistance.hpp"
+#include "CharactersAssociator/DBSCANpoints/DBSCANpoints.hpp"
+#include "CharactersAssociator/DBSCANboxes/DBSCANboxes.hpp"
 #include "common/exceptions/Exceptions.hpp"
 
 #include <spdlog/spdlog.h>
 #include <map>
 
-#define epsDbscan 27
-#define epsEuclDist 1
+#define epsDbscanPoints 8 //7
+#define epsDbscanBoxes 30 //3
 
 enum AssociatorType
 {
-    Dbscan,
-    EuclDistance
+    DbscanPoints,
+    DbscanBoxes
 };
 
 class CharactersAssociatorFactory {

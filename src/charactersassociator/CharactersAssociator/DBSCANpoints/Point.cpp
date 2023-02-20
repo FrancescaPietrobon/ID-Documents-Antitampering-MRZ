@@ -23,16 +23,6 @@ void Point::setCluster(size_t cl)
     cluster = cl;
 }
 
-void Point::setCountPts(size_t count)
-{
-    countPts = count;
-}
-
-size_t Point::getCountPts()
-{
-    return countPts;
-}
-
 float Point::getConfidence()
 {
     return character.confidence;

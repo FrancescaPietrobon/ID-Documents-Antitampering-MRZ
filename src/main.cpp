@@ -15,22 +15,11 @@ std::string getBase64(cv::Mat image)
 
 int main(int argc, char *argv[])
 {
-    /*
-    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/antitampering_mrz/data/AFG_AO_01001_FRONT.JPG"; //TD3 eps = 27   IOU = 0.3  NMS = 0.005 P
-    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/antitampering_mrz/data/JPN_AO_02003_FRONT.jpg"; //TD3 eps = 27  IOU = 0.06  NMS = 0.005 NP
-    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/antitampering_mrz/data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30  IOU = 0.05  NMS = 0.01 NF
-    std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/DNK_AO_04002_FRONT_2.jpeg";
-    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/antitampering_mrz/data/dimMiste.jpg";
-
-    const float confidenceThreshold = 0.3;
-    cv::Mat inputImage = cv::imread(imagePath);
-
-    OcrFactory ocrFactory;
-    std::shared_ptr<Ocr> ocr = ocrFactory.createOCR("RetinaNet");
-    std::vector<Characters> result = ocr->detect(inputImage, confidenceThreshold);
-    */
-
-    std::string imagePath = "testData/images/ocr/AFG_AO_01001_FRONT.JPG";
+    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/JPN_AO_02003_FRONT.jpg"; //TD3 eps = 27  IOU = 0.06  NMS = 0.005 NP
+    std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30  IOU = 0.05  NMS = 0.01 NF
+    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/DNK_AO_04002_FRONT_2.jpeg";
+    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/dimMiste.jpg";
+    //std::string imagePath = "testData/images/ocr/AFG_AO_01001_FRONT.JPG";
 
     char **images = new char *[1];
     images[0] = utils::convertStringtoCharPtr("images0");
@@ -50,7 +39,9 @@ int main(int argc, char *argv[])
     printOCRResult(cv::imread(imagePath), ocrResult.resultDetails->characters, ocrResult.resultDetails->charactersSize);
 
     char *algoTypeAssociation = new char;
-    algoTypeAssociation = utils::convertStringtoCharPtr("Dbscan");
+    algoTypeAssociation = utils::convertStringtoCharPtr("DbscanPoints");
+    //algoTypeAssociation = utils::convertStringtoCharPtr("DbscanBoxes");
+
     AssociatorResponse associatorResult = associate(ocrResult, algoTypeAssociation);
 
     std::cout << "\nAssociation result with DBSCAN:\n" << std::endl;

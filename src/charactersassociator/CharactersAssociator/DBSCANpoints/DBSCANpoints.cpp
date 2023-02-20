@@ -1,9 +1,9 @@
-#include "DBSCAN.hpp"
+#include "DBSCANpoints.hpp"
 
-DBSCAN::DBSCAN(float e):
+DBSCANpoints::DBSCANpoints(float e):
     eps(e){};
 
-std::vector<Fields> DBSCAN::associateCharacters(const Characters *characters, const size_t charactersSize)
+std::vector<Fields> DBSCANpoints::associateCharacters(const Characters *characters, const size_t charactersSize)
 {
     SPDLOG_INFO("Compute Points");
     points = computePointsFromCharacters(characters, charactersSize);
@@ -29,7 +29,7 @@ std::vector<Fields> DBSCAN::associateCharacters(const Characters *characters, co
 }
 
 
-std::vector<Point> DBSCAN::computePointsFromCharacters(const Characters *characters, const size_t charactersSize)
+std::vector<Point> DBSCANpoints::computePointsFromCharacters(const Characters *characters, const size_t charactersSize)
 {
     std::vector<Point> points;
     float h, w, xCenter, yCenter;
@@ -49,7 +49,7 @@ std::vector<Point> DBSCAN::computePointsFromCharacters(const Characters *charact
 }
 
 
-std::vector<std::vector<size_t>> DBSCAN::findNearPoints(std::vector<Point> points)
+std::vector<std::vector<size_t>> DBSCANpoints::findNearPoints(std::vector<Point> points)
 {
     for(size_t i = 0; i < points.size(); i++)
         for(size_t j = 0; j < points.size(); j++)
@@ -62,7 +62,7 @@ std::vector<std::vector<size_t>> DBSCAN::findNearPoints(std::vector<Point> point
     return adjPoints;
 }
 
-std::vector<Point> DBSCAN::dfs(size_t now, size_t c, std::vector<Point> &points, std::vector<std::vector<size_t>> &adjPoints)
+std::vector<Point> DBSCANpoints::dfs(size_t now, size_t c, std::vector<Point> &points, std::vector<std::vector<size_t>> &adjPoints)
 {
     points[now].setCluster(c);
     for(auto & next: adjPoints[now]) {
@@ -72,7 +72,7 @@ std::vector<Point> DBSCAN::dfs(size_t now, size_t c, std::vector<Point> &points,
     return points;
 }
 
-std::vector<std::vector<size_t>> DBSCAN::assignCluster(std::vector<Point> points)
+std::vector<std::vector<size_t>> DBSCANpoints::assignCluster(std::vector<Point> points)
 {
     cluster.resize(clusterIdx+1);
     for(size_t i = 0; i < size; i++)
@@ -81,7 +81,7 @@ std::vector<std::vector<size_t>> DBSCAN::assignCluster(std::vector<Point> points
     return cluster;
 }
 
-std::vector<Fields> DBSCAN::computeFields(std::vector<Point> points, std::vector<std::vector<size_t>> adjPoints)
+std::vector<Fields> DBSCANpoints::computeFields(std::vector<Point> points, std::vector<std::vector<size_t>> adjPoints)
 {
     std::vector<Fields> fields;
     Fields field;
@@ -110,7 +110,7 @@ std::vector<Fields> DBSCAN::computeFields(std::vector<Point> points, std::vector
     return fields;
 }
 
-Fields DBSCAN::fillField(float confidence, size_t labelSize, std::vector<Point> orderedCharacters)
+Fields DBSCANpoints::fillField(float confidence, size_t labelSize, std::vector<Point> orderedCharacters)
 {
 
     Fields field;
@@ -123,7 +123,7 @@ Fields DBSCAN::fillField(float confidence, size_t labelSize, std::vector<Point> 
     return field;
 }
 
-std::vector<Point> DBSCAN::orderCharacters(std::multimap<float, Point> cluster)
+std::vector<Point> DBSCANpoints::orderCharacters(std::multimap<float, Point> cluster)
 {
     // To order wrt x coordinate
     std::vector<Point> orderedCharacters;
@@ -132,7 +132,7 @@ std::vector<Point> DBSCAN::orderCharacters(std::multimap<float, Point> cluster)
     return orderedCharacters;
 }
 
-std::string DBSCAN::extractLabel(std::vector<Point> orderedCharacters)
+std::string DBSCANpoints::extractLabel(std::vector<Point> orderedCharacters)
 {
     std::string label;
     for(size_t i = 0; i < orderedCharacters.size(); ++i)
@@ -141,7 +141,7 @@ std::string DBSCAN::extractLabel(std::vector<Point> orderedCharacters)
     return label;
 }
 
-Coordinates DBSCAN::extractPosition(std::vector<Point> orderedCharacters)
+Coordinates DBSCANpoints::extractPosition(std::vector<Point> orderedCharacters)
 {   
     Coordinates position;
     position.topLeftX = orderedCharacters[0].getPosition().topLeftX;
