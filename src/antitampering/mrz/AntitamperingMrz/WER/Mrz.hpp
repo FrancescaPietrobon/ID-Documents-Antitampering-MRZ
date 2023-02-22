@@ -1,6 +1,7 @@
 #pragma once
 
 #include "charactersClustering/CharactersClusteringApi.hpp"
+#include <unordered_map>
 
 enum MrzType
 {
@@ -19,9 +20,11 @@ class Mrz
         static Mrz* createMrz(MrzType type, std::vector<Fields>);
         Mrz() = default;
         virtual void extractFields(std::vector<Fields> mrz) = 0;
+        virtual void printMRZFields() = 0;
 
     protected:
         std::vector<Fields> mrz;
+        std::unordered_map<char, unsigned> digit_conversion;
 
         std::string docType;
         std::string state;

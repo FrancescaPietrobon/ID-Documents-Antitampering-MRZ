@@ -1,5 +1,6 @@
 #include "ocr/OcrApi.hpp"
 #include "charactersClustering/CharactersClusteringApi.hpp"
+#include "antitampering/mrz/AntitamperingMrzApi.hpp"
 #include "base64/base64.h"
 
 #include "print/PrintResult.hpp"
@@ -15,10 +16,9 @@ std::string getBase64(cv::Mat image)
 int main(int argc, char *argv[])
 {
     //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/JPN_AO_02003_FRONT.jpg"; //TD3 eps = 27  IOU = 0.06  NMS = 0.005 NP
-    std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30  IOU = 0.05  NMS = 0.01 NF
     //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/DNK_AO_04002_FRONT_2.jpeg";
-    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/dimMiste.jpg";
-    //std::string imagePath = "testData/images/ocr/AFG_AO_01001_FRONT.JPG";
+    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30  IOU = 0.05  NMS = 0.01 NF
+    std::string imagePath = "testData/images/ocr/AFG_AO_01001_FRONT.JPG";
 
     char **images = new char *[1];
     images[0] = utils::convertStringtoCharPtr("images0");
@@ -56,5 +56,10 @@ int main(int argc, char *argv[])
 
     printDbscanResult(cv::imread(imagePath), clusteringResult.resultDetails->fields, clusteringResult.resultDetails->fieldsSize);
     
+    char *algoTypeAntitamperingMrz = new char;
+    algoTypeAntitamperingMrz = utils::convertStringtoCharPtr("wer");
+
+    AntitamperingMrzResponse antitamperingMrzResponse = associate(clusteringResult, algoTypeAntitamperingMrz);
+
     return 0;
 }

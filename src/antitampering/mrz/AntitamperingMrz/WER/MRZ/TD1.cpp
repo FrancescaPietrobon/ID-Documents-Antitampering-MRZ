@@ -16,7 +16,8 @@ void TD1::extractFields(std::vector<Fields> mrz)
     //det.typeFieldMRZ = "docType";
     //allFields.push_back(det);
 
-    state = mrz[0].label[2] + mrz[0].label[3] + mrz[0].label[4];
+    state = "";
+    state = state + mrz[0].label[2] + mrz[0].label[3] + mrz[0].label[4];
     //det.fieldMRZ = state;
     //det.typeFieldMRZ = "state";
     //allFields.push_back(det);
@@ -65,7 +66,8 @@ void TD1::extractFields(std::vector<Fields> mrz)
 
     checkDateExpireDoc = mrz[1].label[14];
 
-    nationality = mrz[1].label[15] + mrz[1].label[16] + mrz[1].label[17];
+    nationality = "";
+    nationality = nationality + mrz[1].label[15] + mrz[1].label[16] + mrz[1].label[17];
     //det.fieldMRZ = nationality;
     //det.typeFieldMRZ = "nationality";
     //allFields.push_back(det);

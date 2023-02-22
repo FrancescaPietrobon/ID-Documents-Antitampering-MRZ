@@ -222,7 +222,7 @@ target_link_libraries(application
     print
     document_validator_ocr
     document_validator_characters_clustering
-    #document_validator_antitampering_mrz
+    document_validator_antitampering_mrz
 )
 
 # #######

@@ -7,7 +7,7 @@ std::vector<DoubtfulFields> WER::check(const Fields *fields, const size_t fields
 {
     std::vector<DoubtfulFields> doubtfulFields;
     // TO BE FILLED
-
+    Mrz* mrz = extractMrz(fields, fieldsSize);
     return doubtfulFields;
 }
 
@@ -15,13 +15,13 @@ Mrz* WER::extractMrz(const Fields *fields, const size_t fieldsSize)
 {
     std::vector<Fields> mrzLines = findMrzLines(fields, fieldsSize);
 
-    MrzType type = findMrzType(mrzLines);
+    MrzType mrzType = findMrzType(mrzLines);
     Mrz* mrz;
-    if(type != NONE)
+    if(mrzType != NONE)
     {
-        mrz->createMrz(type, mrzLines);
+        mrz = mrz->createMrz(mrzType, mrzLines);
         mrz->extractFields(mrzLines);
-        //mrz->printMRZFields();
+        mrz->printMRZFields();
     }
     else
     {
@@ -38,6 +38,7 @@ std::vector<Fields> WER::findMrzLines(const Fields *fields, const size_t fieldsS
     size_t countSymbolLower;
     for(size_t i = 0; i < fieldsSize; ++i)
     {
+        countSymbolLower = 0;
         for(size_t j = 0; j < fields[i].labelSize; ++j)
         {
             if(fields[i].label[j] == '<')
@@ -54,18 +55,18 @@ std::vector<Fields> WER::findMrzLines(const Fields *fields, const size_t fieldsS
     return mrzLines;
 }
 
-MrzType WER::findMrzType(std::vector<Fields> mrz)
+MrzType WER::findMrzType(std::vector<Fields> mrzLines)
 {
     std::string Mrztype;
     MrzType mrzType = NONE;
-    if((mrz.size() == 3) && (mrz[0].labelSize == 36) && (mrz[1].labelSize == 36) && (mrz[2].labelSize == 36))
+    if((mrzLines.size() == 3) && (mrzLines[0].labelSize == 36) && (mrzLines[1].labelSize == 36) && (mrzLines[2].labelSize == 36))
     {
         Mrztype = "TD1";
         mrzType = td1;
     }
-    else if((mrz[0].labelSize == 36) && (mrz[1].labelSize == 36)) // if(mrz[0].labelSize >= 32 && mrz[0].labelSize <= 40) less restrictive case
+    else if((mrzLines[0].labelSize == 36) && (mrzLines[1].labelSize == 36)) // if(mrzLines[0].labelSize >= 32 && mrzLines[0].labelSize <= 40) less restrictive case
     {
-        if(mrz[0].label[0] == 'P')
+        if(mrzLines[0].label[0] == 'P')
         {
             Mrztype = "TD2";
             mrzType = td2;
@@ -76,9 +77,9 @@ MrzType WER::findMrzType(std::vector<Fields> mrz)
             mrzType = mrvb;
         }
     }
-    else if((mrz[0].labelSize == 44) && (mrz[1].labelSize == 44)) // if(mrz[0].labelSize > 40 && mrz[0].labelSize <= 48) less restrictive case
+    else if((mrzLines[0].labelSize == 44) && (mrzLines[1].labelSize == 44)) // if(mrzLines[0].labelSize > 40 && mrzLines[0].labelSize <= 48) less restrictive case
     {
-        if(mrz[0].label[0] == 'P')
+        if(mrzLines[0].label[0] == 'P')
         {
             Mrztype = "TD3";
             mrzType = td3;
@@ -90,10 +91,9 @@ MrzType WER::findMrzType(std::vector<Fields> mrz)
         }
     }
     else
-        {
-            Mrztype = "NULL";
-            mrzType = NONE;
-        }
-
+    {
+        Mrztype = "NULL";
+        mrzType = NONE;
+    }
     return mrzType;
 }

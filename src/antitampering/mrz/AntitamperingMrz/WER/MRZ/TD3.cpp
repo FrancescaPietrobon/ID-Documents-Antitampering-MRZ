@@ -15,7 +15,8 @@ void TD3::extractFields(std::vector<Fields> mrz)
     //det.typeFieldMRZ = "docType";
     //allFields.push_back(det);
 
-    state = mrz[0].label[2] + mrz[0].label[3] + mrz[0].label[4];
+    state = "";
+    state = state + mrz[0].label[2] + mrz[0].label[3] + mrz[0].label[4];
     //det.fieldMRZ = state;
     //det.typeFieldMRZ = "state";
     //allFields.push_back(det);
@@ -67,7 +68,8 @@ void TD3::extractFields(std::vector<Fields> mrz)
     else
         std::cout << "Check in document number OK." << std::endl;
     
-    nationality = mrz[1].label[10] + mrz[1].label[11] + mrz[1].label[12];
+    nationality = "";
+    nationality = nationality + mrz[1].label[10] + mrz[1].label[11] + mrz[1].label[12];
     //det.fieldMRZ = nationality;
     //det.typeFieldMRZ = "nationality";
     //allFields.push_back(det);
