@@ -1,25 +1,17 @@
 #include "TD3.hpp"
 
-TD3::TD3(std::vector<Fields> mrz):
-    Mrz(mrz){}
-
-
-void TD3::extractFields(std::vector<Fields> mrz)
+MrzFields TD3::extractMrzFields(std::vector<Fields> mrz)
 {
+    MrzFields mrzFields;
+
     // First line
 
-    docType = mrz[0].label[0];
+    mrzFields.docType = mrz[0].label[0];
     if(mrz[0].label[1] != '<')
-        docType = docType + mrz[0].label[1];
-    //det.fieldMRZ = docType;
-    //det.typeFieldMRZ = "docType";
-    //allFields.push_back(det);
+        mrzFields.docType = mrzFields.docType + mrz[0].label[1];
 
-    state = "";
-    state = state + mrz[0].label[2] + mrz[0].label[3] + mrz[0].label[4];
-    //det.fieldMRZ = state;
-    //det.typeFieldMRZ = "state";
-    //allFields.push_back(det);
+    mrzFields.state = "";
+    mrzFields.state = mrzFields.state + mrz[0].label[2] + mrz[0].label[3] + mrz[0].label[4];
 
     int i = 5;
     for(size_t j = i; j < 44; ++j)
@@ -30,94 +22,73 @@ void TD3::extractFields(std::vector<Fields> mrz)
             break;
         }
         else if(mrz[0].label[j] == '<')
-            surname += " ";
+            mrzFields.surname += " ";
         else
-            surname += mrz[0].label[j];
+            mrzFields.surname += mrz[0].label[j];
     }
-    surname = surname.substr(0, surname.size() - 1);
-    //det.fieldMRZ = surname;
-    //det.typeFieldMRZ = "surname";
-    //allFields.push_back(det);
+    mrzFields.surname = mrzFields.surname.substr(0, mrzFields.surname.size() - 1);
 
     for(size_t j = i; j < 44; ++j)
     {
         if(mrz[0].label[j] == '<' && mrz[0].label[j-1] == '<')
             break;
         else if(mrz[0].label[j] == '<')
-            name += " ";
+            mrzFields.name += " ";
         else
-            name += mrz[0].label[j];
+            mrzFields.name += mrz[0].label[j];
     }
-    name = name.substr(0, name.size() - 1);
-    //det.fieldMRZ = name;
-    //det.typeFieldMRZ = "name";
-    //allFields.push_back(det);
+    mrzFields.name = mrzFields.name.substr(0, mrzFields.name.size() - 1);
 
     // Second line
 
     for(size_t i = 0; i < 9 && mrz[1].label[i] != '<'; ++i)
-        docNumber += mrz[1].label[i];
-    //det.fieldMRZ = docNumber;
-    //det.typeFieldMRZ = "docNumber";
-    //allFields.push_back(det);
+        mrzFields.docNumber += mrz[1].label[i];
 
-    checkDocNum = mrz[1].label[9];
+    mrzFields.checkDocNum = mrz[1].label[9];
 
-    if(!check(docNumber, checkDocNum))
+    if(!check(mrzFields.docNumber, mrzFields.checkDocNum))
         std::cout << "Check in document number faild." << std::endl;
     else
         std::cout << "Check in document number OK." << std::endl;
     
-    nationality = "";
-    nationality = nationality + mrz[1].label[10] + mrz[1].label[11] + mrz[1].label[12];
-    //det.fieldMRZ = nationality;
-    //det.typeFieldMRZ = "nationality";
-    //allFields.push_back(det);
+    mrzFields.nationality = "";
+    mrzFields.nationality = mrzFields.nationality + mrz[1].label[10] + mrz[1].label[11] + mrz[1].label[12];
 
     for(size_t i = 13; i < 19; ++i)
-        dateBirth += mrz[1].label[i];
-    //det.fieldMRZ = dateBirth;
-    //det.typeFieldMRZ = "dateBirth";
-    //allFields.push_back(det);
+        mrzFields.dateBirth += mrz[1].label[i];
 
-    checkDateBirth = mrz[1].label[19];
+    mrzFields.checkDateBirth = mrz[1].label[19];
 
-    if(!check(dateBirth, checkDateBirth))
+    if(!check(mrzFields.dateBirth, mrzFields.checkDateBirth))
         std::cout << "Check in date of birth faild." << std::endl;
     else
         std::cout << "Check in date of birth OK." << std::endl;
 
-    sex = mrz[1].label[20];
-    //det.fieldMRZ = sex;
-    //det.typeFieldMRZ = "sex";
-    //allFields.push_back(det);
+    mrzFields.sex = mrz[1].label[20];
 
     for(size_t i = 21; i < 27; ++i)
-        dateExpireDoc += mrz[1].label[i];
-    //det.fieldMRZ = dateExpireDoc;
-    //det.typeFieldMRZ = "dateExpireDoc";
-    //allFields.push_back(det);
+        mrzFields.dateExpireDoc += mrz[1].label[i];
 
-    checkDateExpireDoc = mrz[1].label[27];
+    mrzFields.checkDateExpireDoc = mrz[1].label[27];
 
-    if(!check(dateExpireDoc, checkDateExpireDoc))
+    if(!check(mrzFields.dateExpireDoc, mrzFields.checkDateExpireDoc))
         std::cout << "Check in date of expire faild." << std::endl;
     else
         std::cout << "Check in date of expire OK." << std::endl;
 
     if(mrz[1].label[28] == '<')
     {
-        optionalData = "NULL";
+        mrzFields.optionalData = "NULL";
         checkOptionalData = "NULL";
     }
     else
     {
         for(size_t i = 28; i < 42 && mrz[1].label[i] != '<'; ++i)
-            optionalData += mrz[1].label[i];
+            mrzFields.optionalData += mrz[1].label[i];
 
         checkOptionalData = mrz[1].label[42];
 
-        if(!check(optionalData, checkOptionalData))
+        if(!check(mrzFields.optionalData, checkOptionalData))
             std::cout << "Check in optional data faild." << std::endl;
         else
             std::cout << "Check in optional data OK." << std::endl;
@@ -125,29 +96,30 @@ void TD3::extractFields(std::vector<Fields> mrz)
 
     checkOverallDigit = mrz[1].label[43];
 
-    if(!checkOverall(checkOverallDigit))
+    if(!checkOverall(mrz, checkOverallDigit))
         std::cout << "Check overall faild." << std::endl;
     else
         std::cout << "Check overall OK." << std::endl;
+
+    return mrzFields;
 }
 
-
-void TD3::printMRZFields()
+void TD3::printMrzFields(MrzFields mrzFields)
 {
     std::cout << "\nMRZ fields detected in TD3 MRZ:" << std::endl;
-    std::cout << "Document type: " << docType << std::endl;
-    std::cout << "State: " << state << std::endl;
-    std::cout << "Surname: " << surname << std::endl;
-    std::cout << "Name: " << name << std::endl;
-    std::cout << "Document number: " << docNumber << std::endl;
-    std::cout << "Check document number: " << checkDocNum << std::endl;
-    std::cout << "Nationality: " << nationality << std::endl;
-    std::cout << "Date of birth: " << dateBirth << std::endl;
-    std::cout << "Check date of birth: " << checkDateBirth << std::endl;
-    std::cout << "Sex: " << sex << std::endl;
-    std::cout << "Date of expire: " << dateExpireDoc << std::endl;
-    std::cout << "Check date of expire: " << checkDateExpireDoc << std::endl;
-    std::cout << "Optional data: " << optionalData << std::endl;
+    std::cout << "Document type: " << mrzFields.docType << std::endl;
+    std::cout << "State: " << mrzFields.state << std::endl;
+    std::cout << "Surname: " << mrzFields.surname << std::endl;
+    std::cout << "Name: " << mrzFields.name << std::endl;
+    std::cout << "Document number: " << mrzFields.docNumber << std::endl;
+    std::cout << "Check document number: " << mrzFields.checkDocNum << std::endl;
+    std::cout << "Nationality: " << mrzFields.nationality << std::endl;
+    std::cout << "Date of birth: " << mrzFields.dateBirth << std::endl;
+    std::cout << "Check date of birth: " << mrzFields.checkDateBirth << std::endl;
+    std::cout << "Sex: " << mrzFields.sex << std::endl;
+    std::cout << "Date of expire: " << mrzFields.dateExpireDoc << std::endl;
+    std::cout << "Check date of expire: " << mrzFields.checkDateExpireDoc << std::endl;
+    std::cout << "Optional data: " << mrzFields.optionalData << std::endl;
     std::cout << "Check optional data: " << checkOptionalData << std::endl;
     std::cout << "Check overall: " << checkOverallDigit << std::endl;
 }

@@ -13,7 +13,4 @@ class WER : public AntitamperingMrz
         std::vector<DoubtfulFields> check(const Fields *fields, const size_t fieldsSize) override;
     private:
         const float eps;
-        Mrz* extractMrz(const Fields *fields, const size_t fieldsSize);
-        std::vector<Fields> findMrzLines(const Fields *fields, const size_t fieldsSize);
-        MrzType findMrzType(std::vector<Fields> mrz);
 };

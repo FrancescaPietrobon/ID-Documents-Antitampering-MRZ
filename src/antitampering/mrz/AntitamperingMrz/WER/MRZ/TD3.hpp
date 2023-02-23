@@ -12,7 +12,6 @@ class TD3: public Mrz
         std::string checkOverallDigit;
 
     public:
-        TD3(std::vector<Fields> mrz);
-        void extractFields(std::vector<Fields> mrz);
-        void printMRZFields();
+        MrzFields extractMrzFields(std::vector<Fields> mrz);
+        void printMrzFields(MrzFields mrzFields);
 };

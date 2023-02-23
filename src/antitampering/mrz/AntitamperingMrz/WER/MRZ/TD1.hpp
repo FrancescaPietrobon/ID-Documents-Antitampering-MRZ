@@ -13,7 +13,6 @@ class TD1: public Mrz
         std::string checkOptionalData;
 
     public:
-        TD1(std::vector<Fields> mrz);
-        void extractFields(std::vector<Fields> mrz);
-        void printMRZFields();
+        MrzFields extractMrzFields(std::vector<Fields> mrz);
+        void printMrzFields(MrzFields mrzFields);
 };

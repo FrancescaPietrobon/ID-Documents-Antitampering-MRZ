@@ -7,11 +7,7 @@
 
 class MRVA: public Mrz
 {
-    private:
-
     public:
-        MRVA(std::vector<Fields> mrz);
-        void extractFields(std::vector<Fields> mrz);
-        void extractFields();
-        void printMRZFields();
+        MrzFields extractMrzFields(std::vector<Fields> mrz);
+        void printMrzFields(MrzFields mrzFields);
 };
