@@ -75,7 +75,6 @@ MrzType Mrz::findMrzType(std::vector<Fields> mrzLines)
 
 Mrz* Mrz::createMrz(MrzType mrzType, std::vector<Fields> chars)
 { 
-    /*
     if (mrzType == td1) 
         return new TD1; 
     else if (mrzType == td2) 
@@ -87,9 +86,6 @@ Mrz* Mrz::createMrz(MrzType mrzType, std::vector<Fields> chars)
     else if (mrzType == mrvb) 
         return new MRVB;
     else return NULL; 
-    */
-    return new TD3;
-
 } 
 
 bool Mrz::check(std::string field, std::string checkDigit)
