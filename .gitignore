@@ -3,7 +3,6 @@ build/
 models/
 data/
 printResults/
-src/antitamperingOLD/
 CMakeUserPresents.json
 conan.lock
 conanbuildinfo.txt
