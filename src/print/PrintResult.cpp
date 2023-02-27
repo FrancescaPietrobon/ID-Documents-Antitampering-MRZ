@@ -1,6 +1,6 @@
 #include "PrintResult.hpp"
 
-void printOCRResult(cv::Mat img, Characters *characters, size_t charactersSize)
+void saveImgOcrResponse(cv::Mat img, Characters *characters, size_t charactersSize)
 {
     cv::Mat new_image = img;
     int lineType = cv::LINE_AA;
@@ -33,7 +33,7 @@ void printOCRResult(cv::Mat img, Characters *characters, size_t charactersSize)
     cv::imwrite("../../printResults/OCR.jpg", new_image);
 }
 
-void printDbscanResult(cv::Mat img, Fields* fields, size_t fieldsSize)
+void saveImgDbscanResponse(cv::Mat img, Fields* fields, size_t fieldsSize)
 {
     cv::Mat new_image = img;
     int lineType = cv::LINE_AA;
@@ -66,4 +66,41 @@ void printDbscanResult(cv::Mat img, Fields* fields, size_t fieldsSize)
         cv::putText(new_image, conf, confOrg, fontFace, fontScale*0.6, cv::Scalar(0,0,0), thickness, lineType);
     }
     cv::imwrite("../../printResults/DBSCAN.jpg", new_image);
+}
+
+void printDbscanResponse(ClusteringResponse clusteringResponse)
+{
+    std::cout << "\nClustering result with DBSCAN:\n" << std::endl;
+    for(size_t i = 0; i < clusteringResponse.resultDetailsSize; ++i)
+    {
+        std::cout << "Image: " << clusteringResponse.resultDetails[i].image << "\n" << std::endl;
+        for(size_t j = 0; j < clusteringResponse.resultDetails[i].fieldsSize; ++j)
+        {
+            std::cout << "Label: " << clusteringResponse.resultDetails[i].fields[j].label << std::endl;
+            std::cout << "Confidence: " << clusteringResponse.resultDetails[i].fields[j].confidence << "\n" << std::endl;
+        }
+        std::cout << "Final confidence: " << clusteringResponse.resultDetails[i].confidence << "\n" << std::endl;
+    }
+}
+
+void printAntitamperingMrzResponse(AntitamperingMrzResponse antitamperingMrzResponse)
+{
+    std::cout << "\nAntitampering Mrz result:\n" << std::endl;
+    for(size_t i = 0; i < antitamperingMrzResponse.resultDetailsSize; ++i)
+    {
+        std::cout << "Image: " << antitamperingMrzResponse.resultDetails[i].image << std::endl;
+        std::cout << "\nDoubtful fields:\n" << std::endl;
+        for(size_t j = 0; j < antitamperingMrzResponse.resultDetails[i].doubdtfulFieldSize; ++j)
+        {
+            std::cout << "Type: " << antitamperingMrzResponse.resultDetails[i].doubtfulFields[j].fieldType << std::endl;
+            std::cout << "Field label: " << antitamperingMrzResponse.resultDetails[i].doubtfulFields[j].dataField << std::endl;
+            std::cout << "Mrz label: " << antitamperingMrzResponse.resultDetails[i].doubtfulFields[j].mrzDataField << std::endl;
+            std::cout << "Confidence: " << antitamperingMrzResponse.resultDetails[i].doubtfulFields[j].confidenceField << "\n" << std::endl;
+        }
+        std::cout << "Final confidence: " << antitamperingMrzResponse.resultDetails[i].confidence << std::endl;
+        std::cout << "Threshold confidence: " << antitamperingMrzResponse.resultDetails[i].confidenceThresholdAntitampering << std::endl;
+        std::cout << "Check digits mrz: " << antitamperingMrzResponse.resultDetails[i].checkDigistsMrz << std::endl;
+        std::cout << "\nFinal result: " << antitamperingMrzResponse.resultDetails[i].result << std::endl;
+    }
+    std::cout << "\nGlobal result: " << antitamperingMrzResponse.result << std::endl;
 }

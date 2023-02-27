@@ -1,13 +1,13 @@
 #pragma once
 
-#include "AntitamperingMrz/WER/WER.hpp"
+#include "AntitamperingMrz/WER/Associations.hpp"
 #include "AntitamperingMrz/AntitamperingMrz.hpp"
 #include "common/exceptions/Exceptions.hpp"
 
 #include <spdlog/spdlog.h>
 #include <map>
 
-#define epsWER 8 //7
+#define CONF_THRESHOLD_WER 0.7
 
 enum AssociatorType
 {

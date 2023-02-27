@@ -37,10 +37,12 @@ extern "C"
 ClusteringResponse clusterChar(OcrResponse ocrResponse, std::shared_ptr<CharactersClustering> cluster)
 {
     ClusteringResponse res;
+    float sumConf;
     res.resultDetailsSize = ocrResponse.resultDetailsSize;
     res.resultDetails = new ClusteringResultDetail[res.resultDetailsSize];
     for (std::size_t i = 0; i < res.resultDetailsSize; i++)
     {
+        sumConf = 0;
         res.resultDetails[i].image = utils::convertStringtoCharPtr(ocrResponse.resultDetails[i].image);
         res.resultDetails[i].error = 0;
         res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr("");
@@ -66,7 +68,9 @@ ClusteringResponse clusterChar(OcrResponse ocrResponse, std::shared_ptr<Characte
             res.resultDetails[i].fields[j].labelSize = clusteringResults[j].labelSize;
             res.resultDetails[i].fields[j].position = clusteringResults[j].position;
             res.resultDetails[i].fields[j].confidence = clusteringResults[j].confidence;
+            sumConf += clusteringResults[j].confidence;
         }
+        res.resultDetails[i].confidence = sumConf / res.resultDetails[i].fieldsSize;
     }
     return res;
 }

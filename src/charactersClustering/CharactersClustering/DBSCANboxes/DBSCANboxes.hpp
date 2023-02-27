@@ -20,7 +20,7 @@ class DBSCANboxes : public CharactersClustering
         DBSCANboxes(const float e);
         virtual ~DBSCANboxes(){};
         std::vector<Fields> clusterCharacters(const Characters *characters, const size_t charactersSize) override;
-
+        
     private:
         const float eps;
         std::vector<CharactersClustered> fillCharactersClustered(const Characters *characters, const size_t charactersSize);

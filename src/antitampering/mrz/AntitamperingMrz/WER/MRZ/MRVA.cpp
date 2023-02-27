@@ -1,18 +1,25 @@
 #include "MRVA.hpp"
 
-MrzFields MRVA::extractMrzFields(std::vector<Fields> mrz)
+std::vector<MrzFields> MRVA::extractMrzFields(std::vector<Fields> mrz)
 {
-    MrzFields mrzFields;
+    std::vector<MrzFields> mrzFields;
+    MrzFields field;
 
     // First line
-
-    mrzFields.docType = mrz[0].label[0];
+    
+    field.fieldType = "docType";
+    field.mrzDataField = mrz[0].label[0];
     if(mrz[0].label[1] != '<')
-        mrzFields.docType = mrzFields.docType + mrz[0].label[1];
+        field.mrzDataField += + mrz[0].label[1];
+    mrzFields.push_back(field);
 
-    mrzFields.state = "";
-    mrzFields.state = mrzFields.state + mrz[0].label[2] + mrz[0].label[3] + mrz[0].label[4];
+    field.fieldType = "state";
+    field.mrzDataField = "";
+    field.mrzDataField = field.mrzDataField + mrz[0].label[2] + mrz[0].label[3] + mrz[0].label[4];
+    mrzFields.push_back(field);
 
+    field.fieldType = "surname";
+    field.mrzDataField = "";
     int i = 5;
     for(size_t j = i; j < 44; ++j)
     {
@@ -22,75 +29,103 @@ MrzFields MRVA::extractMrzFields(std::vector<Fields> mrz)
             break;
         }
         else if(mrz[0].label[j] == '<')
-            mrzFields.surname += " ";
+            field.mrzDataField += " ";
         else
-            mrzFields.surname += mrz[0].label[j];
+            field.mrzDataField += mrz[0].label[j];
     }
+    mrzFields.push_back(field);
 
+    field.fieldType = "name";
+    field.mrzDataField = "";
     for(size_t j = i; j < 44; ++j)
     {
         if(mrz[0].label[j] == '<' && mrz[0].label[j-1] == '<')
             break;
         else if(mrz[0].label[j] == '<')
-            mrzFields.name += " ";
+            field.mrzDataField += " ";
         else
-            mrzFields.name += mrz[0].label[j];
+            field.mrzDataField += mrz[0].label[j];
     }
+    mrzFields.push_back(field);
 
     // Second line
 
+    field.fieldType = "docNumber";
+    field.mrzDataField = "";
     for(size_t i = 0; i < 9 && mrz[1].label[i] != '<'; ++i)
-        mrzFields.docNumber += mrz[1].label[i];
+        field.mrzDataField += mrz[1].label[i];
+    mrzFields.push_back(field);
 
-    mrzFields.checkDocNum = mrz[1].label[9];
+    checkDocNum = mrz[1].label[9];
     
-    mrzFields.nationality = "";
-    mrzFields.nationality = mrzFields.nationality + mrz[1].label[10] + mrz[1].label[11] + mrz[1].label[12];
+    field.fieldType = "nationality";
+    field.mrzDataField = "";
+    field.mrzDataField = field.mrzDataField + mrz[1].label[10] + mrz[1].label[11] + mrz[1].label[12];
+    mrzFields.push_back(field);
 
+    field.fieldType = "dateBirth";
+    field.mrzDataField = "";
     for(size_t i = 13; i < 19; ++i)
-        mrzFields.dateBirth += mrz[1].label[i];
+        field.mrzDataField += mrz[1].label[i];
+    mrzFields.push_back(field);
 
-    mrzFields.checkDateBirth = mrz[1].label[19];
+    checkDateBirth = mrz[1].label[19];
 
-    mrzFields.sex = mrz[1].label[20];
+    field.fieldType = "sex";
+    field.mrzDataField = mrz[1].label[20];
+    mrzFields.push_back(field);
 
+    field.fieldType = "dateExpireDoc";
+    field.mrzDataField = "";
     for(size_t i = 21; i < 27; ++i)
-        mrzFields.dateExpireDoc += mrz[1].label[i];
+        field.mrzDataField += mrz[1].label[i];
+    mrzFields.push_back(field);
 
-    mrzFields.checkDateExpireDoc = mrz[1].label[27];
+    checkDateExpireDoc = mrz[1].label[27];
 
-    if(mrz[1].label[28] == '<')
-        mrzFields.optionalData = "NULL";
-    else
+    if(mrz[1].label[28] != '<')
     {
         for(size_t i = 28; i < 44; ++i)
         {
             if(mrz[1].label[i] == '<' && mrz[1].label[i-1] == '<')
                 break;
             else if(mrz[1].label[i] == '<')
-                mrzFields.optionalData += " ";
+                optionalData += " ";
             else
-                mrzFields.optionalData += mrz[1].label[i];
+                optionalData += mrz[1].label[i];
         }
     }
 
     return mrzFields;
 }
 
-void MRVA::printMrzFields(MrzFields mrzFields)
+bool MRVA::checkDigits(std::vector<Fields> mrz, std::vector<MrzFields> mrzFields)
 {
-    std::cout << "\nMRZ fields detected in MRVA MRZ:" << std::endl;
-    std::cout << "Document type: " << mrzFields.docType << std::endl;
-    std::cout << "State: " << mrzFields.state << std::endl;
-    std::cout << "Surname: " << mrzFields.surname << std::endl;
-    std::cout << "Name: " << mrzFields.name << std::endl;
-    std::cout << "Document number: " << mrzFields.docNumber << std::endl;
-    std::cout << "Check document number: " << mrzFields.checkDocNum << std::endl;
-    std::cout << "Nationality: " << mrzFields.nationality << std::endl;
-    std::cout << "Date of birth: " << mrzFields.dateBirth << std::endl;
-    std::cout << "Check date of birth: " << mrzFields.checkDateBirth << std::endl;
-    std::cout << "Sex: " << mrzFields.sex << std::endl;
-    std::cout << "Date of expire: " << mrzFields.dateExpireDoc << std::endl;
-    std::cout << "Check date of expire: " << mrzFields.checkDateExpireDoc << std::endl;
-    std::cout << "Optional data: " << mrzFields.optionalData << std::endl;
+    bool result = true;
+
+    if(!check(mrzFields.at(4).mrzDataField, checkDocNum))
+    {
+        std::cout << "Check in document number faild." << std::endl;
+        result = false;
+    }  
+    else
+        std::cout << "Check in document number OK." << std::endl;
+
+    if(!check(mrzFields.at(6).mrzDataField, checkDateBirth))
+    {
+        std::cout << "Check in date of birth faild." << std::endl;
+        result = false;
+    }
+    else
+        std::cout << "Check in date of birth OK." << std::endl;
+
+    if(!check(mrzFields.at(8).mrzDataField, checkDateExpireDoc))
+    {
+        std::cout << "Check in date of expire faild." << std::endl;
+        result = false;
+    }
+    else
+        std::cout << "Check in date of expire OK." << std::endl;
+
+    return result;
 }

@@ -13,7 +13,7 @@ std::shared_ptr<AntitamperingMrz> AntitamperingMrzFactory::createAntitamperingMr
     switch (type)
     {
         case wer:
-            return std::shared_ptr<AntitamperingMrz>(std::make_shared<WER>(epsWER));
+            return std::shared_ptr<AntitamperingMrz>(std::make_shared<Associations>(CONF_THRESHOLD_WER));
         default:
         {
             SPDLOG_ERROR("FATAL: Algorithm Type NOT FOUND,  {}", algorithmType);

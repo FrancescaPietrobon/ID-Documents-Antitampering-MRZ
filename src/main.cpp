@@ -28,38 +28,32 @@ int main(int argc, char *argv[])
     contentBase64[0] = utils::convertStringtoCharPtr(getBase64(cv::imread(imagePath)));
     Coordinates *coordinates = new Coordinates[1];
     coordinates[0] = Coordinates{0, 0, 2000, 2000};
-    float *thresholds = new float[1];
-    thresholds[0] = 0.3;
+    float *thresholdsOcr = new float[1];
+    thresholdsOcr[0] = 0.3;
     char *algoTypeOcr = new char;
     algoTypeOcr = utils::convertStringtoCharPtr("RetinaNet");
 
-    OcrResponse ocrResult = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoTypeOcr);
+    OcrResponse ocrResponse = process(images, contentType, contentBase64, coordinates, thresholdsOcr, 1, algoTypeOcr);
 
-    printOCRResult(cv::imread(imagePath), ocrResult.resultDetails->characters, ocrResult.resultDetails->charactersSize);
+    saveImgOcrResponse(cv::imread(imagePath), ocrResponse.resultDetails->characters, ocrResponse.resultDetails->charactersSize);
 
     char *algoTypeClustering = new char;
     //algoTypeClustering = utils::convertStringtoCharPtr("DbscanPoints");
     algoTypeClustering = utils::convertStringtoCharPtr("DbscanBoxes");
 
-    ClusteringResponse clusteringResult = cluster(ocrResult, algoTypeClustering);
+    ClusteringResponse clusteringResponse = cluster(ocrResponse, algoTypeClustering);
 
-    std::cout << "\nClustering result with DBSCAN:\n" << std::endl;
-    for(size_t i = 0; i < clusteringResult.resultDetailsSize; ++i)
-    {
-        std::cout << "Image: " << clusteringResult.resultDetails[i].image << "\n" << std::endl;
-        for(size_t j = 0; j < clusteringResult.resultDetails[i].fieldsSize; ++j)
-        {
-            std::cout << "Label: " << clusteringResult.resultDetails[i].fields[j].label << std::endl;
-            std::cout << "Confidence: " << clusteringResult.resultDetails[i].fields[j].confidence << "\n" << std::endl;
-        }
-    }
-
-    printDbscanResult(cv::imread(imagePath), clusteringResult.resultDetails->fields, clusteringResult.resultDetails->fieldsSize);
+    printDbscanResponse(clusteringResponse);
+    saveImgDbscanResponse(cv::imread(imagePath), clusteringResponse.resultDetails->fields, clusteringResponse.resultDetails->fieldsSize);
     
+    float *thresholdsAntitampering = new float[1];
+    thresholdsAntitampering[0] = 0.7;
     char *algoTypeAntitamperingMrz = new char;
     algoTypeAntitamperingMrz = utils::convertStringtoCharPtr("wer");
 
-    AntitamperingMrzResponse antitamperingMrzResponse = associate(clusteringResult, algoTypeAntitamperingMrz);
+    AntitamperingMrzResponse antitamperingMrzResponse = associate(clusteringResponse, thresholdsAntitampering, algoTypeAntitamperingMrz);
 
+    printAntitamperingMrzResponse(antitamperingMrzResponse);
+    
     return 0;
 }

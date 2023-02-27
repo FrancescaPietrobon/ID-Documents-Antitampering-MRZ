@@ -2,15 +2,18 @@
 
 #include "../AntitamperingMrz.hpp"
 #include "Mrz.hpp"
+#include "Date.hpp"
 
 #include <vector>
 
-class WER : public AntitamperingMrz 
+class WER
 {
     public:
-        WER(const float eps);
+        WER(){};
         virtual ~WER(){};
-        std::vector<DoubtfulFields> check(const Fields *fields, const size_t fieldsSize) override;
+        float computeConfidence(const std::string& s1, const std::string& s2);
+
     private:
-        const float eps;
+        float computeWER(const std::string& s1, const std::string& s2);
+        int min3(int a, int b, int c);
 };

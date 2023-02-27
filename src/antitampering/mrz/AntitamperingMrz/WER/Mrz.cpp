@@ -6,27 +6,6 @@
 #include "MRZ/MRVA.hpp"
 #include "MRZ/MRVB.hpp"
 
-MrzFields Mrz::extractMrz(const Fields *fields, const size_t fieldsSize)
-{
-    std::vector<Fields> mrzLines = findMrzLines(fields, fieldsSize);
-
-    MrzType mrzType = findMrzType(mrzLines);
-    Mrz* mrz;
-    MrzFields mrzFields;
-    if(mrzType != NONE)
-    {
-        mrz = createMrz(mrzType, mrzLines);
-        mrzFields = mrz->extractMrzFields(mrzLines);
-        mrz->printMrzFields(mrzFields);
-    }
-    else
-    {
-        SPDLOG_ERROR("FATAL: Mrz Type NOT FOUND");
-        throw Exception(ErrorCode::GENERAL_ERROR, std::string("Mrz Type not handled"));
-    }
-    return mrzFields;
-}
-
 std::vector<Fields> Mrz::findMrzLines(const Fields *fields, const size_t fieldsSize)
 {
     std::map<float, Fields> orderedMrz;
@@ -48,6 +27,25 @@ std::vector<Fields> Mrz::findMrzLines(const Fields *fields, const size_t fieldsS
         mrzLines.push_back(line.second);
 
     return mrzLines;
+}
+
+std::vector<MrzFields> Mrz::extractMrz(std::vector<Fields> mrzLines)
+{
+    MrzType mrzType = findMrzType(mrzLines);
+    Mrz* mrz;
+    std::vector<MrzFields> mrzFields;
+    if(mrzType != NONE)
+    {
+        mrz = createMrz(mrzType, mrzLines);
+        mrzFields = mrz->extractMrzFields(mrzLines);
+        mrz->printMrzFields(mrzFields);
+    }
+    else
+    {
+        SPDLOG_ERROR("FATAL: Mrz Type NOT FOUND");
+        throw Exception(ErrorCode::GENERAL_ERROR, std::string("Mrz Type not handled"));
+    }
+    return mrzFields;
 }
 
 MrzType Mrz::findMrzType(std::vector<Fields> mrzLines)
@@ -77,6 +75,7 @@ MrzType Mrz::findMrzType(std::vector<Fields> mrzLines)
 
 Mrz* Mrz::createMrz(MrzType mrzType, std::vector<Fields> chars)
 { 
+    /*
     if (mrzType == td1) 
         return new TD1; 
     else if (mrzType == td2) 
@@ -88,6 +87,9 @@ Mrz* Mrz::createMrz(MrzType mrzType, std::vector<Fields> chars)
     else if (mrzType == mrvb) 
         return new MRVB;
     else return NULL; 
+    */
+    return new TD3;
+
 } 
 
 bool Mrz::check(std::string field, std::string checkDigit)
@@ -128,40 +130,9 @@ bool Mrz::checkOverall(std::vector<Fields> mrz, std::string overallDigit)
     return check(stringForCheckOverall, overallDigit);
 }
 
-std::unordered_map<char, unsigned> digit_conversion =  {{'<', 0,},
-                                                        {'0', 0,},
-                                                        {'1', 1,},
-                                                        {'2', 2,},
-                                                        {'3', 3,},
-                                                        {'4', 4,},
-                                                        {'5', 5,},
-                                                        {'6', 6,},
-                                                        {'7', 7,},
-                                                        {'8', 8,},
-                                                        {'9', 9,},
-                                                        {'A', 10,},
-                                                        {'B', 11,},
-                                                        {'C', 12,},
-                                                        {'D', 13,},
-                                                        {'E', 14,},
-                                                        {'F', 15,},
-                                                        {'G', 16,},
-                                                        {'H', 17,},
-                                                        {'I', 18,},
-                                                        {'J', 19,},
-                                                        {'K', 20,},
-                                                        {'L', 21,},
-                                                        {'M', 22,},
-                                                        {'N', 23,},
-                                                        {'O', 24,},
-                                                        {'P', 25,},
-                                                        {'Q', 26,},
-                                                        {'R', 27,},
-                                                        {'S', 28,},
-                                                        {'T', 29,},
-                                                        {'U', 30,},
-                                                        {'V', 31,},
-                                                        {'W', 32,},
-                                                        {'X', 33,},
-                                                        {'Y', 34,},
-                                                        {'Z', 35,}};
+void Mrz::printMrzFields(std::vector<MrzFields> mrzFields)
+{
+    std::cout << "\nMRZ fields detected:" << std::endl;
+    for(MrzFields field: mrzFields)
+        std::cout << field.fieldType << ": " << field.mrzDataField << std::endl;
+}

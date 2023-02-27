@@ -11,6 +11,10 @@ struct Fields {
     size_t labelSize;
     Coordinates position;
     float confidence;
+    
+    bool operator==(Fields const & rhs) const {
+        return (this->label == rhs.label && this->labelSize == rhs.labelSize && this->confidence == rhs.confidence);
+    }
 };
 
 class CharactersClustering {

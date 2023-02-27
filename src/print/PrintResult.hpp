@@ -3,8 +3,12 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 
-#include "ocr/Ocr/Ocr.hpp"
-#include "charactersClustering/CharactersClustering/CharactersClustering.hpp"
+#include "ocr/OcrApi.hpp"
+#include "charactersClustering/CharactersClusteringApi.hpp"
+#include "antitampering/mrz/AntitamperingMrzApi.hpp"
 
-void printOCRResult(cv::Mat img, Characters *characters, size_t charactersSize);
-void printDbscanResult(cv::Mat img, Fields* fields, size_t fieldsSize);
+void saveImgOcrResponse(cv::Mat img, Characters *characters, size_t charactersSize);
+void saveImgDbscanResponse(cv::Mat img, Fields* fields, size_t fieldsSize);
+
+void printDbscanResponse(ClusteringResponse clusteringResult);
+void printAntitamperingMrzResponse(AntitamperingMrzResponse antitamperingMrzResponse);

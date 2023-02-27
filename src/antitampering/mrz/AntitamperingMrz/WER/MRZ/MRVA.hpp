@@ -7,7 +7,9 @@
 
 class MRVA: public Mrz
 {
+    private:
+        bool checkDigits(std::vector<Fields> mrz, std::vector<MrzFields> mrzFields);
+        
     public:
-        MrzFields extractMrzFields(std::vector<Fields> mrz);
-        void printMrzFields(MrzFields mrzFields);
+        std::vector<MrzFields> extractMrzFields(std::vector<Fields> mrz);
 };
