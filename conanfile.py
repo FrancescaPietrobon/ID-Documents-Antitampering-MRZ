@@ -110,16 +110,16 @@ class MrzAntitamperingConan(ConanFile):
     def package_info(self):
         self.cpp_info.name = "lib_document_validator"
 
-        self.cpp_info.components["ocr"].requires = [
+        self.cpp_info.components["ocr_server"].requires = [
             "spdlog::spdlog",
             "boost::boost",
             "opencv::opencv",
             "jsoncpp::jsoncpp",
             "nlohmann_json::nlohmann_json"
         ]
-        self.cpp_info.components["ocr"].libs = ["document_validator_ocr"]
-        self.cpp_info.components["ocr"].libdirs = ["lib/x86_64-linux-gnu"]
-        self.cpp_info.components["ocr"].includedirs = ["include", "include/document_validator"]
+        self.cpp_info.components["ocr_server"].libs = ["document_validator_ocr_server"]
+        self.cpp_info.components["ocr_server"].libdirs = ["lib/x86_64-linux-gnu"]
+        self.cpp_info.components["ocr_server"].includedirs = ["include", "include/document_validator"]
 
         self.cpp_info.components["characters_clustering"].requires = [
             "spdlog::spdlog",

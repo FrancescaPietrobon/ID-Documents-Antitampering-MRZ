@@ -49,44 +49,44 @@ set(BASE64_PATH "src/base64" CACHE STRING "Base64 folder")
 file(GLOB_RECURSE APP_BASE64 "${BASE64_PATH}/*.h" "${BASE64_PATH}/*.cpp" "${BASE64_PATH}/*.hpp")
 file(GLOB_RECURSE BASE64_HEADERS "${BASE64_PATH}/*.hpp" "${BASE64_PATH}/*.h")
 
-# ##########
-# Ocr stub #
-# ##########
+# #################
+# Ocr server stub #
+# #################
 
-set(OCR_PATH "src/ocr" CACHE STRING "Ocr stub folder")
-file(GLOB_RECURSE APP_OCR "${OCR_PATH}/*.h" "${OCR_PATH}/*.cpp" "${OCR_PATH}/*.hpp")
-file(GLOB_RECURSE OCR_HEADERS "${OCR_PATH}/*.hpp" "${OCR_PATH}/*.h")
+set(OCR_SERVER_PATH "src/ocr_server" CACHE STRING "Ocr server stub folder")
+file(GLOB_RECURSE APP_OCR_SERVER "${OCR_SERVER_PATH}/*.h" "${OCR_SERVER_PATH}/*.cpp" "${OCR_SERVER_PATH}/*.hpp")
+file(GLOB_RECURSE OCR_SERVER_HEADERS "${OCR_SERVER_PATH}/*.hpp" "${OCR_SERVER_PATH}/*.h")
 
-add_library(document_validator_ocr SHARED
-    ${APP_OCR}
+add_library(document_validator_ocr_server SHARED
+    ${APP_OCR_SERVER}
     ${APP_BASE64}
     ${APP_COMMON}
 )
 
-target_sources(document_validator_ocr
+target_sources(document_validator_ocr_server
     PUBLIC FILE_SET headers
     TYPE HEADERS
     BASE_DIRS "src" FILES
-    ${OCR_HEADERS}
+    ${OCR_SERVER_HEADERS}
     ${BASE64_HEADERS}
     ${COMMON_HEADERS}
 )
 
-target_include_directories(document_validator_ocr PUBLIC
-    ${OCR_PATH}
+target_include_directories(document_validator_ocr_server PUBLIC
+    ${OCR_SERVER_PATH}
     ${BASE64_PATH}
     ${COMMON_PATH}
 )
 
-target_link_libraries(document_validator_ocr
+target_link_libraries(document_validator_ocr_server
     spdlog::spdlog
     jsoncpp_lib
     nlohmann_json::nlohmann_json
     opencv::opencv
 )
 
-install(TARGETS document_validator_ocr
-    COMPONENT ocr
+install(TARGETS document_validator_ocr_server
+    COMPONENT ocr_server
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -220,7 +220,7 @@ add_executable(application src/main.cpp)
 target_link_libraries(application
     #document_validator
     print
-    document_validator_ocr
+    document_validator_ocr_server
     document_validator_characters_clustering
     document_validator_antitampering_mrz
 )
@@ -233,8 +233,8 @@ enable_testing()
 include(GoogleTest)
 
 # Unit Tests
-set(TESTS_OCR_PATH "src/tests/testCases/unitTests/ocr/" CACHE STRING "Unit tests folder")
-file(GLOB_RECURSE APP_TESTS_OCR "${TESTS_OCR_PATH}/*.h" "${TESTS_OCR_PATH}/*.cpp" "${TESTS_OCR_PATH}/*.hpp")
+set(TESTS_OCR_SERVER_PATH "src/tests/testCases/unitTests/ocr_server/" CACHE STRING "Unit tests folder")
+file(GLOB_RECURSE APP_TESTS_OCR_SERVER "${TESTS_OCR_SERVER_PATH}/*.h" "${TESTS_OCR_SERVER_PATH}/*.cpp" "${TESTS_OCR_SERVER_PATH}/*.hpp")
 
 #set(TESTS_CHARACTERS_CLUSTERING_PATH "src/tests/testCases/unitTests/charactersClustering/" CACHE STRING "Unit tests folder")
 #file(GLOB_RECURSE APP_TESTS_CHARACTERS_CLUSTERING "${TESTS_CHARACTERS_CLUSTERING_PATH}/*.h" "${TESTS_CHARACTERS_CLUSTERING_PATH}/*.cpp" "${TESTS_CHARACTERS_CLUSTERING_PATH}/*.hpp")
@@ -254,7 +254,7 @@ add_executable(TestOcr
 target_include_directories(TestOcr PUBLIC "src/tests")
 
 target_link_libraries(TestOcr
-    document_validator_ocr
+    document_validator_ocr_server
     GTest::gmock
 )
 

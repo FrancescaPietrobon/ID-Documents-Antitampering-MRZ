@@ -14,11 +14,11 @@ struct CharactersClustered
     size_t cluster;
 };
 
-class DBSCANboxes : public CharactersClustering
+class DBSCAN : public CharactersClustering
 {
     public:
-        DBSCANboxes(const float e);
-        virtual ~DBSCANboxes(){};
+        DBSCAN(const float e);
+        virtual ~DBSCAN(){};
         std::vector<Fields> clusterCharacters(const Characters *characters, const size_t charactersSize) override;
         
     private:

@@ -1,4 +1,4 @@
-#include "ocr/OcrApi.hpp"
+#include "ocr_server/OcrApi.hpp"
 #include "charactersClustering/CharactersClusteringApi.hpp"
 #include "antitampering/mrz/AntitamperingMrzApi.hpp"
 #include "base64/base64.h"
@@ -38,8 +38,7 @@ int main(int argc, char *argv[])
     saveImgOcrResponse(cv::imread(imagePath), ocrResponse.resultDetails->characters, ocrResponse.resultDetails->charactersSize);
 
     char *algoTypeClustering = new char;
-    //algoTypeClustering = utils::convertStringtoCharPtr("DbscanPoints");
-    algoTypeClustering = utils::convertStringtoCharPtr("DbscanBoxes");
+    algoTypeClustering = utils::convertStringtoCharPtr("Dbscan");
 
     ClusteringResponse clusteringResponse = cluster(ocrResponse, algoTypeClustering);
 

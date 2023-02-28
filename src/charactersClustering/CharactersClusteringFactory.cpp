@@ -1,8 +1,8 @@
 #include "CharactersClusteringFactory.hpp"
 
 std::map<std::string, ClusteringType> mapClusteringType = {
-    {"DbscanPoints", DbscanPoints},
-    {"DbscanBoxes", DbscanBoxes}
+    {"Dbscan", Dbscan},
+    //{"KMeans", KMeans}
 };
 
 std::shared_ptr<CharactersClustering> CharactersClusteringFactory::createClustering(const std::string& algorithmType)
@@ -11,10 +11,9 @@ std::shared_ptr<CharactersClustering> CharactersClusteringFactory::createCluster
     ClusteringType type = mapClusteringType.find(algorithmType)->second;
     switch (type)
     {
-        case DbscanPoints:
-            return std::shared_ptr<CharactersClustering>(std::make_shared<DBSCANpoints>(epsDbscanPoints));
-        case DbscanBoxes:
-            return std::shared_ptr<CharactersClustering>(std::make_shared<DBSCANboxes>(epsDbscanBoxes));
+        case Dbscan:
+            return std::shared_ptr<CharactersClustering>(std::make_shared<DBSCAN>(epsDbscan));
+        
         default:
         {
             SPDLOG_ERROR("FATAL: Algorithm Type NOT FOUND,  {}", algorithmType);

@@ -1,5 +1,15 @@
 #include "Date.hpp"
 
+static const std::map<std::string, std::string> monthUCtoNum {
+    {"JAN", "01"}, {"FEB", "02"}, {"MAR", "03"}, {"APR", "04"}, {"MAY", "05"}, {"JUN", "06"},
+    {"JUL", "07"}, {"AUG", "08"}, {"SEP", "09"}, {"OCT", "10"}, {"NOV", "11"}, {"DEC", "12"}
+};
+
+static const std::map<std::string, std::string> monthLCtoNum {
+    {"Jan", "01"}, {"Feb", "02"}, {"Mar", "03"}, {"Apr", "04"}, {"May", "05"}, {"Jun", "06"},
+    {"Jul", "07"}, {"Aug", "08"}, {"Sep", "09"}, {"Oct", "10"}, {"Nov", "11"}, {"Dec", "12"}
+};
+
 std::string Date::findDate(std::string data)
 {
     std::string newDate = "None";
@@ -28,7 +38,6 @@ std::pair<std::string, size_t> Date::findMonth(std::string data)
     return monthWithIndex;
 }
 
-
 std::pair<std::string, size_t> Date::searchMonth(std::string field, std::map<std::string, std::string> months)
 {
     std::string month = "None";
@@ -46,7 +55,6 @@ std::pair<std::string, size_t> Date::searchMonth(std::string field, std::map<std
     return std::make_pair(month, index);
     
 }
-
 
 std::string Date::extractAlphanumericDate(std::string data, std::string month, size_t index)
 {
@@ -81,7 +89,6 @@ std::string Date::extractAlphanumericDate(std::string data, std::string month, s
     return newDate;
 }
 
-
 std::string Date::extractNumericDate(std::string data)
 {
     std::string newDate = "None";
@@ -107,12 +114,10 @@ std::string Date::extractNumericDate(std::string data)
     return newDate;
 }
 
-
 bool Date::dayOk(std::string day)
 {
     return (isNumber(day) && (std::stoi(day) > 0) && (std::stoi(day) <= 31));
 }
-
 
 bool Date::monthOk(std::string month)
 {

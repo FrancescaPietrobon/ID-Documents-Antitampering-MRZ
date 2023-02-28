@@ -1,6 +1,5 @@
 #include "OcrFactory.hpp"
 
-
 std::map<std::string, AlgorithmType> mapAlgorithmType = {
     {"RetinaNet", RetinaNet},
     //{"Yolov7", Yolov7}

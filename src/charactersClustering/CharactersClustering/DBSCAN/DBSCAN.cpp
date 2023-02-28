@@ -1,9 +1,9 @@
-#include "DBSCANboxes.hpp"
+#include "DBSCAN.hpp"
 
-DBSCANboxes::DBSCANboxes(float e):
+DBSCAN::DBSCAN(float e):
     eps(e){};
 
-std::vector<Fields> DBSCANboxes::clusterCharacters(const Characters *characters, const size_t charactersSize)
+std::vector<Fields> DBSCAN::clusterCharacters(const Characters *characters, const size_t charactersSize)
 {
     SPDLOG_INFO("Compute Characters Clusters");
     std::vector<CharactersClustered> charactersClustered = fillCharactersClustered(characters, charactersSize);
@@ -26,7 +26,7 @@ std::vector<Fields> DBSCANboxes::clusterCharacters(const Characters *characters,
     return fields;
 }
 
-std::vector<CharactersClustered> DBSCANboxes::fillCharactersClustered(const Characters *characters, const size_t charactersSize)
+std::vector<CharactersClustered> DBSCAN::fillCharactersClustered(const Characters *characters, const size_t charactersSize)
 {
     std::vector<CharactersClustered> charactersClustered;
     CharactersClustered characterClustered;
@@ -39,7 +39,7 @@ std::vector<CharactersClustered> DBSCANboxes::fillCharactersClustered(const Char
     return charactersClustered; 
 }
 
-std::vector<std::vector<size_t>> DBSCANboxes::findNearCharacters(std::vector<CharactersClustered> characters, std::vector<std::vector<size_t>> nearCharacters)
+std::vector<std::vector<size_t>> DBSCAN::findNearCharacters(std::vector<CharactersClustered> characters, std::vector<std::vector<size_t>> nearCharacters)
 {
     for(size_t i = 0; i < characters.size(); i++)
         for(size_t j = 0; j < characters.size(); j++)
@@ -52,7 +52,7 @@ std::vector<std::vector<size_t>> DBSCANboxes::findNearCharacters(std::vector<Cha
     return nearCharacters;
 }
 
-float DBSCANboxes::computeDistance(Characters char1, Characters char2)
+float DBSCAN::computeDistance(Characters char1, Characters char2)
 {
     Coordinates mostRight = char1.position.topLeftX < char2.position.topLeftX ? char1.position : char2.position;
     Coordinates mostLeft = char2.position.topLeftX < char1.position.topLeftX ? char1.position : char2.position;
@@ -65,7 +65,7 @@ float DBSCANboxes::computeDistance(Characters char1, Characters char2)
     return std::sqrt(xDiff * xDiff + 10 * yDiff * yDiff);
 }
 
-std::vector<CharactersClustered> DBSCANboxes::dfs(size_t now, size_t cluster, std::vector<CharactersClustered> characters, std::vector<std::vector<size_t>> nearCharacters)
+std::vector<CharactersClustered> DBSCAN::dfs(size_t now, size_t cluster, std::vector<CharactersClustered> characters, std::vector<std::vector<size_t>> nearCharacters)
 {
     characters[now].cluster = cluster;
     for(auto & next: nearCharacters[now])
@@ -76,7 +76,7 @@ std::vector<CharactersClustered> DBSCANboxes::dfs(size_t now, size_t cluster, st
     return characters;
 }
 
-std::vector<Fields> DBSCANboxes::computeFields(std::vector<CharactersClustered> charactersClustered, size_t numClusters)
+std::vector<Fields> DBSCAN::computeFields(std::vector<CharactersClustered> charactersClustered, size_t numClusters)
 {
     std::vector<Fields> fields;
     Fields field;
@@ -104,7 +104,7 @@ std::vector<Fields> DBSCANboxes::computeFields(std::vector<CharactersClustered> 
     return fields;
 }
 
-std::vector<Characters> DBSCANboxes::orderCharacters(std::multimap<float, Characters> cluster)
+std::vector<Characters> DBSCAN::orderCharacters(std::multimap<float, Characters> cluster)
 {
     // To order wrt x coordinate
     std::vector<Characters> orderedCharacters;
@@ -113,7 +113,7 @@ std::vector<Characters> DBSCANboxes::orderCharacters(std::multimap<float, Charac
     return orderedCharacters;
 }
 
-Fields DBSCANboxes::fillField(float confidence, size_t labelSize, std::vector<Characters> orderedCharacters)
+Fields DBSCAN::fillField(float confidence, size_t labelSize, std::vector<Characters> orderedCharacters)
 {
     Fields field;
     field.confidence = confidence;
@@ -123,7 +123,7 @@ Fields DBSCANboxes::fillField(float confidence, size_t labelSize, std::vector<Ch
     return field;
 }
 
-std::string DBSCANboxes::extractLabel(std::vector<Characters> orderedCharacters)
+std::string DBSCAN::extractLabel(std::vector<Characters> orderedCharacters)
 {
     std::string label;
     for(size_t i = 0; i < orderedCharacters.size(); ++i)
@@ -131,7 +131,7 @@ std::string DBSCANboxes::extractLabel(std::vector<Characters> orderedCharacters)
     return label;
 }
 
-Coordinates DBSCANboxes::extractPosition(std::vector<Characters> orderedCharacters)
+Coordinates DBSCAN::extractPosition(std::vector<Characters> orderedCharacters)
 {   
     Coordinates position;
     position.topLeftX = orderedCharacters[0].position.topLeftX;

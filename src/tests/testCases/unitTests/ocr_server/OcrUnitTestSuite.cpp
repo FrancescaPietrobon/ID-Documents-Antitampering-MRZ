@@ -2,10 +2,10 @@
 #include <gmock/gmock.h>
 
 #include "TestHelper.hpp"
-#include "ocr/OcrApi.hpp"
-#include "ocr/Ocr/Ocr.hpp"
-#include "ocr/Ocr/RetinaNet/OcrRetinaNet.hpp"
-#include "ocr/OcrFactory.hpp"
+#include "ocr_server/OcrApi.hpp"
+#include "ocr_server/Ocr/Ocr.hpp"
+#include "ocr_server/Ocr/RetinaNet/OcrRetinaNet.hpp"
+#include "ocr_server/OcrFactory.hpp"
 #include "common/exceptions/Exceptions.hpp"
 #include "base64/base64.h"
 

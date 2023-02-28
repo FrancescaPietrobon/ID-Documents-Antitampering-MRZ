@@ -3,7 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 
-#include "ocr/OcrApi.hpp"
+#include "ocr_server/OcrApi.hpp"
 #include "charactersClustering/CharactersClusteringApi.hpp"
 #include "antitampering/mrz/AntitamperingMrzApi.hpp"
 
