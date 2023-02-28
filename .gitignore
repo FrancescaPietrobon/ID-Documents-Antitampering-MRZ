@@ -3,7 +3,7 @@ build/
 models/
 data/
 printResults/
-CMakeUserPresents.json
+CMakeUserPresets.json
 conan.lock
 conanbuildinfo.txt
 conaninfo.txt

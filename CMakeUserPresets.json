@@ -1,9 +1,0 @@
-{
-    "version": 4,
-    "vendor": {
-        "conan": {}
-    },
-    "include": [
-        "/home/f_pietrobon/thesis/MRZ_Antitampering/build/Release/generators/CMakePresets.json"
-    ]
-}
