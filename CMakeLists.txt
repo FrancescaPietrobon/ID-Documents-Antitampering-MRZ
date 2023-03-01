@@ -248,7 +248,7 @@ file(COPY "src/tests/testData" DESTINATION ".")
 # Test document_validator_ocr
 add_executable(TestOcr
     src/tests/main.cpp
-    ${APP_TESTS_OCR}
+    ${APP_TESTS_OCR_SERVER}
 )
 
 target_include_directories(TestOcr PUBLIC "src/tests")

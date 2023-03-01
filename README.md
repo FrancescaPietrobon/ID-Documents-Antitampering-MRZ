@@ -4,7 +4,7 @@ This C++ application is used to detect MRZ fields in PRADO documents based on a 
 
 To build the application type:
 ```
-conan install . --build=missing
+conan install . --build missing
 conan build .
 ```
 
@@ -20,5 +20,5 @@ Then to extract the prediction run:
     
 And to run unit tests execute:
 ```
-./TestExecutable
+./TestOcr
 ```
