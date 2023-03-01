@@ -1,5 +1,4 @@
-#ifndef _OCR_RETINANET_HPP_
-#define _OCR_RETINANET_HPP_
+#pragma once
 
 #include "../Ocr.hpp"
 #include "common/exceptions/Exceptions.hpp"
@@ -38,5 +37,3 @@ class OcrRetinaNet : public Ocr
         std::pair<matrix2D, matrix2D> adjustModelPredictions(cv::Mat prediction);
         matrix2D computeBoxes(matrix2D modelBoxes, matrix2D anchorBoxes);
 };
-
-#endif

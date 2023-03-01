@@ -1,5 +1,4 @@
-#ifndef _UTILITIES_RETINANET_HPP_
-#define _UTILITIES_RETINANET_HPP_
+#pragma once
 
 #include <opencv2/opencv.hpp>
 #include <vector>
@@ -15,5 +14,3 @@ Coordinates reshapeBox(std::vector<float> box, float xAlter, float yAlter);
 matrix2D convertToConers(matrix2D boxes);
 
 void printPredictions(matrix2D pred);
-
-#endif

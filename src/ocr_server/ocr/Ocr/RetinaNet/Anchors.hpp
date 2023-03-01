@@ -1,5 +1,4 @@
-#ifndef _ANCHORS_HPP_
-#define _ANCHORS_HPP_
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -39,5 +38,3 @@ class Anchors
         void printAnchors(matrix3D A, matrix3D B);
         void printAnchorShapesTransf(matrix3D grid, matrix3D areaExp, matrix3D concatenation, matrix2D resizedAnchors, int level);
 };
-
-#endif
