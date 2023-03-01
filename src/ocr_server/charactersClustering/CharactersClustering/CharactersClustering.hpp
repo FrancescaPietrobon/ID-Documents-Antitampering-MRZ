@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ocr_server/OcrApi.hpp"
+#include "ocr_server/ocr/OcrApi.hpp"
 #include "common/utils/utils.hpp"
 
 #include <spdlog/spdlog.h>

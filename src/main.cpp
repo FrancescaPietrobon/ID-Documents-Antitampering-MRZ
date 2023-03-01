@@ -1,5 +1,5 @@
-#include "ocr_server/OcrApi.hpp"
-#include "charactersClustering/CharactersClusteringApi.hpp"
+#include "ocr_server/ocr/OcrApi.hpp"
+#include "ocr_server/charactersClustering/CharactersClusteringApi.hpp"
 #include "antitampering/mrz/AntitamperingMrzApi.hpp"
 #include "base64/base64.h"
 

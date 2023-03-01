@@ -1,5 +1,5 @@
 #include "AntitamperingMrzApi.hpp"
-#include "AntitamperingMrzFactory.hpp"
+#include "factory/AntitamperingMrzFactory.hpp"
 
 #include "common/exceptions/Exceptions.hpp"
 
@@ -11,7 +11,7 @@
 
 // IMPLEMENTATION
 
-AntitamperingMrzResponse buildGlobalErrorResponse(const Exception& exception);
+AntitamperingMrzResponse buildGlobalErrorResponseAntitampMrz(const Exception& exception);
 
 extern "C" {
     AntitamperingMrzResponse associate(ClusteringResponse ocrResponse, float *arr_confidence_threshold, char* algorithmType)
@@ -25,7 +25,7 @@ extern "C" {
         catch(const Exception& e)
         {
             SPDLOG_ERROR("Error Processing Request : {}", e.getMessage());
-            res = buildGlobalErrorResponse(e);
+            res = buildGlobalErrorResponseAntitampMrz(e);
             return res;
         }
         res = associateFields(ocrResponse, arr_confidence_threshold, associator);
@@ -93,7 +93,7 @@ AntitamperingMrzResponse associateFields(ClusteringResponse ocrResponse, float *
     return res;
 }
 
-AntitamperingMrzResponse buildGlobalErrorResponse(const Exception &exception)
+AntitamperingMrzResponse buildGlobalErrorResponseAntitampMrz(const Exception &exception)
 {
     AntitamperingMrzResponse res;
     res.result = false;

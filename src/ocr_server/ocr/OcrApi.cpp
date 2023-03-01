@@ -1,5 +1,5 @@
 #include "OcrApi.hpp"
-#include "OcrFactory.hpp"
+#include "factory/OcrFactory.hpp"
 
 #include "common/utils/utils.hpp"
 
@@ -14,7 +14,7 @@
 
 // IMPLEMENTATION
 
-OcrResponse buildGlobalErrorResponse(const Exception &exception);
+OcrResponse buildGlobalErrorResponseOcr(const Exception &exception);
 
 extern "C"
 {
@@ -29,7 +29,7 @@ extern "C"
         catch (const Exception &e)
         {
             SPDLOG_ERROR("Error Processing Request : {}", e.getMessage());
-            res = buildGlobalErrorResponse(e);
+            res = buildGlobalErrorResponseOcr(e);
             return res;
         }
 
@@ -78,7 +78,7 @@ OcrResponse processImage(char **arr_image, char **arr_content_type, char **arr_c
     return res;
 }
 
-OcrResponse buildGlobalErrorResponse(const Exception &exception)
+OcrResponse buildGlobalErrorResponseOcr(const Exception &exception)
 {
     OcrResponse res;
     res.resultDetailsSize = 1;

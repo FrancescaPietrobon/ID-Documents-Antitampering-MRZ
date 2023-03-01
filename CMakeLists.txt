@@ -80,8 +80,6 @@ target_include_directories(document_validator_ocr_server PUBLIC
 
 target_link_libraries(document_validator_ocr_server
     spdlog::spdlog
-    jsoncpp_lib
-    nlohmann_json::nlohmann_json
     opencv::opencv
 )
 
@@ -93,6 +91,7 @@ install(TARGETS document_validator_ocr_server
     FILE_SET headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/document_validator
 )
 
+#[===[
 
 # ############################
 # Characters clustering stub #
@@ -137,48 +136,49 @@ install(TARGETS document_validator_characters_clustering
     FILE_SET headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/document_validator
 )
 
+]===]
 
 # ###################
 # Antitampering MRZ #
 # ###################
 
-set(ANTITAMPERING_MRZ_PATH "src/antitampering" CACHE STRING "Antitampering MRZ")
-file(GLOB_RECURSE APP_ANTITAMPERING_MRZ "${ANTITAMPERING_MRZ_PATH}/*.h" "${ANTITAMPERING_MRZ_PATH}/*.cpp" "${ANTITAMPERING_MRZ_PATH}/*.hpp")
-file(GLOB_RECURSE ANTITAMPERING_MRZ_HEADERS "${ANTITAMPERING_MRZ_PATH}/*.hpp" "${ANTITAMPERING_MRZ_PATH}/*.h")
+set(ANTITAMPERING_PATH "src/antitampering" CACHE STRING "Antitampering stub folder")
+file(GLOB_RECURSE APP_ANTITAMPERING "${ANTITAMPERING_PATH}/*.h" "${ANTITAMPERING_PATH}/*.cpp" "${ANTITAMPERING_PATH}/*.hpp")
+file(GLOB_RECURSE ANTITAMPERING_HEADERS "${ANTITAMPERING_PATH}/*.hpp" "${ANTITAMPERING_PATH}/*.h")
 
-add_library(document_validator_antitampering_mrz SHARED
-    ${APP_ANTITAMPERING_MRZ}
+add_library(document_validator_antitampering SHARED
+    ${APP_ANTITAMPERING}
+    ${APP_DATA}
     ${APP_COMMON}
 )
 
-target_sources(document_validator_antitampering_mrz
+target_sources(document_validator_antitampering
     PUBLIC FILE_SET headers
     TYPE HEADERS
     BASE_DIRS "src" FILES
-    ${ANTITAMPERING_MRZ_HEADERS}
+    ${ANTITAMPERING_HEADERS}
+    ${DATA_HEADERS}
     ${COMMON_HEADERS}
 )
 
-target_include_directories(document_validator_antitampering_mrz PUBLIC
-    ${ANTITAMPERING_MRZ_PATH}
+target_include_directories(document_validator_antitampering PUBLIC
+    ${ANTITAMPERING_PATH}
+    ${DATA_PATH}
     ${COMMON_PATH}
 )
 
-target_link_libraries(document_validator_antitampering_mrz
+target_link_libraries(document_validator_antitampering
     opencv::opencv
     spdlog::spdlog
-    jsoncpp_lib
-    nlohmann_json::nlohmann_json
 )
 
-install(TARGETS document_validator_antitampering_mrz
-    COMPONENT antitampering_mrz
+install(TARGETS document_validator_antitampering
+    COMPONENT antitampering
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     FILE_SET headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/document_validator
 )
-
 
 
 # #################
@@ -221,8 +221,8 @@ target_link_libraries(application
     #document_validator
     print
     document_validator_ocr_server
-    document_validator_characters_clustering
-    document_validator_antitampering_mrz
+    #document_validator_characters_clustering
+    document_validator_antitampering
 )
 
 # #######

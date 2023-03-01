@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CharactersClustering/DBSCAN/DBSCAN.hpp"
+#include "../CharactersClustering/DBSCAN/DBSCAN.hpp"
 #include "common/exceptions/Exceptions.hpp"
 
 #include <spdlog/spdlog.h>

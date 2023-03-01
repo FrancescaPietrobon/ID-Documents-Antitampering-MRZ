@@ -10,7 +10,7 @@
 
 // IMPLEMENTATION
 
-ClusteringResponse buildGlobalErrorResponse(const Exception &exception);
+ClusteringResponse buildGlobalErrorResponseCharsClust(const Exception &exception);
 
 extern "C"
 {
@@ -25,7 +25,7 @@ extern "C"
         catch (const Exception &e)
         {
             SPDLOG_ERROR("Error Processing Request : {}", e.getMessage());
-            res = buildGlobalErrorResponse(e);
+            res = buildGlobalErrorResponseCharsClust(e);
             return res;
         }
 
@@ -75,7 +75,7 @@ ClusteringResponse clusterChar(OcrResponse ocrResponse, std::shared_ptr<Characte
     return res;
 }
 
-ClusteringResponse buildGlobalErrorResponse(const Exception &exception)
+ClusteringResponse buildGlobalErrorResponseCharsClust(const Exception &exception)
 {
     ClusteringResponse res;
     res.resultDetailsSize = 1;

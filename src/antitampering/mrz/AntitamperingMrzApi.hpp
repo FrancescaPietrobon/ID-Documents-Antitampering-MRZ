@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AntitamperingMrz/AntitamperingMrz.hpp"
-#include "charactersClustering/CharactersClusteringApi.hpp"
+#include "ocr_server/charactersClustering/CharactersClusteringApi.hpp"
 
 // RESPONSE
 

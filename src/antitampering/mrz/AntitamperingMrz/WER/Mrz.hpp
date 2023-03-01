@@ -1,6 +1,6 @@
 #pragma once
 
-#include "charactersClustering/CharactersClusteringApi.hpp"
+#include "ocr_server/charactersClustering/CharactersClusteringApi.hpp"
 #include <unordered_map>
 
 enum MrzType

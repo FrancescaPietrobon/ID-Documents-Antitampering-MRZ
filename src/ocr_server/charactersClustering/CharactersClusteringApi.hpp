@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CharactersClustering/CharactersClustering.hpp"
-#include "CharactersClusteringFactory.hpp"
+#include "factory/CharactersClusteringFactory.hpp"
 
 // RESPONSE
 struct ClusteringResultDetail
