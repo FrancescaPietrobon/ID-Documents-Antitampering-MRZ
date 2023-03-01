@@ -45,12 +45,10 @@ int main(int argc, char *argv[])
     printDbscanResponse(clusteringResponse);
     saveImgDbscanResponse(cv::imread(imagePath), clusteringResponse.resultDetails->fields, clusteringResponse.resultDetails->fieldsSize);
     
-    float *thresholdsAntitampering = new float[1];
-    thresholdsAntitampering[0] = 0.7;
     char *algoTypeAntitamperingMrz = new char;
     algoTypeAntitamperingMrz = utils::convertStringtoCharPtr("wer");
 
-    AntitamperingMrzResponse antitamperingMrzResponse = associate(clusteringResponse, thresholdsAntitampering, algoTypeAntitamperingMrz);
+    AntitamperingMrzResponse antitamperingMrzResponse = associate(clusteringResponse, algoTypeAntitamperingMrz);
 
     printAntitamperingMrzResponse(antitamperingMrzResponse);
     

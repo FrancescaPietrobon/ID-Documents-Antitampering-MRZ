@@ -1,92 +1,11 @@
 #include "Mrz.hpp"
 
-#include "MRZ/TD1.hpp"
-#include "MRZ/TD2.hpp"
-#include "MRZ/TD3.hpp"
-#include "MRZ/MRVA.hpp"
-#include "MRZ/MRVB.hpp"
-
-std::vector<Fields> Mrz::findMrzLines(const Fields *fields, const size_t fieldsSize)
-{
-    std::map<float, Fields> orderedMrz;
-    size_t countSymbolLower;
-    for(size_t i = 0; i < fieldsSize; ++i)
-    {
-        countSymbolLower = 0;
-        for(size_t j = 0; j < fields[i].labelSize; ++j)
-        {
-            if(fields[i].label[j] == '<')
-                countSymbolLower += 1;
-        }
-        if(countSymbolLower > 3)
-            orderedMrz.emplace(fields[i].position.topLeftY, fields[i]);     
-    }
-
-    std::vector<Fields> mrzLines;
-    for(auto & line: orderedMrz)
-        mrzLines.push_back(line.second);
-
-    return mrzLines;
-}
-
-std::vector<MrzFields> Mrz::extractMrz(std::vector<Fields> mrzLines)
-{
-    MrzType mrzType = findMrzType(mrzLines);
-    Mrz* mrz;
-    std::vector<MrzFields> mrzFields;
-    if(mrzType != NONE)
-    {
-        mrz = createMrz(mrzType, mrzLines);
-        mrzFields = mrz->extractMrzFields(mrzLines);
-        mrz->printMrzFields(mrzFields);
-    }
-    else
-    {
-        SPDLOG_ERROR("FATAL: Mrz Type NOT FOUND");
-        throw Exception(ErrorCode::GENERAL_ERROR, std::string("Mrz Type not handled"));
-    }
-    return mrzFields;
-}
-
-MrzType Mrz::findMrzType(std::vector<Fields> mrzLines)
-{
-    MrzType mrzType = NONE;
-    if((mrzLines.size() == 3) && (mrzLines[0].labelSize == 36) && (mrzLines[1].labelSize == 36) && (mrzLines[2].labelSize == 36))
-        mrzType = td1;
-    else if((mrzLines[0].labelSize == 36) && (mrzLines[1].labelSize == 36))
-    {
-        if(mrzLines[0].label[0] == 'P')
-            mrzType = td2;
-        else
-            mrzType = mrvb;
-    }
-    else if((mrzLines[0].labelSize == 44) && (mrzLines[1].labelSize == 44))
-    {
-        if(mrzLines[0].label[0] == 'P')
-            mrzType = td3;
-        else
-            mrzType = mrva;
-    }
-    else
-        mrzType = NONE;
-
-    return mrzType;
-}
-
-Mrz* Mrz::createMrz(MrzType mrzType, std::vector<Fields> chars)
-{ 
-    if (mrzType == td1) 
-        return new TD1; 
-    else if (mrzType == td2) 
-        return new TD2; 
-    else if (mrzType == td3) 
-        return new TD3;
-    else if (mrzType == mrva) 
-        return new MRVA; 
-    else if (mrzType == mrvb) 
-        return new MRVB;
-    else return NULL; 
-} 
+static std::unordered_map<char, unsigned> digitsConversion = {
+    {'<', 0,}, {'0', 0,}, {'1', 1,}, {'2', 2,}, {'3', 3,}, {'4', 4,}, {'5', 5,}, {'6', 6,}, {'7', 7,}, {'8', 8,}, {'9', 9,},
+    {'A', 10,}, {'B', 11,}, {'C', 12,}, {'D', 13,}, {'E', 14,}, {'F', 15,}, {'G', 16,}, {'H', 17,}, {'I', 18,}, {'J', 19,},
+    {'K', 20,}, {'L', 21,}, {'M', 22,}, {'N', 23,}, {'O', 24,}, {'P', 25,}, {'Q', 26,}, {'R', 27,}, {'S', 28,}, {'T', 29,},
+    {'U', 30,}, {'V', 31,}, {'W', 32,}, {'X', 33,}, {'Y', 34,}, {'Z', 35,}
+};
 
 bool Mrz::check(std::string field, std::string checkDigit)
 {
@@ -106,7 +25,7 @@ bool Mrz::check(std::string field, std::string checkDigit)
     }
     
     for(size_t i = 0; i < field.size(); ++i)
-        sum += digit_conversion[field[i]] * weight[i];
+        sum += digitsConversion[field[i]] * weight[i];
 
     return (checkDigit == std::to_string(sum % 10));
 }

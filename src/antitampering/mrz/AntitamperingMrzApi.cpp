@@ -14,7 +14,7 @@
 AntitamperingMrzResponse buildGlobalErrorResponseAntitampMrz(const Exception& exception);
 
 extern "C" {
-    AntitamperingMrzResponse associate(ClusteringResponse ocrResponse, float *arr_confidence_threshold, char* algorithmType)
+    AntitamperingMrzResponse associate(ClusteringResponse ocrResponse, char* algorithmType)
     {
         AntitamperingMrzResponse res;
         std::shared_ptr<AntitamperingMrz> associator = nullptr;
@@ -28,12 +28,12 @@ extern "C" {
             res = buildGlobalErrorResponseAntitampMrz(e);
             return res;
         }
-        res = associateFields(ocrResponse, arr_confidence_threshold, associator);
+        res = associateFields(ocrResponse, associator);
         return res;
     }
 }
 
-AntitamperingMrzResponse associateFields(ClusteringResponse ocrResponse, float *arr_confidence_threshold, std::shared_ptr<AntitamperingMrz> associator)
+AntitamperingMrzResponse associateFields(ClusteringResponse ocrResponse, std::shared_ptr<AntitamperingMrz> associator)
 {
     AntitamperingMrzResponse res;
     res.resultDetailsSize = ocrResponse.resultDetailsSize;
@@ -43,15 +43,12 @@ AntitamperingMrzResponse associateFields(ClusteringResponse ocrResponse, float *
         res.resultDetails[i].image = utils::convertStringtoCharPtr(ocrResponse.resultDetails[i].image);
         res.resultDetails[i].error = 0;
         res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr("");
-        res.resultDetails[i].confidenceThreshold = arr_confidence_threshold[i] != -1.0 ? arr_confidence_threshold[i] : CONF_THRESHOLD_WER;
-        std::pair<std::vector<AssociatedField>, std::vector<DoubtfulFields>> associations;
         std::vector<DoubtfulFields> doubtfulFields;
         float finalConfidence;
         try
         {
-            associations = associator->extractAssociations(ocrResponse.resultDetails[i].fields, ocrResponse.resultDetails[i].fieldsSize);
-            doubtfulFields = associations.second;
-            finalConfidence = associator->computeConfFinal(doubtfulFields, associations.first);
+            doubtfulFields = associator->extractDoubtfulFields(ocrResponse.resultDetails[i].fields, ocrResponse.resultDetails[i].fieldsSize);
+            finalConfidence = associator->computeConfFinal(doubtfulFields);
         }
         catch (Exception &ex)
         {
@@ -80,7 +77,6 @@ AntitamperingMrzResponse buildGlobalErrorResponseAntitampMrz(const Exception &ex
     res.resultDetailsSize = 1;
     res.resultDetails = new AntitamperingMrzResultDetail[res.resultDetailsSize];
     res.resultDetails[0].image = utils::convertStringtoCharPtr("");
-    res.resultDetails[0].confidenceThreshold = -1;
     res.resultDetails[0].confidence = -1;
     res.resultDetails[0].doubdtfulFieldSize = 0;
     res.resultDetails[0].error = exception.getCode();

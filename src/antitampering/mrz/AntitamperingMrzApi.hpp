@@ -7,7 +7,6 @@
 
 struct AntitamperingMrzResultDetail {
     char* image;
-    float confidenceThreshold;
     float confidence;
     DoubtfulFields* doubtfulFields;
     size_t doubdtfulFieldSize;
@@ -24,8 +23,8 @@ struct AntitamperingMrzResponse {
 
 extern "C" {
 
-    AntitamperingMrzResponse associate(ClusteringResponse ocrResponse, float *arr_confidence_threshold, char* algorithmType);
+    AntitamperingMrzResponse associate(ClusteringResponse ocrResponse, char* algorithmType);
 
 } // extern "C"
 
-AntitamperingMrzResponse associateFields(ClusteringResponse ocrResponse, float *arr_confidence_threshold, std::shared_ptr<AntitamperingMrz> associator);
+AntitamperingMrzResponse associateFields(ClusteringResponse ocrResponse, std::shared_ptr<AntitamperingMrz> associator);

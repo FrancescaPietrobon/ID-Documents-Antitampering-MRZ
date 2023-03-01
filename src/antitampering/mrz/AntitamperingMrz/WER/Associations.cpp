@@ -3,26 +3,14 @@
 Associations::Associations(float conf):
     confidenceThreshold(conf){};
 
-std::pair<std::vector<AssociatedField>, std::vector<DoubtfulFields>> Associations::extractAssociations(const Fields *allFields, const size_t fieldsSize)
+std::vector<DoubtfulFields> Associations::extractDoubtfulFields(const Fields *allFields, const size_t fieldsSize)
 {
-    Mrz* mrz;
-    std::vector<Fields> mrzLines = mrz->findMrzLines(allFields, fieldsSize);
-    std::vector<MrzFields> mrzFields = mrz->extractMrz(mrzLines);
-    std::vector<Fields> fields = removeMrzFromFields(allFields, fieldsSize, mrzLines);
+    SplitFields splitter;
+    std::vector<Fields> mrzLines = splitter.findMrzLines(allFields, fieldsSize);
+    std::vector<MrzFields> mrzFields = splitter.extractMrzFields(mrzLines);
+    std::vector<Fields> fields = splitter.extractFieldsWithoutMrz(allFields, fieldsSize, mrzLines);
     std::pair<std::vector<AssociatedField>, std::vector<DoubtfulFields>> associations = computeAssociations(fields, mrzFields);
-    return associations;
-}
-
-std::vector<Fields> Associations::removeMrzFromFields(const Fields *allFields, const size_t fieldsSize, std::vector<Fields> mrzLines)
-{
-    std::vector<Fields> fields;
-    for(size_t i = 0; i < fieldsSize; ++i)
-        fields.push_back(allFields[i]);
-
-    for(Fields line: mrzLines)
-        fields.erase(std::remove(fields.begin(), fields.end(), line), fields.end());
-    
-    return fields;
+    return associations.second;
 }
 
 std::pair<std::vector<AssociatedField>, std::vector<DoubtfulFields>> Associations::computeAssociations(std::vector<Fields> fields, std::vector<MrzFields> mrzFields)
@@ -152,15 +140,19 @@ bool Associations::findField(Fields dataField, std::string mrzDataField, std::st
     return found;
 }
 
-float Associations::computeConfFinal(std::vector<DoubtfulFields> doubtfulAss, std::vector<AssociatedField> finAss)
+float Associations::computeConfFinal(std::vector<DoubtfulFields> doubtfulAss)
 {
     float confFinal = 0;
     float sum = 0;
-    for(auto ass: finAss)
-        sum += ass.confidenceField;
+
+    // Confidence of doubtful fields
     for(auto ass: doubtfulAss)
         sum += ass.confidenceField;
 
-    confFinal = sum / (finAss.size() + doubtfulAss.size());
+    // Confidence of perfect associations
+    for(auto ass: finAss)
+        sum += ass.confidenceField;
+
+    confFinal = sum / (doubtfulAss.size() + finAss.size());
     return confFinal;
 }

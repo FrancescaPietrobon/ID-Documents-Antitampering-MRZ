@@ -8,6 +8,8 @@
 #include <memory>
 #include <new>
 
+#define DEFAULT_CONFIDENCE_THRESHOLD_CHAR_CLUST 0.3
+
 // IMPLEMENTATION
 
 ClusteringResponse buildGlobalErrorResponseCharsClust(const Exception &exception);
@@ -46,7 +48,6 @@ ClusteringResponse clusterChar(OcrResponse ocrResponse, std::shared_ptr<Characte
         res.resultDetails[i].image = utils::convertStringtoCharPtr(ocrResponse.resultDetails[i].image);
         res.resultDetails[i].error = 0;
         res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr("");
-        res.resultDetails[i].confidenceThreshold = ocrResponse.resultDetails[i].confidenceThreshold;
         std::vector<Fields> clusteringResults;
         try
         {
@@ -57,7 +58,6 @@ ClusteringResponse clusterChar(OcrResponse ocrResponse, std::shared_ptr<Characte
             res.resultDetails[i].fieldsSize = 0;
             res.resultDetails[i].error = ex.getCode();
             res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr(ex.getMessage());
-            res.resultDetails[i].confidenceThreshold = ocrResponse.resultDetails[i].confidenceThreshold;
             continue;
         }
         res.resultDetails[i].fieldsSize = clusteringResults.size();
@@ -81,7 +81,6 @@ ClusteringResponse buildGlobalErrorResponseCharsClust(const Exception &exception
     res.resultDetailsSize = 1;
     res.resultDetails = new ClusteringResultDetail[res.resultDetailsSize];
     res.resultDetails[0].image = utils::convertStringtoCharPtr("");
-    res.resultDetails[0].confidenceThreshold = -1;
     res.resultDetails[0].confidence = -1;
     res.resultDetails[0].fieldsSize = 0;
     res.resultDetails[0].error = exception.getCode();

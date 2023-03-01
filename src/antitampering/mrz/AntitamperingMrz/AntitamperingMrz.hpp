@@ -19,10 +19,11 @@ struct AssociatedField
     float confidenceField;
 };
 
-class AntitamperingMrz {
+class AntitamperingMrz
+{
     public:
         AntitamperingMrz(){};
         virtual ~AntitamperingMrz(){};
-        virtual std::pair<std::vector<AssociatedField>, std::vector<DoubtfulFields>> extractAssociations(const Fields *doubtfulFields, const size_t doubtfulFieldsSize) = 0;
-        virtual float computeConfFinal(std::vector<DoubtfulFields> doubtfulAss, std::vector<AssociatedField> finAss) = 0;
+        virtual std::vector<DoubtfulFields> extractDoubtfulFields(const Fields *allFields, const size_t fieldsSize) = 0;
+        virtual float computeConfFinal(std::vector<DoubtfulFields> doubtfulAss) = 0;
 };

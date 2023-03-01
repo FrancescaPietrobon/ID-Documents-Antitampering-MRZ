@@ -9,7 +9,6 @@ struct ClusteringResultDetail
     char *image;
     Fields *fields;
     size_t fieldsSize;
-    float confidenceThreshold;
     float confidence;
     size_t error;
     char *errorMessage;

@@ -10,7 +10,7 @@
 #include <string>
 #include <new>
 
-#define DEFAULT_CONFIDENCE_THRESHOLD 0.3
+#define DEFAULT_CONFIDENCE_THRESHOLD_OCR 0.3
 
 // IMPLEMENTATION
 
@@ -46,7 +46,7 @@ OcrResponse processImage(char **arr_image, char **arr_content_type, char **arr_c
     for (std::size_t i = 0; i < res.resultDetailsSize; i++)
     {
         res.resultDetails[i].image = utils::convertStringtoCharPtr(arr_image[i]);
-        res.resultDetails[i].confidenceThreshold = arr_confidence_threshold[i] != -1.0 ? arr_confidence_threshold[i] : DEFAULT_CONFIDENCE_THRESHOLD;
+        res.resultDetails[i].confidenceThreshold = arr_confidence_threshold[i] != -1.0 ? arr_confidence_threshold[i] : DEFAULT_CONFIDENCE_THRESHOLD_OCR;
         res.resultDetails[i].error = 0;
         res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr("");
         std::vector<Characters> ocrResults;
