@@ -7,11 +7,8 @@
 
 struct AntitamperingMrzResultDetail {
     char* image;
-    bool result;
-    float confidenceThresholdOcr;
-    float confidenceThresholdAntitampering;
+    float confidenceThreshold;
     float confidence;
-    bool checkDigistsMrz;
     DoubtfulFields* doubtfulFields;
     size_t doubdtfulFieldSize;
     size_t error;
@@ -21,7 +18,6 @@ struct AntitamperingMrzResultDetail {
 struct AntitamperingMrzResponse {
     AntitamperingMrzResultDetail* resultDetails;
     size_t resultDetailsSize;
-    bool result;
 };
 
 // IMPLEMENTATION

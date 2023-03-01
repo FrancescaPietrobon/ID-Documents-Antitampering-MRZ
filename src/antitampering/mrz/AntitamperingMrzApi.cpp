@@ -36,27 +36,22 @@ extern "C" {
 AntitamperingMrzResponse associateFields(ClusteringResponse ocrResponse, float *arr_confidence_threshold, std::shared_ptr<AntitamperingMrz> associator)
 {
     AntitamperingMrzResponse res;
-    res.result = true;
     res.resultDetailsSize = ocrResponse.resultDetailsSize;
     res.resultDetails = new AntitamperingMrzResultDetail[res.resultDetailsSize];
     for (std::size_t i = 0; i < res.resultDetailsSize; i++)
     {
         res.resultDetails[i].image = utils::convertStringtoCharPtr(ocrResponse.resultDetails[i].image);
-        res.resultDetails[i].result = true;
         res.resultDetails[i].error = 0;
         res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr("");
-        res.resultDetails[i].confidenceThresholdOcr = ocrResponse.resultDetails[i].confidenceThreshold;
-        res.resultDetails[i].confidenceThresholdAntitampering = arr_confidence_threshold[i] != -1.0 ? arr_confidence_threshold[i] : CONF_THRESHOLD_WER;
+        res.resultDetails[i].confidenceThreshold = arr_confidence_threshold[i] != -1.0 ? arr_confidence_threshold[i] : CONF_THRESHOLD_WER;
         std::pair<std::vector<AssociatedField>, std::vector<DoubtfulFields>> associations;
         std::vector<DoubtfulFields> doubtfulFields;
         float finalConfidence;
-        bool checks = false;
         try
         {
             associations = associator->extractAssociations(ocrResponse.resultDetails[i].fields, ocrResponse.resultDetails[i].fieldsSize);
             doubtfulFields = associations.second;
             finalConfidence = associator->computeConfFinal(doubtfulFields, associations.first);
-            //checks = associator->checkDigitsMrz();
         }
         catch (Exception &ex)
         {
@@ -66,7 +61,6 @@ AntitamperingMrzResponse associateFields(ClusteringResponse ocrResponse, float *
             continue;
         }
         res.resultDetails[i].confidence = finalConfidence;
-        res.resultDetails[i].checkDigistsMrz = checks;
         res.resultDetails[i].doubdtfulFieldSize = doubtfulFields.size();
         res.resultDetails[i].doubtfulFields = new DoubtfulFields[res.resultDetails[i].doubdtfulFieldSize];
         for (std::size_t j = 0; j < doubtfulFields.size(); j++)
@@ -76,19 +70,6 @@ AntitamperingMrzResponse associateFields(ClusteringResponse ocrResponse, float *
             res.resultDetails[i].doubtfulFields[j].mrzDataField = doubtfulFields[j].mrzDataField;
             res.resultDetails[i].doubtfulFields[j].confidenceField = doubtfulFields[j].confidenceField;
         }
-        
-        if(res.resultDetails[i].confidence < res.resultDetails[i].confidenceThresholdAntitampering)
-        {
-            res.resultDetails[i].result = false;
-            res.result = false;
-        }
-        /*
-        if(doubtfulFields.size() > 0)
-        {
-            res.resultDetails[i].result = false;
-            res.result = false;
-        }
-        */
     }
     return res;
 }
@@ -96,14 +77,11 @@ AntitamperingMrzResponse associateFields(ClusteringResponse ocrResponse, float *
 AntitamperingMrzResponse buildGlobalErrorResponseAntitampMrz(const Exception &exception)
 {
     AntitamperingMrzResponse res;
-    res.result = false;
     res.resultDetailsSize = 1;
     res.resultDetails = new AntitamperingMrzResultDetail[res.resultDetailsSize];
     res.resultDetails[0].image = utils::convertStringtoCharPtr("");
-    res.resultDetails[0].result = false;
-    res.resultDetails[0].confidenceThresholdOcr = -1;
+    res.resultDetails[0].confidenceThreshold = -1;
     res.resultDetails[0].confidence = -1;
-    res.resultDetails[0].checkDigistsMrz = false;
     res.resultDetails[0].doubdtfulFieldSize = 0;
     res.resultDetails[0].error = exception.getCode();
     res.resultDetails[0].errorMessage = utils::convertStringtoCharPtr(exception.getMessage());

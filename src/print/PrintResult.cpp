@@ -98,9 +98,6 @@ void printAntitamperingMrzResponse(AntitamperingMrzResponse antitamperingMrzResp
             std::cout << "Confidence: " << antitamperingMrzResponse.resultDetails[i].doubtfulFields[j].confidenceField << "\n" << std::endl;
         }
         std::cout << "Final confidence: " << antitamperingMrzResponse.resultDetails[i].confidence << std::endl;
-        std::cout << "Threshold confidence: " << antitamperingMrzResponse.resultDetails[i].confidenceThresholdAntitampering << std::endl;
-        std::cout << "Check digits mrz: " << antitamperingMrzResponse.resultDetails[i].checkDigistsMrz << std::endl;
-        std::cout << "\nFinal result: " << antitamperingMrzResponse.resultDetails[i].result << std::endl;
+        std::cout << "Threshold confidence: " << antitamperingMrzResponse.resultDetails[i].confidenceThreshold << std::endl;
     }
-    std::cout << "\nGlobal result: " << antitamperingMrzResponse.result << std::endl;
 }
