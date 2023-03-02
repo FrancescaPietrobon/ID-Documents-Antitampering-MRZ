@@ -1,9 +1,9 @@
 #include "TD3.hpp"
 
-std::vector<MrzFields> TD3::extractMrzFields(std::vector<Fields> mrz)
+std::vector<MrzField> TD3::extractMrzFields(std::vector<Field> mrz)
 {
-    std::vector<MrzFields> mrzFields;
-    MrzFields field;
+    std::vector<MrzField> mrzFields;
+    MrzField field;
 
     // First line
     
@@ -100,7 +100,7 @@ std::vector<MrzFields> TD3::extractMrzFields(std::vector<Fields> mrz)
     return mrzFields;
 }
 
-bool TD3::checkDigits(std::vector<Fields> mrz, std::vector<MrzFields> mrzFields)//, std::string checkDocNum, std::string checkDateBirth,std::string checkDateExpireDoc, std::string optionalData, std::string checkOptionalData)
+bool TD3::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)//, std::string checkDocNum, std::string checkDateBirth,std::string checkDateExpireDoc, std::string optionalData, std::string checkOptionalData)
 {
     bool result = true;
 

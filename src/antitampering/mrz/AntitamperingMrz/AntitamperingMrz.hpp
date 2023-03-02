@@ -1,10 +1,11 @@
 #pragma once
 
-#include "ocr_server/charactersClustering/CharactersClusteringApi.hpp"
+#include "common/utils/utils.hpp"
 
 #include <spdlog/spdlog.h>
 
-struct DoubtfulFields {
+struct DoubtfulField
+{
     char* fieldType;
     char* dataField;
     char* mrzDataField;
@@ -14,7 +15,7 @@ struct DoubtfulFields {
 struct AssociatedField
 {
     char* fieldType;
-    Fields field;
+    Field field;
     char* mrzDataField;
     float confidenceField;
 };
@@ -24,6 +25,6 @@ class AntitamperingMrz
     public:
         AntitamperingMrz(){};
         virtual ~AntitamperingMrz(){};
-        virtual std::vector<DoubtfulFields> extractDoubtfulFields(const Fields *allFields, const size_t fieldsSize) = 0;
-        virtual float computeConfFinal(std::vector<DoubtfulFields> doubtfulAss) = 0;
+        virtual std::vector<DoubtfulField> extractDoubtfulFields(const Field *allFields, const size_t fieldsSize) = 0;
+        virtual float computeConfFinal(std::vector<DoubtfulField> doubtfulAss) = 0;
 };

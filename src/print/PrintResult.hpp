@@ -8,7 +8,7 @@
 #include "antitampering/mrz/AntitamperingMrzApi.hpp"
 
 void saveImgOcrResponse(cv::Mat img, Characters *characters, size_t charactersSize);
-void saveImgDbscanResponse(cv::Mat img, Fields* fields, size_t fieldsSize);
+void saveImgDbscanResponse(cv::Mat img, Field* fields, size_t fieldsSize);
 
 void printDbscanResponse(ClusteringResponse clusteringResult);
 void printAntitamperingMrzResponse(AntitamperingMrzResponse antitamperingMrzResponse);

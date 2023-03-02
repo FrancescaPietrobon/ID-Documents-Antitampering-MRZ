@@ -3,17 +3,17 @@
 Associations::Associations(float conf):
     confidenceThreshold(conf){};
 
-std::vector<DoubtfulFields> Associations::extractDoubtfulFields(const Fields *allFields, const size_t fieldsSize)
+std::vector<DoubtfulField> Associations::extractDoubtfulFields(const Field *allFields, const size_t fieldsSize)
 {
     SplitFields splitter;
-    std::vector<Fields> mrzLines = splitter.findMrzLines(allFields, fieldsSize);
-    std::vector<MrzFields> mrzFields = splitter.extractMrzFields(mrzLines);
-    std::vector<Fields> fields = splitter.extractFieldsWithoutMrz(allFields, fieldsSize, mrzLines);
-    std::pair<std::vector<AssociatedField>, std::vector<DoubtfulFields>> associations = computeAssociations(fields, mrzFields);
+    std::vector<Field> mrzLines = splitter.findMrzLines(allFields, fieldsSize);
+    std::vector<MrzField> mrzFields = splitter.extractMrzFields(mrzLines);
+    std::vector<Field> fields = splitter.extractFieldsWithoutMrz(allFields, fieldsSize, mrzLines);
+    std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> associations = computeAssociations(fields, mrzFields);
     return associations.second;
 }
 
-std::pair<std::vector<AssociatedField>, std::vector<DoubtfulFields>> Associations::computeAssociations(std::vector<Fields> fields, std::vector<MrzFields> mrzFields)
+std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> Associations::computeAssociations(std::vector<Field> fields, std::vector<MrzField> mrzFields)
 {
     float currentConf = 0, maxConf = 0;
     std::string bestTypeField, bestField;
@@ -71,7 +71,7 @@ std::pair<std::vector<AssociatedField>, std::vector<DoubtfulFields>> Association
     return std::make_pair(finAss, doubtfulAss);
 }
 
-Fields Associations::convertIfDate(Fields field)
+Field Associations::convertIfDate(Field field)
 {
     std::string dataField = field.label;
     Date date;
@@ -84,7 +84,7 @@ Fields Associations::convertIfDate(Fields field)
     return field;
 }
 
-std::vector<AssociatedField> Associations::addFinalAssociation(Fields dataField, std::string mrzDataField, std::string fieldType, float confidence, std::vector<AssociatedField> finAss)
+std::vector<AssociatedField> Associations::addFinalAssociation(Field dataField, std::string mrzDataField, std::string fieldType, float confidence, std::vector<AssociatedField> finAss)
 {
     AssociatedField association;
     association.fieldType = utils::convertStringtoCharPtr(fieldType);
@@ -99,9 +99,9 @@ std::vector<AssociatedField> Associations::addFinalAssociation(Fields dataField,
     return finAss;
 }
 
-std::vector<DoubtfulFields> Associations::addDoubtfulAssociations(char* dataField, std::string mrzDataField, std::string fieldType, float confidence, std::vector<DoubtfulFields> doubtfulAss)
+std::vector<DoubtfulField> Associations::addDoubtfulAssociations(char* dataField, std::string mrzDataField, std::string fieldType, float confidence, std::vector<DoubtfulField> doubtfulAss)
 {
-    DoubtfulFields association;
+    DoubtfulField association;
     association.fieldType = utils::convertStringtoCharPtr(fieldType);
     association.dataField = dataField;
     association.mrzDataField = utils::convertStringtoCharPtr(mrzDataField);
@@ -113,7 +113,7 @@ std::vector<DoubtfulFields> Associations::addDoubtfulAssociations(char* dataFiel
     return doubtfulAss;
 }
 
-bool Associations::findField(Fields dataField, std::string mrzDataField, std::string fieldType, float confidence, std::vector<DoubtfulFields> &doubtfulAss, std::vector<AssociatedField> &finAss)
+bool Associations::findField(Field dataField, std::string mrzDataField, std::string fieldType, float confidence, std::vector<DoubtfulField> &doubtfulAss, std::vector<AssociatedField> &finAss)
 {
     bool found = false;
     for(size_t itDoubtFilds = 0; itDoubtFilds < doubtfulAss.size(); ++itDoubtFilds)
@@ -140,7 +140,7 @@ bool Associations::findField(Fields dataField, std::string mrzDataField, std::st
     return found;
 }
 
-float Associations::computeConfFinal(std::vector<DoubtfulFields> doubtfulAss)
+float Associations::computeConfFinal(std::vector<DoubtfulField> doubtfulAss)
 {
     float confFinal = 0;
     float sum = 0;

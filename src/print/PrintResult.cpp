@@ -33,7 +33,7 @@ void saveImgOcrResponse(cv::Mat img, Characters *characters, size_t charactersSi
     cv::imwrite("../../printResults/OCR.jpg", new_image);
 }
 
-void saveImgDbscanResponse(cv::Mat img, Fields* fields, size_t fieldsSize)
+void saveImgDbscanResponse(cv::Mat img, Field* fields, size_t fieldsSize)
 {
     cv::Mat new_image = img;
     int lineType = cv::LINE_AA;
@@ -90,7 +90,7 @@ void printAntitamperingMrzResponse(AntitamperingMrzResponse antitamperingMrzResp
     {
         std::cout << "Image: " << antitamperingMrzResponse.resultDetails[i].image << std::endl;
         std::cout << "\nDoubtful fields:\n" << std::endl;
-        for(size_t j = 0; j < antitamperingMrzResponse.resultDetails[i].doubdtfulFieldSize; ++j)
+        for(size_t j = 0; j < antitamperingMrzResponse.resultDetails[i].doubdtfulFieldsSize; ++j)
         {
             std::cout << "Type: " << antitamperingMrzResponse.resultDetails[i].doubtfulFields[j].fieldType << std::endl;
             std::cout << "Field label: " << antitamperingMrzResponse.resultDetails[i].doubtfulFields[j].dataField << std::endl;

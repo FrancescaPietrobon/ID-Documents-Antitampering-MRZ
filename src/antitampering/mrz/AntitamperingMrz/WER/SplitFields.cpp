@@ -6,9 +6,9 @@
 #include "MRZ/MRVA.hpp"
 #include "MRZ/MRVB.hpp"
 
-std::vector<Fields> SplitFields::findMrzLines(const Fields *fields, const size_t fieldsSize)
+std::vector<Field> SplitFields::findMrzLines(const Field *fields, const size_t fieldsSize)
 {
-    std::map<float, Fields> orderedMrz;
+    std::map<float, Field> orderedMrz;
     size_t countSymbolLower;
     for(size_t i = 0; i < fieldsSize; ++i)
     {
@@ -22,17 +22,17 @@ std::vector<Fields> SplitFields::findMrzLines(const Fields *fields, const size_t
             orderedMrz.emplace(fields[i].position.topLeftY, fields[i]);     
     }
 
-    std::vector<Fields> mrzLines;
+    std::vector<Field> mrzLines;
     for(auto & line: orderedMrz)
         mrzLines.push_back(line.second);
 
     return mrzLines;
 }
 
-std::vector<MrzFields> SplitFields::extractMrzFields(std::vector<Fields> mrzLines)
+std::vector<MrzField> SplitFields::extractMrzFields(std::vector<Field> mrzLines)
 {
     MrzType mrzType = findMrzType(mrzLines);
-    std::vector<MrzFields> mrzFields;
+    std::vector<MrzField> mrzFields;
     if(mrzType != NONE)
     {
         Mrz* mrz = createMrz(mrzType, mrzLines);
@@ -47,7 +47,7 @@ std::vector<MrzFields> SplitFields::extractMrzFields(std::vector<Fields> mrzLine
     return mrzFields;
 }
 
-MrzType SplitFields::findMrzType(std::vector<Fields> mrzLines)
+MrzType SplitFields::findMrzType(std::vector<Field> mrzLines)
 {
     MrzType mrzType = NONE;
     if((mrzLines.size() == 3) && (mrzLines[0].labelSize == 36) && (mrzLines[1].labelSize == 36) && (mrzLines[2].labelSize == 36))
@@ -72,7 +72,7 @@ MrzType SplitFields::findMrzType(std::vector<Fields> mrzLines)
     return mrzType;
 }
 
-Mrz* SplitFields::createMrz(MrzType mrzType, std::vector<Fields> chars)
+Mrz* SplitFields::createMrz(MrzType mrzType, std::vector<Field> chars)
 { 
     if (mrzType == td1) 
         return new TD1; 
@@ -87,13 +87,13 @@ Mrz* SplitFields::createMrz(MrzType mrzType, std::vector<Fields> chars)
     else return NULL; 
 }
 
-std::vector<Fields> SplitFields::extractFieldsWithoutMrz(const Fields *allFields, const size_t fieldsSize, std::vector<Fields> mrzLines)
+std::vector<Field> SplitFields::extractFieldsWithoutMrz(const Field *allFields, const size_t fieldsSize, std::vector<Field> mrzLines)
 {
-    std::vector<Fields> fields;
+    std::vector<Field> fields;
     for(size_t i = 0; i < fieldsSize; ++i)
         fields.push_back(allFields[i]);
 
-    for(Fields line: mrzLines)
+    for(Field line: mrzLines)
         fields.erase(std::remove(fields.begin(), fields.end(), line), fields.end());
     
     return fields;

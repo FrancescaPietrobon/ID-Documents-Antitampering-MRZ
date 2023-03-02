@@ -1,7 +1,8 @@
 #pragma once
 
-#include "ocr_server/charactersClustering/CharactersClusteringApi.hpp"
+#include "antitampering/mrz/AntitamperingMrz/AntitamperingMrz.hpp"
 #include <unordered_map>
+#include <map>
 
 enum MrzType
 {
@@ -13,7 +14,7 @@ enum MrzType
     NONE,
 };
 
-struct MrzFields
+struct MrzField
 {
     std::string fieldType;
     std::string mrzDataField;
@@ -23,8 +24,8 @@ class Mrz
 {
     public:
         Mrz() = default;
-        virtual std::vector<MrzFields> extractMrzFields(std::vector<Fields> mrz) = 0;
-        void printMrzFields(std::vector<MrzFields> mrzFields);
+        virtual std::vector<MrzField> extractMrzFields(std::vector<Field> mrz) = 0;
+        void printMrzFields(std::vector<MrzField> mrzFields);
 
     protected:
         std::string checkDocNum = "";
@@ -32,7 +33,7 @@ class Mrz
         std::string checkDateExpireDoc = "";
         std::string optionalData = "";
         bool checkDigitsResult = true;
-        virtual bool checkDigits(std::vector<Fields> mrz, std::vector<MrzFields> mrzFields) = 0;
+        virtual bool checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields) = 0;
         bool check(std::string field, std::string checkDigit);
-        bool checkOverall(std::vector<Fields> mrz, std::string overallDigit);     
+        bool checkOverall(std::vector<Field> mrz, std::string overallDigit);     
 };

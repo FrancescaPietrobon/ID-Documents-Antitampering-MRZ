@@ -19,7 +19,7 @@ class DBSCAN : public CharactersClustering
     public:
         DBSCAN(const float e);
         virtual ~DBSCAN(){};
-        std::vector<Fields> clusterCharacters(const Characters *characters, const size_t charactersSize) override;
+        std::vector<Field> clusterCharacters(const Characters *characters, const size_t charactersSize) override;
         
     private:
         const float eps;
@@ -27,9 +27,9 @@ class DBSCAN : public CharactersClustering
         std::vector<std::vector<size_t>> findNearCharacters(std::vector<CharactersClustered> characters, std::vector<std::vector<size_t>> nearCharacters);
         float computeDistance(Characters char1, Characters char2);
         std::vector<CharactersClustered> dfs(size_t now, size_t cluster, std::vector<CharactersClustered> characters, std::vector<std::vector<size_t>> nearCharacters);
-        std::vector<Fields> computeFields(std::vector<CharactersClustered> charactersClustered, size_t numClusters);
+        std::vector<Field> computeFields(std::vector<CharactersClustered> charactersClustered, size_t numClusters);
         std::vector<Characters> orderCharacters(std::multimap<float, Characters> cluster);
-        Fields fillField(float confidence, size_t labelSize, std::vector<Characters> orderedCharacters);
+        Field fillField(float confidence, size_t labelSize, std::vector<Characters> orderedCharacters);
         std::string extractLabel(std::vector<Characters> orderedCharacters);
         Coordinates extractPosition(std::vector<Characters> orderedCharacters);
 };

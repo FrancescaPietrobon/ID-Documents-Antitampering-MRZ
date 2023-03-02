@@ -14,13 +14,13 @@
 AntitamperingMrzResponse buildGlobalErrorResponseAntitampMrz(const Exception& exception);
 
 extern "C" {
-    AntitamperingMrzResponse associate(ClusteringResponse ocrResponse, char* algorithmType)
+    AntitamperingMrzResponse associate(char **arr_image, char **arr_content_type, DocumentFields *document_fields, size_t arr_size, char *algorithm_type)
     {
         AntitamperingMrzResponse res;
         std::shared_ptr<AntitamperingMrz> associator = nullptr;
         try
         {
-            associator = AntitamperingMrzFactory::createAntitamperingMrz(std::string(algorithmType));
+            associator = AntitamperingMrzFactory::createAntitamperingMrz(std::string(algorithm_type));
         }
         catch(const Exception& e)
         {
@@ -28,38 +28,38 @@ extern "C" {
             res = buildGlobalErrorResponseAntitampMrz(e);
             return res;
         }
-        res = associateFields(ocrResponse, associator);
+        res = associateFields(arr_image, arr_content_type, document_fields, arr_size, associator);
         return res;
     }
 }
 
-AntitamperingMrzResponse associateFields(ClusteringResponse ocrResponse, std::shared_ptr<AntitamperingMrz> associator)
+AntitamperingMrzResponse associateFields(char **arr_image, char **arr_content_type, DocumentFields *document_fields, size_t arr_size, std::shared_ptr<AntitamperingMrz> associator)
 {
     AntitamperingMrzResponse res;
-    res.resultDetailsSize = ocrResponse.resultDetailsSize;
+    res.resultDetailsSize = arr_size;
     res.resultDetails = new AntitamperingMrzResultDetail[res.resultDetailsSize];
-    for (std::size_t i = 0; i < res.resultDetailsSize; i++)
+    for (std::size_t i = 0; i < res.resultDetailsSize; ++i)
     {
-        res.resultDetails[i].image = utils::convertStringtoCharPtr(ocrResponse.resultDetails[i].image);
+        res.resultDetails[i].image = utils::convertStringtoCharPtr(arr_image[i]);
         res.resultDetails[i].error = 0;
         res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr("");
-        std::vector<DoubtfulFields> doubtfulFields;
+        std::vector<DoubtfulField> doubtfulFields;
         float finalConfidence;
         try
         {
-            doubtfulFields = associator->extractDoubtfulFields(ocrResponse.resultDetails[i].fields, ocrResponse.resultDetails[i].fieldsSize);
+            doubtfulFields = associator->extractDoubtfulFields(document_fields[i].fields, document_fields[i].fieldsSize);
             finalConfidence = associator->computeConfFinal(doubtfulFields);
         }
         catch (Exception &ex)
         {
-            res.resultDetails[i].doubdtfulFieldSize = 0;
+            res.resultDetails[i].doubdtfulFieldsSize = 0;
             res.resultDetails[i].error = ex.getCode();
             res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr(ex.getMessage());
             continue;
         }
         res.resultDetails[i].confidence = finalConfidence;
-        res.resultDetails[i].doubdtfulFieldSize = doubtfulFields.size();
-        res.resultDetails[i].doubtfulFields = new DoubtfulFields[res.resultDetails[i].doubdtfulFieldSize];
+        res.resultDetails[i].doubdtfulFieldsSize = doubtfulFields.size();
+        res.resultDetails[i].doubtfulFields = new DoubtfulField[res.resultDetails[i].doubdtfulFieldsSize];
         for (std::size_t j = 0; j < doubtfulFields.size(); j++)
         {
             res.resultDetails[i].doubtfulFields[j].fieldType = doubtfulFields[j].fieldType;
@@ -78,7 +78,7 @@ AntitamperingMrzResponse buildGlobalErrorResponseAntitampMrz(const Exception &ex
     res.resultDetails = new AntitamperingMrzResultDetail[res.resultDetailsSize];
     res.resultDetails[0].image = utils::convertStringtoCharPtr("");
     res.resultDetails[0].confidence = -1;
-    res.resultDetails[0].doubdtfulFieldSize = 0;
+    res.resultDetails[0].doubdtfulFieldsSize = 0;
     res.resultDetails[0].error = exception.getCode();
     res.resultDetails[0].errorMessage = utils::convertStringtoCharPtr(exception.getMessage());
     return res;

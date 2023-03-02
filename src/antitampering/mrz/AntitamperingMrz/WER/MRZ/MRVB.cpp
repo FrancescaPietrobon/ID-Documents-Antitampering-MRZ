@@ -1,9 +1,9 @@
 #include "MRVB.hpp"
 
-std::vector<MrzFields> MRVB::extractMrzFields(std::vector<Fields> mrz)
+std::vector<MrzField> MRVB::extractMrzFields(std::vector<Field> mrz)
 {
-    std::vector<MrzFields> mrzFields;
-    MrzFields field;
+    std::vector<MrzField> mrzFields;
+    MrzField field;
 
     // First line
     
@@ -99,7 +99,7 @@ std::vector<MrzFields> MRVB::extractMrzFields(std::vector<Fields> mrz)
     return mrzFields;
 }
 
-bool MRVB::checkDigits(std::vector<Fields> mrz, std::vector<MrzFields> mrzFields)
+bool MRVB::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
 {
     bool result = true;
 

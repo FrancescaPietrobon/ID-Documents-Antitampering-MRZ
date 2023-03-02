@@ -48,7 +48,7 @@ ClusteringResponse clusterChar(OcrResponse ocrResponse, std::shared_ptr<Characte
         res.resultDetails[i].image = utils::convertStringtoCharPtr(ocrResponse.resultDetails[i].image);
         res.resultDetails[i].error = 0;
         res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr("");
-        std::vector<Fields> clusteringResults;
+        std::vector<Field> clusteringResults;
         try
         {
             clusteringResults = cluster->clusterCharacters(ocrResponse.resultDetails[i].characters, ocrResponse.resultDetails[i].charactersSize);
@@ -61,7 +61,7 @@ ClusteringResponse clusterChar(OcrResponse ocrResponse, std::shared_ptr<Characte
             continue;
         }
         res.resultDetails[i].fieldsSize = clusteringResults.size();
-        res.resultDetails[i].fields = new Fields[res.resultDetails[i].fieldsSize];
+        res.resultDetails[i].fields = new Field[res.resultDetails[i].fieldsSize];
         for (std::size_t j = 0; j < clusteringResults.size(); j++)
         {
             res.resultDetails[i].fields[j].label = clusteringResults[j].label;

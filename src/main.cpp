@@ -34,6 +34,10 @@ int main(int argc, char *argv[])
     algoTypeOcr = utils::convertStringtoCharPtr("RetinaNet");
 
     OcrResponse ocrResponse = process(images, contentType, contentBase64, coordinates, thresholdsOcr, 1, algoTypeOcr);
+    delete[] contentBase64;
+    delete[] coordinates;
+    delete[] thresholdsOcr;
+    delete algoTypeOcr;
 
     saveImgOcrResponse(cv::imread(imagePath), ocrResponse.resultDetails->characters, ocrResponse.resultDetails->charactersSize);
 
@@ -41,14 +45,20 @@ int main(int argc, char *argv[])
     algoTypeClustering = utils::convertStringtoCharPtr("Dbscan");
 
     ClusteringResponse clusteringResponse = cluster(ocrResponse, algoTypeClustering);
+    delete algoTypeClustering;
 
     printDbscanResponse(clusteringResponse);
     saveImgDbscanResponse(cv::imread(imagePath), clusteringResponse.resultDetails->fields, clusteringResponse.resultDetails->fieldsSize);
-    
+
+    DocumentFields *documentFields = new DocumentFields[1];
+    documentFields[0].fields = clusteringResponse.resultDetails->fields;
+    documentFields[0].fieldsSize = clusteringResponse.resultDetails->fieldsSize;
+
     char *algoTypeAntitamperingMrz = new char;
     algoTypeAntitamperingMrz = utils::convertStringtoCharPtr("wer");
 
-    AntitamperingMrzResponse antitamperingMrzResponse = associate(clusteringResponse, algoTypeAntitamperingMrz);
+    AntitamperingMrzResponse antitamperingMrzResponse = associate(images, contentType, documentFields, 1, algoTypeAntitamperingMrz);
+    delete algoTypeAntitamperingMrz;
 
     printAntitamperingMrzResponse(antitamperingMrzResponse);
     

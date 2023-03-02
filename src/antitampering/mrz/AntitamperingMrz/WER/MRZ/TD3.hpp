@@ -10,8 +10,8 @@ class TD3: public Mrz
     private:
         std::string checkOptionalData = "";
         std::string checkOverallDigit = "";
-        bool checkDigits(std::vector<Fields> mrz, std::vector<MrzFields> mrzFields);
+        bool checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields);
 
     public:
-        std::vector<MrzFields> extractMrzFields(std::vector<Fields> mrz);  
+        std::vector<MrzField> extractMrzFields(std::vector<Field> mrz);  
 };

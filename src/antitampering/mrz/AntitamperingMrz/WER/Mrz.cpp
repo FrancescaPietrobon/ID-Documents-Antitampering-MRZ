@@ -30,7 +30,7 @@ bool Mrz::check(std::string field, std::string checkDigit)
     return (checkDigit == std::to_string(sum % 10));
 }
 
-bool Mrz::checkOverall(std::vector<Fields> mrz, std::string overallDigit)
+bool Mrz::checkOverall(std::vector<Field> mrz, std::string overallDigit)
 {
     std::string stringForCheckOverall;
     for(int i = 0; i < 10; ++i)
@@ -45,9 +45,9 @@ bool Mrz::checkOverall(std::vector<Fields> mrz, std::string overallDigit)
     return check(stringForCheckOverall, overallDigit);
 }
 
-void Mrz::printMrzFields(std::vector<MrzFields> mrzFields)
+void Mrz::printMrzFields(std::vector<MrzField> mrzFields)
 {
     std::cout << "\nMRZ fields detected:" << std::endl;
-    for(MrzFields field: mrzFields)
+    for(MrzField field: mrzFields)
         std::cout << field.fieldType << ": " << field.mrzDataField << std::endl;
 }

@@ -3,7 +3,7 @@
 DBSCAN::DBSCAN(float e):
     eps(e){};
 
-std::vector<Fields> DBSCAN::clusterCharacters(const Characters *characters, const size_t charactersSize)
+std::vector<Field> DBSCAN::clusterCharacters(const Characters *characters, const size_t charactersSize)
 {
     SPDLOG_INFO("Compute Characters Clusters");
     std::vector<CharactersClustered> charactersClustered = fillCharactersClustered(characters, charactersSize);
@@ -21,7 +21,7 @@ std::vector<Fields> DBSCAN::clusterCharacters(const Characters *characters, cons
     }
     
     SPDLOG_INFO("Compute fields");
-    std::vector<Fields> fields = computeFields(charactersClustered, clusterIdx);
+    std::vector<Field> fields = computeFields(charactersClustered, clusterIdx);
 
     return fields;
 }
@@ -76,10 +76,10 @@ std::vector<CharactersClustered> DBSCAN::dfs(size_t now, size_t cluster, std::ve
     return characters;
 }
 
-std::vector<Fields> DBSCAN::computeFields(std::vector<CharactersClustered> charactersClustered, size_t numClusters)
+std::vector<Field> DBSCAN::computeFields(std::vector<CharactersClustered> charactersClustered, size_t numClusters)
 {
-    std::vector<Fields> fields;
-    Fields field;
+    std::vector<Field> fields;
+    Field field;
     std::multimap<float, Characters> cluster;
     float sumConfidence;
     size_t countElements;
@@ -113,9 +113,9 @@ std::vector<Characters> DBSCAN::orderCharacters(std::multimap<float, Characters>
     return orderedCharacters;
 }
 
-Fields DBSCAN::fillField(float confidence, size_t labelSize, std::vector<Characters> orderedCharacters)
+Field DBSCAN::fillField(float confidence, size_t labelSize, std::vector<Characters> orderedCharacters)
 {
-    Fields field;
+    Field field;
     field.confidence = confidence;
     field.labelSize = labelSize;
     field.label = utils::convertStringtoCharPtr(extractLabel(orderedCharacters));
