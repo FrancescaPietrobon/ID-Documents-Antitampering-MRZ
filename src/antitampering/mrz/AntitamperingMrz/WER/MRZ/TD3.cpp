@@ -95,8 +95,6 @@ std::vector<MrzField> TD3::extractMrzFields(std::vector<Field> mrz)
 
     checkOverallDigit += mrz[1].label[43];
 
-    checkDigitsResult = checkDigits(mrz, mrzFields);
-
     return mrzFields;
 }
 

@@ -9,6 +9,7 @@ std::vector<DoubtfulField> Associations::extractDoubtfulFields(const Field *allF
     std::vector<Field> mrzLines = splitter.findMrzLines(allFields, fieldsSize);
     std::vector<MrzField> mrzFields = splitter.extractMrzFields(mrzLines);
     std::vector<Field> fields = splitter.extractFieldsWithoutMrz(allFields, fieldsSize, mrzLines);
+    CheckDigitsResult = splitter.getCheckDigitsResult();
     std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> associations = computeAssociations(fields, mrzFields);
     return associations.second;
 }
@@ -153,6 +154,9 @@ float Associations::computeConfFinal(std::vector<DoubtfulField> doubtfulAss)
     for(auto ass: finAss)
         sum += ass.confidenceField;
 
-    confFinal = sum / (doubtfulAss.size() + finAss.size());
+    // Confidence of check digits (1 true, 0 false)
+    sum += CheckDigitsResult;
+
+    confFinal = sum / (doubtfulAss.size() + finAss.size() + 1);
     return confFinal;
 }

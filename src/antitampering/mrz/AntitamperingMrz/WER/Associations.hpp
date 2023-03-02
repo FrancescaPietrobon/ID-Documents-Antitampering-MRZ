@@ -18,6 +18,7 @@ class Associations : public AntitamperingMrz
     
     private:
         const float confidenceThreshold;
+        bool CheckDigitsResult = true;
         std::vector<DoubtfulField> doubtfulAss;
         std::vector<AssociatedField> finAss;
         Field convertIfDate(Field field);

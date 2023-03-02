@@ -25,6 +25,7 @@ class Mrz
     public:
         Mrz() = default;
         virtual std::vector<MrzField> extractMrzFields(std::vector<Field> mrz) = 0;
+        virtual bool checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields) = 0;
         void printMrzFields(std::vector<MrzField> mrzFields);
 
     protected:
@@ -32,8 +33,6 @@ class Mrz
         std::string checkDateBirth = "";
         std::string checkDateExpireDoc = "";
         std::string optionalData = "";
-        bool checkDigitsResult = true;
-        virtual bool checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields) = 0;
         bool check(std::string field, std::string checkDigit);
         bool checkOverall(std::vector<Field> mrz, std::string overallDigit);     
 };

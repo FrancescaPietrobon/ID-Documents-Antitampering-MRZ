@@ -37,6 +37,7 @@ std::vector<MrzField> SplitFields::extractMrzFields(std::vector<Field> mrzLines)
     {
         Mrz* mrz = createMrz(mrzType, mrzLines);
         mrzFields = mrz->extractMrzFields(mrzLines);
+        checkDigitsResult = mrz->checkDigits(mrzLines, mrzFields);
         mrz->printMrzFields(mrzFields);
     }
     else
@@ -97,4 +98,9 @@ std::vector<Field> SplitFields::extractFieldsWithoutMrz(const Field *allFields, 
         fields.erase(std::remove(fields.begin(), fields.end(), line), fields.end());
     
     return fields;
+}
+
+bool SplitFields::getCheckDigitsResult()
+{
+    return checkDigitsResult;
 }
