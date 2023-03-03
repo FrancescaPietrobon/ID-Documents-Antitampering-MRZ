@@ -5,6 +5,7 @@
 #include <numeric>
 #include <math.h>
 #include <algorithm>
+#include <spdlog/spdlog.h>
 
 // Meshgrid
 #define RX_Y_PLUS 0.5

@@ -77,8 +77,8 @@ void printPredictions(matrix2D pred)
     {
         for(size_t j = 0; j < pred.begin()->size(); ++j)
             if(i < 5)
-                std::cout << pred[i][j] << " ";
+                SPDLOG_DEBUG("{}", pred[i][j]);
         if(i < 5)
-            std::cout << " " << std::endl;
+            SPDLOG_DEBUG(" ");
     }
 }

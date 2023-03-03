@@ -11,7 +11,6 @@ bool Mrz::check(std::string field, std::string checkDigit)
 {
     int sum = 0;
     size_t i = 0;
-
     std::vector<int> weight;
     std::vector<int> vals {7, 3, 1};
 
@@ -47,7 +46,7 @@ bool Mrz::checkOverall(std::vector<Field> mrz, std::string overallDigit)
 
 void Mrz::printMrzFields(std::vector<MrzField> mrzFields)
 {
-    std::cout << "\nMRZ fields detected:" << std::endl;
+    SPDLOG_DEBUG("MRZ fields detected:");
     for(MrzField field: mrzFields)
-        std::cout << field.fieldType << ": " << field.mrzDataField << std::endl;
+        SPDLOG_DEBUG("{}: {}", field.fieldType, field.mrzDataField);
 }

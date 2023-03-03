@@ -7,9 +7,11 @@ std::vector<DoubtfulField> Associations::extractDoubtfulFields(const Field *allF
 {
     SplitFields splitter;
     std::vector<Field> mrzLines = splitter.findMrzLines(allFields, fieldsSize);
+    SPDLOG_INFO("Extract Mrz Fields");
     std::vector<MrzField> mrzFields = splitter.extractMrzFields(mrzLines);
     std::vector<Field> fields = splitter.extractFieldsWithoutMrz(allFields, fieldsSize, mrzLines);
     CheckDigitsResult = splitter.getCheckDigitsResult();
+    SPDLOG_INFO("Compute Associations");
     std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> associations = computeAssociations(fields, mrzFields);
     return associations.second;
 }
@@ -20,29 +22,18 @@ std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> Associations
     std::string bestTypeField, bestField;
     WER wer;
 
-    std::cout << "\nCompare fields:" << std::endl;
-
+    SPDLOG_DEBUG("Compare fields:");
     for(auto & field: fields)
     {
-        std::cout << "\nField: " << field.label << "\n" << std::endl;
-
+        SPDLOG_DEBUG("Field: {}", field.label);
         if((field.labelSize >= 6) && (field.labelSize <= 12))
             field = convertIfDate(field);
-    
+
         maxConf = 0;
-
-        std::cout << std::left << std::setw(20) << "MRZ FIELD";
-        std::cout << std::left << std::setw(20) << "MRZ FIELD TYPE";
-        std::cout << std::left << std::setw(20) << "CONFIDENCE" << std::endl;
-
         for(size_t itFields = 0; itFields < mrzFields.size(); ++itFields)
         {
             currentConf = wer.computeConfidence(field.label, mrzFields[itFields].mrzDataField);
-
-            std::cout << std::left << std::setw(20) << mrzFields[itFields].mrzDataField;
-            std::cout << std::left << std::setw(20) << mrzFields[itFields].fieldType;
-            std::cout << std::left << std::setw(20) << currentConf << std::endl;
-
+            SPDLOG_DEBUG("Mrz field: {}\t Type: {}\t Confidence: {}", field.label, mrzFields[itFields].mrzDataField, currentConf);
             if(currentConf > maxConf)
             {
                 maxConf = currentConf;
@@ -56,8 +47,7 @@ std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> Associations
                 break;
             }
         }
-        std::cout << "Max confidence: " << maxConf << std::endl;
-
+        SPDLOG_DEBUG("Max confidence: {}", maxConf);
         if(!findField(field, bestField, bestTypeField, maxConf, doubtfulAss, finAss) && (maxConf > 0))
         {
             if(maxConf == 1)
@@ -65,10 +55,7 @@ std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> Associations
             else
                 doubtfulAss = addDoubtfulAssociations(field.label, bestField, bestTypeField, maxConf, doubtfulAss);
         }
-
-        std::cout << std::endl;
     }
-
     return std::make_pair(finAss, doubtfulAss);
 }
 
@@ -94,7 +81,7 @@ std::vector<AssociatedField> Associations::addFinalAssociation(Field dataField, 
     association.confidenceField = confidence;
 
     std::string labelField = dataField.label;
-    std::cout << "Added in final association: " << labelField << " - " << mrzDataField << std::endl;
+    SPDLOG_DEBUG("Added in final association: {} - {}", labelField, mrzDataField);
     finAss.push_back(association);
 
     return finAss;
@@ -108,7 +95,7 @@ std::vector<DoubtfulField> Associations::addDoubtfulAssociations(char* dataField
     association.mrzDataField = utils::convertStringtoCharPtr(mrzDataField);
     association.confidenceField = confidence;
 
-    std::cout << "Added in doubtful association: " << dataField << " - " << mrzDataField  << std::endl;
+    SPDLOG_DEBUG("Added in doubtful association: = {} - {}", dataField, mrzDataField);
     doubtfulAss.push_back(association);
 
     return doubtfulAss;
@@ -124,11 +111,10 @@ bool Associations::findField(Field dataField, std::string mrzDataField, std::str
             found = true;
             if(doubtfulAss[itDoubtFilds].confidenceField < confidence)
             {
-                std::cout << "Prev conf: "<< doubtfulAss[itDoubtFilds].confidenceField << "\t curr conf: " << confidence << std::endl;
-                std::cout << "Field to remove: " << doubtfulAss[itDoubtFilds].dataField << "   MRZ Field: " << doubtfulAss[itDoubtFilds].mrzDataField << "   MRZ Field type: " << doubtfulAss[itDoubtFilds].fieldType << std::endl;
+                SPDLOG_DEBUG("Prev conf: {}\t curr conf: {}", doubtfulAss[itDoubtFilds].confidenceField, confidence);
+                SPDLOG_DEBUG("Field to remove: {}\t MRZ Field: {}\t MRZ Field type:", doubtfulAss[itDoubtFilds].dataField, doubtfulAss[itDoubtFilds].mrzDataField, doubtfulAss[itDoubtFilds].fieldType);
                 doubtfulAss.erase(doubtfulAss.begin()+itDoubtFilds);
                 ++itDoubtFilds;
-
                 if(confidence == 1)
                     finAss = addFinalAssociation(dataField, mrzDataField, fieldType, confidence, finAss);
                 else

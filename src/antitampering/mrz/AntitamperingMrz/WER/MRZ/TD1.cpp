@@ -110,35 +110,35 @@ bool TD1::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
 
     if(!check(mrzFields.at(2).mrzDataField, checkDocNum))
     {
-        std::cout << "Check in document number faild." << std::endl;
+        SPDLOG_DEBUG("Check in document number faild.");
         result = false;
     }  
     else
-        std::cout << "Check in document number OK." << std::endl;
+        SPDLOG_DEBUG("Check in document number OK.");
 
     if(!check(optionalData, checkOptionalData))
     {
-        std::cout << "Check in optional data faild." << std::endl;
+        SPDLOG_DEBUG("Check in optional data faild.");
         result = false;
     }
     else
-        std::cout << "Check in optional data OK." << std::endl;
+        SPDLOG_DEBUG("Check in optional data OK.");
 
     if(!check(mrzFields.at(3).mrzDataField, checkDateBirth))
     {
-        std::cout << "Check in date of birth faild." << std::endl;
+        SPDLOG_DEBUG("Check in date of birth faild.");
         result = false;
     }
     else
-        std::cout << "Check in date of birth OK." << std::endl;
+        SPDLOG_DEBUG("Check in date of birth OK.");
 
     if(!check(mrzFields.at(5).mrzDataField, checkDateExpireDoc))
     {
-        std::cout << "Check in date of expire faild." << std::endl;
+        SPDLOG_DEBUG("Check in date of expire faild.");
         result = false;
     }
     else
-        std::cout << "Check in date of expire OK." << std::endl;
+        SPDLOG_DEBUG("Check in date of expire OK.");
 
     // MISSING CHECK FIRST TWO LINES
 

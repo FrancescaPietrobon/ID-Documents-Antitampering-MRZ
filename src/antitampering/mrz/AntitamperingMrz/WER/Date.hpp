@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <spdlog/spdlog.h>
 
 class Date
 {
