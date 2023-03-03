@@ -6,12 +6,12 @@ DBSCAN::DBSCAN(float e):
 std::vector<Field> DBSCAN::clusterCharacters(const Characters *characters, const size_t charactersSize)
 {
     SPDLOG_INFO("Compute Characters Clusters");
-    std::vector<CharactersClustered> charactersClustered = fillCharactersClustered(characters, charactersSize);
+    std::vector<CharactersClustered> charactersClustered = this->fillCharactersClustered(characters, charactersSize);
     std::vector<std::vector<size_t>> nearCharacters;
     nearCharacters.resize(charactersSize);
 
     SPDLOG_INFO("Find near characters");
-    nearCharacters = findNearCharacters(charactersClustered, nearCharacters);
+    nearCharacters = this->findNearCharacters(charactersClustered, nearCharacters);
     size_t clusterIdx = -1;
     for(size_t i = 0; i < charactersSize; i++)
     {
@@ -21,7 +21,7 @@ std::vector<Field> DBSCAN::clusterCharacters(const Characters *characters, const
     }
     
     SPDLOG_INFO("Compute fields");
-    std::vector<Field> fields = computeFields(charactersClustered, clusterIdx);
+    std::vector<Field> fields = this->computeFields(charactersClustered, clusterIdx);
 
     return fields;
 }
@@ -46,7 +46,7 @@ std::vector<std::vector<size_t>> DBSCAN::findNearCharacters(std::vector<Characte
         {
             if(i == j)
                 continue;
-            if(computeDistance(characters[i].character, characters[j].character) <= eps)
+            if(this->computeDistance(characters[i].character, characters[j].character) <= this->eps)
                 nearCharacters[i].push_back(j);
         }
     return nearCharacters;
@@ -71,7 +71,7 @@ std::vector<CharactersClustered> DBSCAN::dfs(size_t now, size_t cluster, std::ve
     for(auto & next: nearCharacters[now])
     {
         if(characters[next].cluster != NOT_ASSIGNED) continue;
-        characters = dfs(next, cluster, characters, nearCharacters);
+        characters = this->dfs(next, cluster, characters, nearCharacters);
     }
     return characters;
 }
@@ -96,8 +96,8 @@ std::vector<Field> DBSCAN::computeFields(std::vector<CharactersClustered> charac
                 countElements += 1;
             }
         }
-        std::vector<Characters> orderedCharacters = orderCharacters(cluster);
-        field = fillField(sumConfidence/countElements, countElements, orderedCharacters);
+        std::vector<Characters> orderedCharacters = this->orderCharacters(cluster);
+        field = this->fillField(sumConfidence/countElements, countElements, orderedCharacters);
         fields.push_back(field);
         cluster.clear();
     }
@@ -118,8 +118,8 @@ Field DBSCAN::fillField(float confidence, size_t labelSize, std::vector<Characte
     Field field;
     field.confidence = confidence;
     field.labelSize = labelSize;
-    field.label = utils::convertStringtoCharPtr(extractLabel(orderedCharacters));
-    field.position = extractPosition(orderedCharacters);
+    field.label = utils::convertStringtoCharPtr(this->extractLabel(orderedCharacters));
+    field.position = this->extractPosition(orderedCharacters);
     return field;
 }
 

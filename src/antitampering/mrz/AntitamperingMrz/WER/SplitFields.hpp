@@ -13,7 +13,6 @@ class SplitFields
         bool getCheckDigitsResult();
         
     private:
-        std::vector<Field> mrzLines;
         bool checkDigitsResult = true;
         MrzType findMrzType(std::vector<Field> mrzLines);
         Mrz* createMrz(MrzType mrzType, std::vector<Field> chars);

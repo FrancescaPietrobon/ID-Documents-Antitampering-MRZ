@@ -10,9 +10,9 @@ std::vector<DoubtfulField> Associations::extractDoubtfulFields(const Field *allF
     SPDLOG_INFO("Extract Mrz Fields");
     std::vector<MrzField> mrzFields = splitter.extractMrzFields(mrzLines);
     std::vector<Field> fields = splitter.extractFieldsWithoutMrz(allFields, fieldsSize, mrzLines);
-    CheckDigitsResult = splitter.getCheckDigitsResult();
+    this->CheckDigitsResult = splitter.getCheckDigitsResult();
     SPDLOG_INFO("Compute Associations");
-    std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> associations = computeAssociations(fields, mrzFields);
+    std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> associations = this->computeAssociations(fields, mrzFields);
     return associations.second;
 }
 
@@ -27,7 +27,7 @@ std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> Associations
     {
         SPDLOG_DEBUG("Field: {}", field.label);
         if((field.labelSize >= 6) && (field.labelSize <= 12))
-            field = convertIfDate(field);
+            field = this->convertIfDate(field);
 
         maxConf = 0;
         for(size_t itFields = 0; itFields < mrzFields.size(); ++itFields)
@@ -48,15 +48,15 @@ std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> Associations
             }
         }
         SPDLOG_DEBUG("Max confidence: {}", maxConf);
-        if(!findField(field, bestField, bestTypeField, maxConf, doubtfulAss, finAss) && (maxConf > 0))
+        if(!this->findField(field, bestField, bestTypeField, maxConf, doubtfulAss, this->finAss) && (maxConf > 0))
         {
             if(maxConf == 1)
-                finAss = addFinalAssociation(field, bestField, bestTypeField, maxConf, finAss);
+                finAss = this->addFinalAssociation(field, bestField, bestTypeField, maxConf, this->finAss);
             else
-                doubtfulAss = addDoubtfulAssociations(field.label, bestField, bestTypeField, maxConf, doubtfulAss);
+                doubtfulAss = this->addDoubtfulAssociations(field.label, bestField, bestTypeField, maxConf, this->doubtfulAss);
         }
     }
-    return std::make_pair(finAss, doubtfulAss);
+    return std::make_pair(this->finAss, this->doubtfulAss);
 }
 
 Field Associations::convertIfDate(Field field)
@@ -116,9 +116,9 @@ bool Associations::findField(Field dataField, std::string mrzDataField, std::str
                 doubtfulAss.erase(doubtfulAss.begin()+itDoubtFilds);
                 ++itDoubtFilds;
                 if(confidence == 1)
-                    finAss = addFinalAssociation(dataField, mrzDataField, fieldType, confidence, finAss);
+                    finAss = this->addFinalAssociation(dataField, mrzDataField, fieldType, confidence, finAss);
                 else
-                    doubtfulAss = addDoubtfulAssociations(dataField.label, mrzDataField, fieldType, confidence, doubtfulAss);
+                    doubtfulAss = this->addDoubtfulAssociations(dataField.label, mrzDataField, fieldType, confidence, doubtfulAss);
                 
                 break;
             }
@@ -137,12 +137,12 @@ float Associations::computeConfFinal(std::vector<DoubtfulField> doubtfulAss)
         sum += ass.confidenceField;
 
     // Confidence of perfect associations
-    for(auto ass: finAss)
+    for(auto ass: this->finAss)
         sum += ass.confidenceField;
 
     // Confidence of check digits (1 true, 0 false)
     sum += CheckDigitsResult;
 
-    confFinal = sum / (doubtfulAss.size() + finAss.size() + 1);
+    confFinal = sum / (doubtfulAss.size() + this->finAss.size() + 1);
     return confFinal;
 }

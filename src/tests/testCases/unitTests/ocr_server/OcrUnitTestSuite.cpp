@@ -50,7 +50,7 @@ TEST_F(OcrTestFixture, CVMatToMatrix2DUnitTest)
     const int sz[] = {1, 2, 1, 4}; 
     float data[10] = { 1, 2, 3, 4, 5, 6, 7, 8 };
     cv::Mat cvMat = cv::Mat(4, sz, CV_32F, data);
-    matrix2D funcMatrix = CVMatToMatrix2D(cvMat);
+    matrix2D funcMatrix = utilsRetinaNet::CVMatToMatrix2D(cvMat);
 
     std::vector<float> row1 = {1, 2, 3, 4};
     std::vector<float> row2 = {5, 6, 7, 8};
@@ -64,7 +64,7 @@ TEST_F(OcrTestFixture, convertToConersUnitTest)
     std::vector<float> xywhBox1 = {2, 2, 2, 2};
     std::vector<float> xywhBox2 = {3, 4, 2, 4};
     matrix2D xywhBoxes = {xywhBox1, xywhBox2};
-    matrix2D funcCornersBoxes = convertToConers(xywhBoxes);
+    matrix2D funcCornersBoxes = utilsRetinaNet::convertToConers(xywhBoxes);
 
     std::vector<float> cornersBox1 = {1, 1, 3, 3};
     std::vector<float> cornersBox2 = {2, 2, 4, 6};
@@ -78,7 +78,7 @@ TEST_F(OcrTestFixture, reshapeBoxUnitTest)
     std::vector<float> box = {2, 2, 2, 2};
     float xAlter = 2;
     float yAlter = 1;
-    Coordinates coords = reshapeBox(box, xAlter, yAlter);
+    Coordinates coords = utilsRetinaNet::reshapeBox(box, xAlter, yAlter);
 
     ASSERT_TRUE(coords.topLeftX == 1) << TestHelper::PrintTo();
     ASSERT_TRUE(coords.topLeftY == 2) << TestHelper::PrintTo();
@@ -92,7 +92,7 @@ TEST_F(OcrTestFixture, multVarianceUnitTest)
     std::vector<float> box2 = {3, 4, 2, 4};
     matrix2D boxes = {box1, box2};
     std::vector<float> variance = {0.1, 0.1, 0.2, 0.2};
-    matrix2D funcBoxes = multVariance(boxes, variance);
+    matrix2D funcBoxes = utilsRetinaNet::multVariance(boxes, variance);
 
     std::vector<float> myBox1 = {0.2, 0.2, 0.4, 0.4};
     std::vector<float> myBox2 = {0.3, 0.4, 0.4, 0.8};
@@ -106,7 +106,7 @@ TEST_F(OcrTestFixture, applySigmoidUnitTest)
     std::vector<float> predClass1 = {0.9, 0.1, 0.15};
     std::vector<float> predClass2 = {0.2, 0.7, 0.3};
     matrix2D predClasses = {predClass1, predClass2};
-    matrix2D funcPredClasses = applySigmoid(predClasses);
+    matrix2D funcPredClasses = utilsRetinaNet::applySigmoid(predClasses);
 
     float threshold = 0.0001;
     ASSERT_TRUE(abs(funcPredClasses[0][0] - 0.710949) < threshold) << TestHelper::PrintTo();

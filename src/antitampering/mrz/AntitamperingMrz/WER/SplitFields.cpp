@@ -31,11 +31,11 @@ std::vector<Field> SplitFields::findMrzLines(const Field *fields, const size_t f
 
 std::vector<MrzField> SplitFields::extractMrzFields(std::vector<Field> mrzLines)
 {
-    MrzType mrzType = findMrzType(mrzLines);
+    MrzType mrzType = this->findMrzType(mrzLines);
     std::vector<MrzField> mrzFields;
     if(mrzType != NONE)
     {
-        Mrz* mrz = createMrz(mrzType, mrzLines);
+        Mrz* mrz = this->createMrz(mrzType, mrzLines);
         mrzFields = mrz->extractMrzFields(mrzLines);
         checkDigitsResult = mrz->checkDigits(mrzLines, mrzFields);
         mrz->printMrzFields(mrzFields);

@@ -24,14 +24,14 @@ std::vector<MrzField> TD1::extractMrzFields(std::vector<Field> mrz)
         field.mrzDataField += mrz[0].label[i];
     mrzFields.push_back(field);
 
-    checkDocNum = mrz[0].label[14];
+    this->checkDocNum = mrz[0].label[14];
 
     if(mrz[0].label[15] != '<')
     {
         for(size_t i = 15; i < 29 && mrz[0].label[i] != '<'; ++i)
-            optionalData += mrz[0].label[i];
+            this->optionalData += mrz[0].label[i];
 
-        checkOptionalData += mrz[0].label[29];
+        this->checkOptionalData += mrz[0].label[29];
     }
 
     // Second line
@@ -42,7 +42,7 @@ std::vector<MrzField> TD1::extractMrzFields(std::vector<Field> mrz)
         field.mrzDataField += mrz[1].label[i];
     mrzFields.push_back(field);
 
-    checkDateBirth = mrz[1].label[6];
+    this->checkDateBirth = mrz[1].label[6];
 
     field.fieldType = "sex";
     field.mrzDataField = mrz[1].label[7];
@@ -54,7 +54,7 @@ std::vector<MrzField> TD1::extractMrzFields(std::vector<Field> mrz)
         field.mrzDataField += mrz[1].label[i];
     mrzFields.push_back(field);
 
-    checkDateExpireDoc = mrz[1].label[14];
+    this->checkDateExpireDoc = mrz[1].label[14];
 
     field.fieldType = "nationality";
     field.mrzDataField = "";
@@ -64,10 +64,10 @@ std::vector<MrzField> TD1::extractMrzFields(std::vector<Field> mrz)
     if(mrz[1].label[18] != '<')
     {
         for(size_t i = 18; i < 29 && mrz[1].label[i] != '<'; ++i)
-            secondOptionalData += mrz[1].label[i];
+            this->secondOptionalData += mrz[1].label[i];
     }
 
-    checkFirstTwoLines = mrz[1].label[29];
+    this->checkFirstTwoLines = mrz[1].label[29];
 
     // Third line
 
@@ -108,7 +108,7 @@ bool TD1::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
 {
     bool result = true;
 
-    if(!check(mrzFields.at(2).mrzDataField, checkDocNum))
+    if(!this->check(mrzFields.at(2).mrzDataField, this->checkDocNum))
     {
         SPDLOG_DEBUG("Check in document number faild.");
         result = false;
@@ -116,7 +116,7 @@ bool TD1::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
     else
         SPDLOG_DEBUG("Check in document number OK.");
 
-    if(!check(optionalData, checkOptionalData))
+    if(!this->check(optionalData, this->checkOptionalData))
     {
         SPDLOG_DEBUG("Check in optional data faild.");
         result = false;
@@ -124,7 +124,7 @@ bool TD1::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
     else
         SPDLOG_DEBUG("Check in optional data OK.");
 
-    if(!check(mrzFields.at(3).mrzDataField, checkDateBirth))
+    if(!this->check(mrzFields.at(3).mrzDataField, this->checkDateBirth))
     {
         SPDLOG_DEBUG("Check in date of birth faild.");
         result = false;
@@ -132,7 +132,7 @@ bool TD1::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
     else
         SPDLOG_DEBUG("Check in date of birth OK.");
 
-    if(!check(mrzFields.at(5).mrzDataField, checkDateExpireDoc))
+    if(!this->check(mrzFields.at(5).mrzDataField, this->checkDateExpireDoc))
     {
         SPDLOG_DEBUG("Check in date of expire faild.");
         result = false;
@@ -140,7 +140,25 @@ bool TD1::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
     else
         SPDLOG_DEBUG("Check in date of expire OK.");
 
-    // MISSING CHECK FIRST TWO LINES
+    if(!this->checkTwoLines(mrz, this->checkFirstTwoLines))
+    {
+        SPDLOG_DEBUG("Check of first two lines faild.");
+        result = false;
+    }
+    else
+        SPDLOG_DEBUG("Check of first two lines OK.");
 
     return result;
+}
+
+bool TD1::checkTwoLines(std::vector<Field> mrz, std::string checkFirstTwoLines)
+{
+    std::string stringForCheck;
+    for(int i = 0; i < 29; ++i)
+        stringForCheck += mrz[0].label[i];
+    
+    for(int i = 0; i < 28; ++i)
+        stringForCheck += mrz[1].label[i];
+    
+    return this->check(stringForCheck, checkFirstTwoLines);
 }

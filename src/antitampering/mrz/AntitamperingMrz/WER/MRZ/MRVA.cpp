@@ -56,7 +56,7 @@ std::vector<MrzField> MRVA::extractMrzFields(std::vector<Field> mrz)
         field.mrzDataField += mrz[1].label[i];
     mrzFields.push_back(field);
 
-    checkDocNum = mrz[1].label[9];
+    this->checkDocNum = mrz[1].label[9];
     
     field.fieldType = "nationality";
     field.mrzDataField = "";
@@ -69,7 +69,7 @@ std::vector<MrzField> MRVA::extractMrzFields(std::vector<Field> mrz)
         field.mrzDataField += mrz[1].label[i];
     mrzFields.push_back(field);
 
-    checkDateBirth = mrz[1].label[19];
+    this->checkDateBirth = mrz[1].label[19];
 
     field.fieldType = "sex";
     field.mrzDataField = mrz[1].label[20];
@@ -81,7 +81,7 @@ std::vector<MrzField> MRVA::extractMrzFields(std::vector<Field> mrz)
         field.mrzDataField += mrz[1].label[i];
     mrzFields.push_back(field);
 
-    checkDateExpireDoc = mrz[1].label[27];
+    this->checkDateExpireDoc = mrz[1].label[27];
 
     if(mrz[1].label[28] != '<')
     {
@@ -90,9 +90,9 @@ std::vector<MrzField> MRVA::extractMrzFields(std::vector<Field> mrz)
             if(mrz[1].label[i] == '<' && mrz[1].label[i-1] == '<')
                 break;
             else if(mrz[1].label[i] == '<')
-                optionalData += " ";
+                this->optionalData += " ";
             else
-                optionalData += mrz[1].label[i];
+                this->optionalData += mrz[1].label[i];
         }
     }
 
@@ -103,7 +103,7 @@ bool MRVA::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
 {
     bool result = true;
 
-    if(!check(mrzFields.at(4).mrzDataField, checkDocNum))
+    if(!this->check(mrzFields.at(4).mrzDataField, this->checkDocNum))
     {
         SPDLOG_DEBUG("Check in document number faild.");
         result = false;
@@ -111,7 +111,7 @@ bool MRVA::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
     else
         SPDLOG_DEBUG("Check in document number OK.");
 
-    if(!check(mrzFields.at(6).mrzDataField, checkDateBirth))
+    if(!this->check(mrzFields.at(6).mrzDataField, this->checkDateBirth))
     {
         SPDLOG_DEBUG("Check in date of birth faild.");
         result = false;
@@ -119,7 +119,7 @@ bool MRVA::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
     else
         SPDLOG_DEBUG("Check in date of birth OK.");
 
-    if(!check(mrzFields.at(8).mrzDataField, checkDateExpireDoc))
+    if(!this->check(mrzFields.at(8).mrzDataField, this->checkDateExpireDoc))
     {
         SPDLOG_DEBUG("Check in date of expire faild.");
         result = false;

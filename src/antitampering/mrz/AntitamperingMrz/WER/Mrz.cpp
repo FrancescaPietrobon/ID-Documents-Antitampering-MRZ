@@ -41,7 +41,7 @@ bool Mrz::checkOverall(std::vector<Field> mrz, std::string overallDigit)
     for(int i = 21; i < 43; ++i)
         stringForCheckOverall += mrz[1].label[i];
     
-    return check(stringForCheckOverall, overallDigit);
+    return this->check(stringForCheckOverall, overallDigit);
 }
 
 void Mrz::printMrzFields(std::vector<MrzField> mrzFields)

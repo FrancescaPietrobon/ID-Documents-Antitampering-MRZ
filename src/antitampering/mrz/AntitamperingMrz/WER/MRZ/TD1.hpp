@@ -15,4 +15,5 @@ class TD1: public Mrz
 
     public:
         std::vector<MrzField> extractMrzFields(std::vector<Field> mrz);
+        bool checkTwoLines(std::vector<Field> mrz, std::string checkFirstTwoLines);
 };
