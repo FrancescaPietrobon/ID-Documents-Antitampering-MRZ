@@ -3,29 +3,12 @@
 std::vector<MrzField> TD1::extractMrzFields(std::vector<Field> mrz)
 {
     std::vector<MrzField> mrzFields;
-    MrzField field;
 
     // First line
-    
-    field.fieldType = "docType";
-    field.mrzDataField = mrz[0].label[0];
-    if(mrz[0].label[1] != '<')
-        field.mrzDataField += mrz[0].label[1];
-    mrzFields.push_back(field);
-
-    field.fieldType = "state";
-    field.mrzDataField = "";
-    field.mrzDataField = field.mrzDataField + mrz[0].label[2] + mrz[0].label[3] + mrz[0].label[4];
-    mrzFields.push_back(field);
-
-    field.fieldType = "docNumber";
-    field.mrzDataField = "";
-    for(size_t i = 5; i < 14 && mrz[0].label[i] != '<'; ++i)
-        field.mrzDataField += mrz[0].label[i];
-    mrzFields.push_back(field);
-
+    mrzFields = this->extractDocType(mrz, mrzFields);
+    mrzFields = this->extractState(mrz, mrzFields);
+    mrzFields = this->extractDocNumber(mrz, mrzFields);
     this->checkDocNum = mrz[0].label[14];
-
     if(mrz[0].label[15] != '<')
     {
         for(size_t i = 15; i < 29 && mrz[0].label[i] != '<'; ++i)
@@ -35,42 +18,101 @@ std::vector<MrzField> TD1::extractMrzFields(std::vector<Field> mrz)
     }
 
     // Second line
-
-    field.fieldType = "dateBirth";
-    field.mrzDataField = "";
-    for(size_t i = 0; i < 6; ++i)
-        field.mrzDataField += mrz[1].label[i];
-    mrzFields.push_back(field);
-
+    mrzFields = this->extractDateBirth(mrz, mrzFields);
     this->checkDateBirth = mrz[1].label[6];
-
-    field.fieldType = "sex";
-    field.mrzDataField = mrz[1].label[7];
-    mrzFields.push_back(field);
-
-    field.fieldType = "dateExpireDoc";
-    field.mrzDataField = "";
-    for(size_t i = 8; i < 14; ++i)
-        field.mrzDataField += mrz[1].label[i];
-    mrzFields.push_back(field);
-
+    mrzFields = this->extractSex(mrz, mrzFields);
+    mrzFields = this->extractDateExpireDoc(mrz, mrzFields);
     this->checkDateExpireDoc = mrz[1].label[14];
-
-    field.fieldType = "nationality";
-    field.mrzDataField = "";
-    field.mrzDataField = field.mrzDataField + mrz[1].label[15] + mrz[1].label[16] + mrz[1].label[17];
-    mrzFields.push_back(field);
-
+    mrzFields = this->extractNationality(mrz, mrzFields);
     if(mrz[1].label[18] != '<')
     {
         for(size_t i = 18; i < 29 && mrz[1].label[i] != '<'; ++i)
             this->secondOptionalData += mrz[1].label[i];
     }
-
     this->checkFirstTwoLines = mrz[1].label[29];
 
     // Third line
+    mrzFields = this->extractSurnameAndName(mrz, mrzFields);
 
+    return mrzFields;
+}
+
+std::vector<MrzField> TD1::extractDocType(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
+    field.fieldType = "docType";
+    field.mrzDataField = mrz[0].label[0];
+    if(mrz[0].label[1] != '<')
+        field.mrzDataField += mrz[0].label[1];
+    mrzFields.push_back(field);
+    return mrzFields;
+}
+
+std::vector<MrzField> TD1::extractState(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
+    field.fieldType = "state";
+    field.mrzDataField = "";
+    field.mrzDataField = field.mrzDataField + mrz[0].label[2] + mrz[0].label[3] + mrz[0].label[4];
+    mrzFields.push_back(field);
+    return mrzFields;
+}
+
+std::vector<MrzField> TD1::extractDocNumber(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
+    field.fieldType = "docNumber";
+    field.mrzDataField = "";
+    for(size_t i = 5; i < 14 && mrz[0].label[i] != '<'; ++i)
+        field.mrzDataField += mrz[0].label[i];
+    mrzFields.push_back(field);
+    return mrzFields;
+}
+
+std::vector<MrzField> TD1::extractDateBirth(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
+    field.fieldType = "dateBirth";
+    field.mrzDataField = "";
+    for(size_t i = 0; i < 6; ++i)
+        field.mrzDataField += mrz[1].label[i];
+    mrzFields.push_back(field);
+    return mrzFields;
+}
+
+std::vector<MrzField> TD1::extractSex(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
+    field.fieldType = "sex";
+    field.mrzDataField = mrz[1].label[7];
+    mrzFields.push_back(field);
+    return mrzFields;
+}
+
+std::vector<MrzField> TD1::extractDateExpireDoc(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
+    field.fieldType = "dateExpireDoc";
+    field.mrzDataField = "";
+    for(size_t i = 8; i < 14; ++i)
+        field.mrzDataField += mrz[1].label[i];
+    mrzFields.push_back(field);
+    return mrzFields;
+}
+
+std::vector<MrzField> TD1::extractNationality(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
+    field.fieldType = "nationality";
+    field.mrzDataField = "";
+    field.mrzDataField = field.mrzDataField + mrz[1].label[15] + mrz[1].label[16] + mrz[1].label[17];
+    mrzFields.push_back(field);
+    return mrzFields;
+}
+
+std::vector<MrzField> TD1::extractSurnameAndName(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
     field.fieldType = "surname";
     field.mrzDataField = "";
     int i = 0;
@@ -87,7 +129,6 @@ std::vector<MrzField> TD1::extractMrzFields(std::vector<Field> mrz)
             field.mrzDataField += mrz[2].label[j];
     }
     mrzFields.push_back(field);
-
     field.fieldType = "name";
     field.mrzDataField = "";
     for(size_t j = i; j < 30; ++j)
@@ -100,7 +141,6 @@ std::vector<MrzField> TD1::extractMrzFields(std::vector<Field> mrz)
             field.mrzDataField += mrz[2].label[j];
     }
     mrzFields.push_back(field);
-
     return mrzFields;
 }
 

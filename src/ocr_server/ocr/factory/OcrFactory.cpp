@@ -15,7 +15,7 @@ std::shared_ptr<Ocr> OcrFactory::createOCR(const std::string& algorithmType)
         {
             SPDLOG_INFO("Loading OCR");
             std::string modelsFolder = std::string(MODELS_FOLDER);
-            std::string modelFilename = modelsFolder + std::string("Frozen_graph_lnorm_5e6_156img.pb");
+            std::string modelFilename = modelsFolder + std::string("ocr_5e6_156img.pb");
 
             cv::dnn::Net model = cv::dnn::readNetFromTensorflow(modelFilename);
             cv::Size netInputSize = cv::Size(800, 800);
