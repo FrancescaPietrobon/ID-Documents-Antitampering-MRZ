@@ -16,4 +16,9 @@ class SplitFields
         bool checkDigitsResult = true;
         MrzType findMrzType(std::vector<Field> mrzLines);
         Mrz* createMrz(MrzType mrzType, std::vector<Field> chars);
+        bool isTD1(std::vector<Field> mrzLines);
+        bool isTD2(std::vector<Field> mrzLines);
+        bool isTD3(std::vector<Field> mrzLines);
+        bool isMRVA(std::vector<Field> mrzLines);
+        bool isMRVB(std::vector<Field> mrzLines);
 };

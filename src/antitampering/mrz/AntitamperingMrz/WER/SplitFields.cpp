@@ -51,26 +51,53 @@ std::vector<MrzField> SplitFields::extractMrzFields(std::vector<Field> mrzLines)
 MrzType SplitFields::findMrzType(std::vector<Field> mrzLines)
 {
     MrzType mrzType = NONE;
-    if((mrzLines.size() == 3) && (mrzLines[0].labelSize == 36) && (mrzLines[1].labelSize == 36) && (mrzLines[2].labelSize == 36))
+
+    if(this->isTD1(mrzLines))
         mrzType = td1;
-    else if((mrzLines[0].labelSize == 36) && (mrzLines[1].labelSize == 36))
-    {
-        if(mrzLines[0].label[0] == 'P')
-            mrzType = td2;
-        else
-            mrzType = mrvb;
-    }
-    else if((mrzLines[0].labelSize == 44) && (mrzLines[1].labelSize == 44))
-    {
-        if(mrzLines[0].label[0] == 'P')
-            mrzType = td3;
-        else
-            mrzType = mrva;
-    }
-    else
-        mrzType = NONE;
+    else if(this->isTD2(mrzLines))
+        mrzType = td2;
+    else if(this->isTD3(mrzLines))
+        mrzType = td3;
+    else if(this->isMRVA(mrzLines))
+        mrzType = mrva;
+    else if(this->isMRVB(mrzLines))
+        mrzType = mrvb;
 
     return mrzType;
+}
+
+bool SplitFields::isTD1(std::vector<Field> mrzLines)
+{
+    return ((mrzLines.size() == 3) &&
+            (mrzLines[0].labelSize == 36) && (mrzLines[1].labelSize == 36) && (mrzLines[2].labelSize == 36));
+}
+
+bool SplitFields::isTD2(std::vector<Field> mrzLines)
+{
+    return ((mrzLines.size() == 2) &&
+            (mrzLines[0].labelSize == 36) && (mrzLines[1].labelSize == 36) &&
+            (mrzLines[0].label[0] == 'P'));
+}
+
+bool SplitFields::isTD3(std::vector<Field> mrzLines)
+{
+    return ((mrzLines.size() == 2) &&
+            (mrzLines[0].labelSize == 44) && (mrzLines[1].labelSize == 44) &&
+            (mrzLines[0].label[0] == 'P'));
+}
+
+bool SplitFields::isMRVB(std::vector<Field> mrzLines)
+{
+    return ((mrzLines.size() == 2) &&
+            (mrzLines[0].labelSize == 36) && (mrzLines[1].labelSize == 36) &&
+            (mrzLines[0].label[0] != 'P'));
+}
+
+bool SplitFields::isMRVA(std::vector<Field> mrzLines)
+{
+    return ((mrzLines.size() == 2) &&
+            (mrzLines[0].labelSize == 44) && (mrzLines[1].labelSize == 44) &&
+            (mrzLines[0].label[0] != 'P'));
 }
 
 Mrz* SplitFields::createMrz(MrzType mrzType, std::vector<Field> chars)
