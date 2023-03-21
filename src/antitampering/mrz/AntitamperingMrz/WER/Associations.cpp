@@ -16,7 +16,8 @@ std::vector<DoubtfulField> Associations::extractDoubtfulFields(const Field *allF
     return associations.second;
 }
 
-std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> Associations::computeAssociations(std::vector<Field> fields, std::vector<MrzField> mrzFields)
+std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>>
+Associations::computeAssociations(std::vector<Field> fields, std::vector<MrzField> mrzFields)
 {
     float currentConf = 0, maxConf = 0;
     std::string bestTypeField, bestField;
@@ -26,8 +27,7 @@ std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> Associations
     for(auto & field: fields)
     {
         SPDLOG_DEBUG("Field: {}", field.label);
-        if((field.labelSize >= 6) && (field.labelSize <= 12))
-            field = this->convertIfDate(field);
+        field = this->convertIfDate(field);
 
         maxConf = 0;
         for(size_t itFields = 0; itFields < mrzFields.size(); ++itFields)
@@ -48,31 +48,47 @@ std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> Associations
             }
         }
         SPDLOG_DEBUG("Max confidence: {}", maxConf);
-        if(!this->findField(field, bestField, bestTypeField, maxConf, doubtfulAss, this->finAss) && (maxConf > 0))
-        {
-            if(maxConf == 1)
-                finAss = this->addFinalAssociation(field, bestField, bestTypeField, maxConf, this->finAss);
-            else
-                doubtfulAss = this->addDoubtfulAssociations(field.label, bestField, bestTypeField, maxConf, this->doubtfulAss);
-        }
+        std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> associations;
+        associations = addAssociation(field, bestField, bestTypeField, maxConf, this->doubtfulAss, this->finAss);
+        this->finAss = associations.first;
+        this->doubtfulAss = associations.second;
     }
     return std::make_pair(this->finAss, this->doubtfulAss);
 }
 
+std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>>
+Associations::addAssociation(Field dataField, std::string mrzDataField, std::string fieldType, float confidence,
+                             std::vector<DoubtfulField> &doubtfulAss, std::vector<AssociatedField> &finAss)
+{
+    if(!this->findField(dataField, mrzDataField, fieldType, confidence, doubtfulAss, finAss) && (confidence > 0))
+    {
+        if(confidence == 1)
+            finAss = this->addFinalAssociation(dataField, mrzDataField, fieldType, confidence, finAss);
+        else
+            doubtfulAss = this->addDoubtfulAssociations(dataField.label, mrzDataField, fieldType, confidence, doubtfulAss);
+    }
+    return std::make_pair(finAss, doubtfulAss);
+}
+
 Field Associations::convertIfDate(Field field)
 {
-    std::string dataField = field.label;
-    Date date;
-    
-    // If it is a date, it is refactorized in format yymmdd.
-    std::string newLabel = date.findDate(dataField);
-    if(newLabel != "None")
-        field.label = utils::convertStringtoCharPtr(newLabel);
-
+    if((field.labelSize >= 6) && (field.labelSize <= 12))
+    {
+        std::string dataField = field.label;
+        Date date;
+        // If it is a date, it is refactorized in format yymmdd.
+        std::string newLabel = date.findDate(dataField);
+        if(newLabel != "None")
+            field.label = utils::convertStringtoCharPtr(newLabel);
+    }
     return field;
 }
 
-std::vector<AssociatedField> Associations::addFinalAssociation(Field dataField, std::string mrzDataField, std::string fieldType, float confidence, std::vector<AssociatedField> finAss)
+
+
+std::vector<AssociatedField>
+Associations::addFinalAssociation(Field dataField, std::string mrzDataField, std::string fieldType,
+                                  float confidence, std::vector<AssociatedField> finAss)
 {
     AssociatedField association;
     association.fieldType = utils::convertStringtoCharPtr(fieldType);
@@ -87,7 +103,9 @@ std::vector<AssociatedField> Associations::addFinalAssociation(Field dataField, 
     return finAss;
 }
 
-std::vector<DoubtfulField> Associations::addDoubtfulAssociations(char* dataField, std::string mrzDataField, std::string fieldType, float confidence, std::vector<DoubtfulField> doubtfulAss)
+std::vector<DoubtfulField>
+Associations::addDoubtfulAssociations(char* dataField, std::string mrzDataField, std::string fieldType,
+                                      float confidence, std::vector<DoubtfulField> doubtfulAss)
 {
     DoubtfulField association;
     association.fieldType = utils::convertStringtoCharPtr(fieldType);
@@ -101,7 +119,8 @@ std::vector<DoubtfulField> Associations::addDoubtfulAssociations(char* dataField
     return doubtfulAss;
 }
 
-bool Associations::findField(Field dataField, std::string mrzDataField, std::string fieldType, float confidence, std::vector<DoubtfulField> &doubtfulAss, std::vector<AssociatedField> &finAss)
+bool Associations::findField(Field dataField, std::string mrzDataField, std::string fieldType, float confidence,
+                             std::vector<DoubtfulField> &doubtfulAss, std::vector<AssociatedField> &finAss)
 {
     bool found = false;
     for(size_t itDoubtFilds = 0; itDoubtFilds < doubtfulAss.size(); ++itDoubtFilds)
@@ -112,7 +131,8 @@ bool Associations::findField(Field dataField, std::string mrzDataField, std::str
             if(doubtfulAss[itDoubtFilds].confidenceField < confidence)
             {
                 SPDLOG_DEBUG("Prev conf: {}\t curr conf: {}", doubtfulAss[itDoubtFilds].confidenceField, confidence);
-                SPDLOG_DEBUG("Field to remove: {}\t MRZ Field: {}\t MRZ Field type:", doubtfulAss[itDoubtFilds].dataField, doubtfulAss[itDoubtFilds].mrzDataField, doubtfulAss[itDoubtFilds].fieldType);
+                SPDLOG_DEBUG("Field to remove: {}\t MRZ Field: {}\t MRZ Field type:",
+                            doubtfulAss[itDoubtFilds].dataField, doubtfulAss[itDoubtFilds].mrzDataField, doubtfulAss[itDoubtFilds].fieldType);
                 doubtfulAss.erase(doubtfulAss.begin()+itDoubtFilds);
                 ++itDoubtFilds;
                 if(confidence == 1)

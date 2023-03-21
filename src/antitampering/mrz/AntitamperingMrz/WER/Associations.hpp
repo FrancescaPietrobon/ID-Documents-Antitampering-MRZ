@@ -23,7 +23,13 @@ class Associations : public AntitamperingMrz
         std::vector<AssociatedField> finAss;
         Field convertIfDate(Field field);
         std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> computeAssociations(std::vector<Field> fields, std::vector<MrzField> mrzFields);
-        bool findField(Field dataField, std::string mrzDataField, std::string fieldType, float confidence, std::vector<DoubtfulField> &doubtfulAss, std::vector<AssociatedField> &finAss);
-        std::vector<AssociatedField> addFinalAssociation(Field dataField, std::string mrzDataField, std::string fieldType, float confidence, std::vector<AssociatedField> finAss);
-        std::vector<DoubtfulField> addDoubtfulAssociations(char* dataField, std::string mrzDataField, std::string fieldType, float confidence, std::vector<DoubtfulField> doubtfulAss);
+        bool findField(Field dataField, std::string mrzDataField, std::string fieldType, float confidence,
+                       std::vector<DoubtfulField> &doubtfulAss, std::vector<AssociatedField> &finAss);
+        std::pair<std::vector<AssociatedField>, std::vector<DoubtfulField>> addAssociation(Field dataField, std::string mrzDataField, std::string fieldType,
+                                                                                           float confidence, std::vector<DoubtfulField> &doubtfulAss,
+                                                                                           std::vector<AssociatedField> &finAss);
+        std::vector<AssociatedField> addFinalAssociation(Field dataField, std::string mrzDataField, std::string fieldType,
+                                                         float confidence, std::vector<AssociatedField> finAss);
+        std::vector<DoubtfulField> addDoubtfulAssociations(char* dataField, std::string mrzDataField, std::string fieldType,
+                                                           float confidence, std::vector<DoubtfulField> doubtfulAss);
 };

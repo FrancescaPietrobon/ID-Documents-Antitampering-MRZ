@@ -124,8 +124,6 @@ TEST_F(OcrTestFixture, CheckPredictionUnitTest)
 {
     char **images = new char *[1];
     images[0] = utils::convertStringtoCharPtr("images0");
-    char **contentType = new char *[1];
-    contentType[0] = utils::convertStringtoCharPtr("image/jpeg");
     char **contentBase64 = new char *[1];
     contentBase64[0] = utils::convertStringtoCharPtr(getBase64(cv::imread("testData/images/ocr/AFG_AO_01001_FRONT.JPG")));
     Coordinates *coordinates = new Coordinates[1];
@@ -135,7 +133,7 @@ TEST_F(OcrTestFixture, CheckPredictionUnitTest)
     char *algoType = new char;
     algoType = utils::convertStringtoCharPtr("RetinaNet");
 
-    OcrResponse result = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoType);
+    OcrResponse result = process(images, contentBase64, coordinates, thresholds, 1, algoType);
 
     float threshold = 0.001;
     ASSERT_TRUE(result.resultDetails[0].charactersSize == 185) << TestHelper::PrintTo();
@@ -152,8 +150,6 @@ TEST_F(OcrTestFixture, BadCoordinatesUnitTest)
 {
     char **images = new char *[1];
     images[0] = utils::convertStringtoCharPtr("images0");
-    char **contentType = new char *[1];
-    contentType[0] = utils::convertStringtoCharPtr("image/jpeg");
     char **contentBase64 = new char *[1];
     contentBase64[0] = utils::convertStringtoCharPtr(getBase64(cv::imread("testData/images/ocr/AFG_AO_01001_FRONT.JPG")));
     Coordinates *coordinates = new Coordinates[1];
@@ -163,7 +159,7 @@ TEST_F(OcrTestFixture, BadCoordinatesUnitTest)
     char *algoType = new char;
     algoType = utils::convertStringtoCharPtr("RetinaNet");
 
-    OcrResponse result = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoType);
+    OcrResponse result = process(images, contentBase64, coordinates, thresholds, 1, algoType);
 
     ASSERT_TRUE(result.resultDetailsSize == 1) << TestHelper::PrintTo();
     ASSERT_TRUE(result.resultDetails[0].charactersSize == 0) << TestHelper::PrintTo();
@@ -175,8 +171,6 @@ TEST_F(OcrTestFixture, OcrTypeNotFoundUnitTest)
 {
     char **images = new char *[1];
     images[0] = utils::convertStringtoCharPtr("images0");
-    char **contentType = new char *[1];
-    contentType[0] = utils::convertStringtoCharPtr("image/jpeg");
     char **contentBase64 = new char *[1];
     contentBase64[0] = utils::convertStringtoCharPtr(getBase64(cv::imread("testData/images/ocr/AFG_AO_01001_FRONT.JPG")));
     Coordinates *coordinates = new Coordinates[1];
@@ -186,7 +180,7 @@ TEST_F(OcrTestFixture, OcrTypeNotFoundUnitTest)
     char *algoType = new char;
     algoType = utils::convertStringtoCharPtr("NewType");
 
-    OcrResponse result = process(images, contentType, contentBase64, coordinates, thresholds, 1, algoType);
+    OcrResponse result = process(images, contentBase64, coordinates, thresholds, 1, algoType);
 
     ASSERT_TRUE(result.resultDetailsSize == 1) << TestHelper::PrintTo();
     ASSERT_TRUE(strcmp(result.resultDetails[0].image, "") == 0) << TestHelper::PrintTo();

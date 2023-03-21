@@ -22,8 +22,6 @@ int main(int argc, char *argv[])
 
     char **images = new char *[1];
     images[0] = utils::convertStringtoCharPtr("images0");
-    char **contentType = new char *[1];
-    contentType[0] = utils::convertStringtoCharPtr("image/jpeg");
     char **contentBase64 = new char *[1];
     contentBase64[0] = utils::convertStringtoCharPtr(getBase64(cv::imread(imagePath)));
     Coordinates *coordinates = new Coordinates[1];
@@ -33,7 +31,7 @@ int main(int argc, char *argv[])
     char *algoTypeOcr = new char;
     algoTypeOcr = utils::convertStringtoCharPtr("RetinaNet");
 
-    OcrResponse ocrResponse = process(images, contentType, contentBase64, coordinates, thresholdsOcr, 1, algoTypeOcr);
+    OcrResponse ocrResponse = process(images, contentBase64, coordinates, thresholdsOcr, 1, algoTypeOcr);
     delete[] contentBase64;
     delete[] coordinates;
     delete[] thresholdsOcr;
@@ -57,7 +55,7 @@ int main(int argc, char *argv[])
     char *algoTypeAntitamperingMrz = new char;
     algoTypeAntitamperingMrz = utils::convertStringtoCharPtr("wer");
 
-    AntitamperingMrzResponse antitamperingMrzResponse = associate(images, contentType, documentFields, 1, algoTypeAntitamperingMrz);
+    AntitamperingMrzResponse antitamperingMrzResponse = associate(images, documentFields, 1, algoTypeAntitamperingMrz);
     delete algoTypeAntitamperingMrz;
 
     printAntitamperingMrzResponse(antitamperingMrzResponse);

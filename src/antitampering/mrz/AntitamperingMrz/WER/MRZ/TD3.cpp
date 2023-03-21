@@ -140,7 +140,7 @@ std::vector<MrzField> TD3::extractDateExpireDoc(std::vector<Field> mrz, std::vec
     return mrzFields;
 }
 
-bool TD3::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)//, std::string checkDocNum, std::string checkDateBirth,std::string checkDateExpireDoc, std::string optionalData, std::string checkOptionalData)
+bool TD3::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
 {
     bool result = true;
 

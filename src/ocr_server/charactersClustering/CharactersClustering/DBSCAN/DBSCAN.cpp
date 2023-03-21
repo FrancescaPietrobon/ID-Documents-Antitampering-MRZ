@@ -70,7 +70,8 @@ std::vector<CharactersClustered> DBSCAN::dfs(size_t now, size_t cluster, std::ve
     characters[now].cluster = cluster;
     for(auto & next: nearCharacters[now])
     {
-        if(characters[next].cluster != NOT_ASSIGNED) continue;
+        if(characters[next].cluster != NOT_ASSIGNED)
+            continue;
         characters = this->dfs(next, cluster, characters, nearCharacters);
     }
     return characters;

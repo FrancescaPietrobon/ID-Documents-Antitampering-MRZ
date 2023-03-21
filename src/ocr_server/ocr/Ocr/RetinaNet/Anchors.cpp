@@ -74,7 +74,8 @@ matrix3D Anchors::meshgrid(int level)
     {
         for(int j = 0; j < width / std::pow(2, level); ++j)
         {
-            point = {static_cast<float>(j + RX_Y_PLUS) * static_cast<float>(std::pow(2, level)), static_cast<float>(i + RX_Y_PLUS) * static_cast<float>(std::pow(2, level))};
+            point = {static_cast<float>(j + RX_Y_PLUS) * static_cast<float>(std::pow(2, level)),
+                     static_cast<float>(i + RX_Y_PLUS) * static_cast<float>(std::pow(2, level))};
             for(int k = 0; k < 15; ++k)
                 grid.push_back(point);
             gridRep.push_back(grid);
@@ -119,8 +120,16 @@ void Anchors::printAnchors(matrix3D A, matrix3D B)
 void Anchors::printAnchorShapesTransf(matrix3D grid, matrix3D areaExp, matrix3D concatenation, matrix2D resizedAnchors, int level)
 {
     SPDLOG_DEBUG("Level {}", level - 3);
-    SPDLOG_DEBUG("Meshgrid: \t {} x {} x {} \t ({} x {} x {} x {})", grid.size(), grid[0].size(), grid[0][0].size(), std::sqrt(grid.size()), std::sqrt(grid.size()), grid[0].size(), grid[0][0].size());
-    SPDLOG_DEBUG("Anchor sizes: \t {} x {} x {} \t ({} x {} x {} x {})", areaExp.size(), areaExp[0].size(), areaExp[0][0].size(), std::sqrt(areaExp.size()), std::sqrt(areaExp.size()), areaExp[0].size(), areaExp[0][0].size());
-    SPDLOG_DEBUG("Anchors: \t {} x {} x {} \t ({} x {} x {} x {})", concatenation.size(), concatenation[0].size(), concatenation[0][0].size(), std::sqrt(concatenation.size()), std::sqrt(concatenation.size()), concatenation[0].size(), concatenation[0][0].size());
-    SPDLOG_DEBUG("Anchors_res: \t {} x {} \t ({} x {} x {} x {})", resizedAnchors.size(), resizedAnchors[0].size(), std::sqrt(concatenation.size()), std::sqrt(concatenation.size()), concatenation[0].size(), concatenation[0][0].size());
+    SPDLOG_DEBUG("Meshgrid: \t {} x {} x {} \t ({} x {} x {} x {})",
+                 grid.size(), grid[0].size(), grid[0][0].size(),
+                 std::sqrt(grid.size()), std::sqrt(grid.size()), grid[0].size(), grid[0][0].size());
+    SPDLOG_DEBUG("Anchor sizes: \t {} x {} x {} \t ({} x {} x {} x {})",
+                 areaExp.size(), areaExp[0].size(), areaExp[0][0].size(),
+                 std::sqrt(areaExp.size()), std::sqrt(areaExp.size()), areaExp[0].size(), areaExp[0][0].size());
+    SPDLOG_DEBUG("Anchors: \t {} x {} x {} \t ({} x {} x {} x {})",
+                 concatenation.size(), concatenation[0].size(), concatenation[0][0].size(),
+                 std::sqrt(concatenation.size()), std::sqrt(concatenation.size()), concatenation[0].size(), concatenation[0][0].size());
+    SPDLOG_DEBUG("Anchors_res: \t {} x {} \t ({} x {} x {} x {})",
+                 resizedAnchors.size(), resizedAnchors[0].size(),
+                 std::sqrt(concatenation.size()), std::sqrt(concatenation.size()), concatenation[0].size(), concatenation[0][0].size());
 }

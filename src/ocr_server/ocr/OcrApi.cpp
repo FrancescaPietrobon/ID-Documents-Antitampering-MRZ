@@ -18,7 +18,7 @@ OcrResponse buildGlobalErrorResponseOcr(const Exception &exception);
 
 extern "C"
 {
-    OcrResponse process(char **arr_image, char **arr_content_type, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size, char *algorithm_type)
+    OcrResponse process(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size, char *algorithm_type)
     {
         OcrResponse res;
         std::shared_ptr<Ocr> detector = nullptr;
@@ -33,12 +33,12 @@ extern "C"
             return res;
         }
 
-        res = processImage(arr_image, arr_content_type, arr_content_base64, arr_coordinates, arr_confidence_threshold, arr_size, detector);
+        res = processImage(arr_image, arr_content_base64, arr_coordinates, arr_confidence_threshold, arr_size, detector);
         return res;
     }
 }
 
-OcrResponse processImage(char **arr_image, char **arr_content_type, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size, std::shared_ptr<Ocr> detector)
+OcrResponse processImage(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size, std::shared_ptr<Ocr> detector)
 {
     OcrResponse res;
     res.resultDetailsSize = arr_size;

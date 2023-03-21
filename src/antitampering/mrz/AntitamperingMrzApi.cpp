@@ -14,7 +14,7 @@
 AntitamperingMrzResponse buildGlobalErrorResponseAntitampMrz(const Exception& exception);
 
 extern "C" {
-    AntitamperingMrzResponse associate(char **arr_image, char **arr_content_type, DocumentFields *document_fields, size_t arr_size, char *algorithm_type)
+    AntitamperingMrzResponse associate(char **arr_image, DocumentFields *document_fields, size_t arr_size, char *algorithm_type)
     {
         AntitamperingMrzResponse res;
         std::shared_ptr<AntitamperingMrz> associator = nullptr;
@@ -28,12 +28,12 @@ extern "C" {
             res = buildGlobalErrorResponseAntitampMrz(e);
             return res;
         }
-        res = associateFields(arr_image, arr_content_type, document_fields, arr_size, associator);
+        res = associateFields(arr_image, document_fields, arr_size, associator);
         return res;
     }
 }
 
-AntitamperingMrzResponse associateFields(char **arr_image, char **arr_content_type, DocumentFields *document_fields, size_t arr_size, std::shared_ptr<AntitamperingMrz> associator)
+AntitamperingMrzResponse associateFields(char **arr_image, DocumentFields *document_fields, size_t arr_size, std::shared_ptr<AntitamperingMrz> associator)
 {
     AntitamperingMrzResponse res;
     res.resultDetailsSize = arr_size;
