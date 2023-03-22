@@ -1,5 +1,5 @@
 #include "OcrApi.hpp"
-#include "OcrFactory.hpp"
+#include "factory/OcrFactory.hpp"
 
 #include "common/utils/utils.hpp"
 
@@ -10,15 +10,15 @@
 #include <string>
 #include <new>
 
-#define DEFAULT_CONFIDENCE_THRESHOLD 0.3
+#define DEFAULT_CONFIDENCE_THRESHOLD_OCR 0.3
 
 // IMPLEMENTATION
 
-OcrResponse buildGlobalErrorResponse(const Exception &exception);
+OcrResponse buildGlobalErrorResponseOcr(const Exception &exception);
 
 extern "C"
 {
-    OcrResponse process(char **arr_image, char **arr_content_type, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size, char *algorithm_type)
+    OcrResponse process(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size, char *algorithm_type)
     {
         OcrResponse res;
         std::shared_ptr<Ocr> detector = nullptr;
@@ -29,16 +29,16 @@ extern "C"
         catch (const Exception &e)
         {
             SPDLOG_ERROR("Error Processing Request : {}", e.getMessage());
-            res = buildGlobalErrorResponse(e);
+            res = buildGlobalErrorResponseOcr(e);
             return res;
         }
 
-        res = processImage(arr_image, arr_content_type, arr_content_base64, arr_coordinates, arr_confidence_threshold, arr_size, detector);
+        res = processImage(arr_image, arr_content_base64, arr_coordinates, arr_confidence_threshold, arr_size, detector);
         return res;
     }
 }
 
-OcrResponse processImage(char **arr_image, char **arr_content_type, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size, std::shared_ptr<Ocr> detector)
+OcrResponse processImage(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size, std::shared_ptr<Ocr> detector)
 {
     OcrResponse res;
     res.resultDetailsSize = arr_size;
@@ -46,7 +46,7 @@ OcrResponse processImage(char **arr_image, char **arr_content_type, char **arr_c
     for (std::size_t i = 0; i < res.resultDetailsSize; i++)
     {
         res.resultDetails[i].image = utils::convertStringtoCharPtr(arr_image[i]);
-        res.resultDetails[i].confidenceThreshold = arr_confidence_threshold[i] != -1.0 ? arr_confidence_threshold[i] : DEFAULT_CONFIDENCE_THRESHOLD;
+        res.resultDetails[i].confidenceThreshold = arr_confidence_threshold[i] != -1.0 ? arr_confidence_threshold[i] : DEFAULT_CONFIDENCE_THRESHOLD_OCR;
         res.resultDetails[i].error = 0;
         res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr("");
         std::vector<Characters> ocrResults;
@@ -78,7 +78,7 @@ OcrResponse processImage(char **arr_image, char **arr_content_type, char **arr_c
     return res;
 }
 
-OcrResponse buildGlobalErrorResponse(const Exception &exception)
+OcrResponse buildGlobalErrorResponseOcr(const Exception &exception)
 {
     OcrResponse res;
     res.resultDetailsSize = 1;

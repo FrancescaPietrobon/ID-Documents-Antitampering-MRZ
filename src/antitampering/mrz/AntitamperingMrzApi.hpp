@@ -1,19 +1,14 @@
 #pragma once
 
 #include "AntitamperingMrz/AntitamperingMrz.hpp"
-#include "charactersClustering/CharactersClusteringApi.hpp"
 
 // RESPONSE
 
 struct AntitamperingMrzResultDetail {
     char* image;
-    bool result;
-    float confidenceThresholdOcr;
-    float confidenceThresholdAntitampering;
     float confidence;
-    bool checkDigistsMrz;
-    DoubtfulFields* doubtfulFields;
-    size_t doubdtfulFieldSize;
+    DoubtfulField* doubtfulFields;
+    size_t doubdtfulFieldsSize;
     size_t error;
     char* errorMessage;
 };
@@ -21,15 +16,19 @@ struct AntitamperingMrzResultDetail {
 struct AntitamperingMrzResponse {
     AntitamperingMrzResultDetail* resultDetails;
     size_t resultDetailsSize;
-    bool result;
+};
+
+struct DocumentFields
+{
+    Field *fields;
+    size_t fieldsSize;
 };
 
 // IMPLEMENTATION
 
 extern "C" {
-
-    AntitamperingMrzResponse associate(ClusteringResponse ocrResponse, float *arr_confidence_threshold, char* algorithmType);
+    AntitamperingMrzResponse associate(char **arr_image, DocumentFields *document_fields, size_t arr_size, char *algorithm_type);
 
 } // extern "C"
 
-AntitamperingMrzResponse associateFields(ClusteringResponse ocrResponse, float *arr_confidence_threshold, std::shared_ptr<AntitamperingMrz> associator);
+AntitamperingMrzResponse associateFields(char **arr_image, DocumentFields *document_fields, size_t arr_size, std::shared_ptr<AntitamperingMrz> associator);

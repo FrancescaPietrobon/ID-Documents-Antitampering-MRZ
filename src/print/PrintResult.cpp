@@ -17,7 +17,7 @@ void saveImgOcrResponse(cv::Mat img, Characters *characters, size_t charactersSi
                       thickness, cv::LINE_8);
 
         std::string label, conf;
-        label.append(1, characters[i].label);
+        label = characters[i].label;
         conf = fmt::format("{:.1f}", characters[i].confidence);
 
         // Print labels
@@ -33,7 +33,7 @@ void saveImgOcrResponse(cv::Mat img, Characters *characters, size_t charactersSi
     cv::imwrite("../../printResults/OCR.jpg", new_image);
 }
 
-void saveImgDbscanResponse(cv::Mat img, Fields* fields, size_t fieldsSize)
+void saveImgDbscanResponse(cv::Mat img, Field* fields, size_t fieldsSize)
 {
     cv::Mat new_image = img;
     int lineType = cv::LINE_AA;
@@ -90,7 +90,7 @@ void printAntitamperingMrzResponse(AntitamperingMrzResponse antitamperingMrzResp
     {
         std::cout << "Image: " << antitamperingMrzResponse.resultDetails[i].image << std::endl;
         std::cout << "\nDoubtful fields:\n" << std::endl;
-        for(size_t j = 0; j < antitamperingMrzResponse.resultDetails[i].doubdtfulFieldSize; ++j)
+        for(size_t j = 0; j < antitamperingMrzResponse.resultDetails[i].doubdtfulFieldsSize; ++j)
         {
             std::cout << "Type: " << antitamperingMrzResponse.resultDetails[i].doubtfulFields[j].fieldType << std::endl;
             std::cout << "Field label: " << antitamperingMrzResponse.resultDetails[i].doubtfulFields[j].dataField << std::endl;
@@ -98,9 +98,5 @@ void printAntitamperingMrzResponse(AntitamperingMrzResponse antitamperingMrzResp
             std::cout << "Confidence: " << antitamperingMrzResponse.resultDetails[i].doubtfulFields[j].confidenceField << "\n" << std::endl;
         }
         std::cout << "Final confidence: " << antitamperingMrzResponse.resultDetails[i].confidence << std::endl;
-        std::cout << "Threshold confidence: " << antitamperingMrzResponse.resultDetails[i].confidenceThresholdAntitampering << std::endl;
-        std::cout << "Check digits mrz: " << antitamperingMrzResponse.resultDetails[i].checkDigistsMrz << std::endl;
-        std::cout << "\nFinal result: " << antitamperingMrzResponse.resultDetails[i].result << std::endl;
     }
-    std::cout << "\nGlobal result: " << antitamperingMrzResponse.result << std::endl;
 }

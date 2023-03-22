@@ -2,21 +2,21 @@
 #include <iostream>
 #include <vector>
 
-static std::unordered_map<unsigned, char> dictionary = {
-    {0, '0',}, {1, '1',}, {2, '2',}, {3, '3',}, {4, '4',}, {5, '5',}, {6, '6',}, {7, '7',}, {8, '8',}, {9, '9',},
-    {10, 'A',}, {11, 'a',}, {12, 'B',}, {13, 'b',}, {14, 'C',}, {15, 'c',}, {16, 'D',}, {17, 'd',}, {18, 'E',}, {19, 'e',},
-    {20, 'F',}, {21, 'f',}, {22, 'G',}, {23, 'g',}, {24, 'H',}, {25, 'h',}, {26, 'I',}, {27, 'i',}, {28, 'J',}, {29, 'j',},
-    {30, 'K',}, {31, 'k',}, {32, 'L',}, {33, 'l',}, {34, 'M',}, {35, 'm',}, {36, 'N',}, {37, 'n',}, {38, 'O',}, {39, 'o',},
-    {40, 'P',}, {41, 'p',}, {42, 'Q',}, {43, 'q',}, {44, 'R',}, {45, 'r',}, {46, 'S',}, {47, 's',}, {48, 'T',}, {49, 't',},
-    {50, 'U',}, {51, 'u',}, {52, 'V',}, {53, 'v',}, {54, 'W',}, {55, 'w',}, {56, 'X',}, {57, 'x',}, {58, 'Y',}, {59, 'y',},
-    {60, 'Z',}, {61, 'z',}, {62, '<',}
+static std::unordered_map<unsigned, std::string> dictionary = {
+    {0, "0",}, {1, "1",}, {2, "2",}, {3, "3",}, {4, "4",}, {5, "5",}, {6, "6",}, {7, "7",}, {8, "8",}, {9, "9",},
+    {10, "A",}, {11, "a",}, {12, "B",}, {13, "b",}, {14, "C",}, {15, "c",}, {16, "D",}, {17, "d",}, {18, "E",}, {19, "e",},
+    {20, "F",}, {21, "f",}, {22, "G",}, {23, "g",}, {24, "H",}, {25, "h",}, {26, "I",}, {27, "i",}, {28, "J",}, {29, "j",},
+    {30, "K",}, {31, "k",}, {32, "L",}, {33, "l",}, {34, "M",}, {35, "m",}, {36, "N",}, {37, "n",}, {38, "O",}, {39, "o",},
+    {40, "P",}, {41, "p",}, {42, "Q",}, {43, "q",}, {44, "R",}, {45, "r",}, {46, "S",}, {47, "s",}, {48, "T",}, {49, "t",},
+    {50, "U",}, {51, "u",}, {52, "V",}, {53, "v",}, {54, "W",}, {55, "w",}, {56, "X",}, {57, "x",}, {58, "Y",}, {59, "y",},
+    {60, "Z",}, {61, "z",}, {62, "<",}
 };
 
 OcrRetinaNet::OcrRetinaNet(const cv::dnn::Net model, cv::Size modelInputSize): Ocr()
 {
     SPDLOG_INFO("Creating RetinaNet Model");
-    this -> model = model;
-    this -> modelInputSize = modelInputSize;
+    this->model = model;
+    this->modelInputSize = modelInputSize;
     SPDLOG_INFO("RetinaNet Model Created");
 }
 
@@ -51,13 +51,13 @@ std::pair<matrix2D, matrix2D> OcrRetinaNet::adjustModelPredictions(cv::Mat predi
     cv::Mat classPredCVMat = predictions(classRanges);
 
     // Convert predictions from cv::Mat to matrix2D
-    matrix2D boxesPred = CVMatToMatrix2D(boxPredCVMat);
-    matrix2D classesPred = CVMatToMatrix2D(classPredCVMat);
+    matrix2D boxesPred = utilsRetinaNet::CVMatToMatrix2D(boxPredCVMat);
+    matrix2D classesPred = utilsRetinaNet::CVMatToMatrix2D(classPredCVMat);
 
     std::vector<float> variance = {VARIANCE_X, VARIANCE_X, VARIANCE_Y, VARIANCE_Y};
-    boxesPred =  multVariance(boxesPred, variance);
+    boxesPred =  utilsRetinaNet::multVariance(boxesPred, variance);
     //printPred(boxPred);
-    classesPred = applySigmoid(classesPred);
+    classesPred = utilsRetinaNet::applySigmoid(classesPred);
     //printPred(classPred);
 
     return std::make_pair(boxesPred, classesPred);
@@ -67,8 +67,8 @@ cv::Mat OcrRetinaNet::imagePreprocessing(const cv::Mat& inputImage)
 {
     float imgWidth = inputImage.size[1];
     float imgHeight = inputImage.size[0];
-    xAlter = modelInputSize.width / imgWidth;
-    yAlter = modelInputSize.height / imgHeight;
+    this->xAlter = modelInputSize.width / imgWidth;
+    this->yAlter = modelInputSize.height / imgHeight;
 
     cv::Mat imagePreprocessed;
     cv::fastNlMeansDenoising(inputImage, imagePreprocessed, DENOISE_PARAM);
@@ -84,22 +84,22 @@ std::vector<Characters> OcrRetinaNet::detect(const cv::Mat image, const float co
     cv::imwrite("../../printResults/post_cut.jpg", image);
 
     SPDLOG_INFO("Preprocessing input image");
-    cv::Mat imagePreprocessed = this -> imagePreprocessing(image);
+    cv::Mat imagePreprocessed = this->imagePreprocessing(image);
 
     SPDLOG_INFO("Extracting predictions");
-    cv::Mat predictions = this -> inference(imagePreprocessed);
-    matrix2D modelBoxes = this -> adjustModelPredictions(predictions).first;
-    matrix2D modelClasses = this -> adjustModelPredictions(predictions).second;
+    cv::Mat predictions = this->inference(imagePreprocessed);
+    matrix2D modelBoxes = this->adjustModelPredictions(predictions).first;
+    matrix2D modelClasses = this->adjustModelPredictions(predictions).second;
 
     SPDLOG_INFO("Constructing Anchors");
     Anchors *anchors = new Anchors(modelInputSize.width, modelInputSize.height);
     matrix2D anchorBoxes = anchors->anchorsGenerator();
 
     SPDLOG_INFO("Adjust boxes");
-    matrix2D boxes = computeBoxes(modelBoxes, anchorBoxes);
+    matrix2D boxes = this->computeBoxes(modelBoxes, anchorBoxes);
 
     SPDLOG_INFO("Apply NMS");
-    std::vector<Characters> characters = nonMaximaSuppression(boxes, modelClasses, confidenceThreshold);
+    std::vector<Characters> characters = this->nonMaximaSuppression(boxes, modelClasses, confidenceThreshold);
 
     return characters;
 }
@@ -132,9 +132,9 @@ std::vector<Characters> OcrRetinaNet::nonMaximaSuppression(matrix2D boxesPreNMS,
     {
         Characters currCharacter;
         currCharacter.labelIndex = maxIndices[idx];
-        currCharacter.position = reshapeBox(boxesNew[idx], xAlter, yAlter);
+        currCharacter.position = utilsRetinaNet::reshapeBox(boxesNew[idx], xAlter, yAlter);
         currCharacter.confidence = maxAll[idx];
-        currCharacter.label = dictionary[int(maxIndices[idx])];
+        currCharacter.label = utils::convertStringtoCharPtr(dictionary[int(maxIndices[idx])]);
         characters.push_back(currCharacter);
     }
     SPDLOG_INFO("{} Characters Detected post NMS", nmsIndices.size());
@@ -154,6 +154,6 @@ matrix2D OcrRetinaNet::computeBoxes(matrix2D modelBoxes, matrix2D anchorBoxes)
     }
 
     // Convert boxes in (x1, y1, x2, y2)
-    boxes = convertToConers(boxes);
+    boxes = utilsRetinaNet::convertToConers(boxes);
     return boxes;
 }

@@ -1,5 +1,5 @@
 #include "AntitamperingMrzApi.hpp"
-#include "AntitamperingMrzFactory.hpp"
+#include "factory/AntitamperingMrzFactory.hpp"
 
 #include "common/exceptions/Exceptions.hpp"
 
@@ -11,64 +11,55 @@
 
 // IMPLEMENTATION
 
-AntitamperingMrzResponse buildGlobalErrorResponse(const Exception& exception);
+AntitamperingMrzResponse buildGlobalErrorResponseAntitampMrz(const Exception& exception);
 
 extern "C" {
-    AntitamperingMrzResponse associate(ClusteringResponse ocrResponse, float *arr_confidence_threshold, char* algorithmType)
+    AntitamperingMrzResponse associate(char **arr_image, DocumentFields *document_fields, size_t arr_size, char *algorithm_type)
     {
         AntitamperingMrzResponse res;
         std::shared_ptr<AntitamperingMrz> associator = nullptr;
         try
         {
-            associator = AntitamperingMrzFactory::createAntitamperingMrz(std::string(algorithmType));
+            associator = AntitamperingMrzFactory::createAntitamperingMrz(std::string(algorithm_type));
         }
         catch(const Exception& e)
         {
             SPDLOG_ERROR("Error Processing Request : {}", e.getMessage());
-            res = buildGlobalErrorResponse(e);
+            res = buildGlobalErrorResponseAntitampMrz(e);
             return res;
         }
-        res = associateFields(ocrResponse, arr_confidence_threshold, associator);
+        res = associateFields(arr_image, document_fields, arr_size, associator);
         return res;
     }
 }
 
-AntitamperingMrzResponse associateFields(ClusteringResponse ocrResponse, float *arr_confidence_threshold, std::shared_ptr<AntitamperingMrz> associator)
+AntitamperingMrzResponse associateFields(char **arr_image, DocumentFields *document_fields, size_t arr_size, std::shared_ptr<AntitamperingMrz> associator)
 {
     AntitamperingMrzResponse res;
-    res.result = true;
-    res.resultDetailsSize = ocrResponse.resultDetailsSize;
+    res.resultDetailsSize = arr_size;
     res.resultDetails = new AntitamperingMrzResultDetail[res.resultDetailsSize];
-    for (std::size_t i = 0; i < res.resultDetailsSize; i++)
+    for (std::size_t i = 0; i < res.resultDetailsSize; ++i)
     {
-        res.resultDetails[i].image = utils::convertStringtoCharPtr(ocrResponse.resultDetails[i].image);
-        res.resultDetails[i].result = true;
+        res.resultDetails[i].image = utils::convertStringtoCharPtr(arr_image[i]);
         res.resultDetails[i].error = 0;
         res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr("");
-        res.resultDetails[i].confidenceThresholdOcr = ocrResponse.resultDetails[i].confidenceThreshold;
-        res.resultDetails[i].confidenceThresholdAntitampering = arr_confidence_threshold[i] != -1.0 ? arr_confidence_threshold[i] : CONF_THRESHOLD_WER;
-        std::pair<std::vector<AssociatedField>, std::vector<DoubtfulFields>> associations;
-        std::vector<DoubtfulFields> doubtfulFields;
+        std::vector<DoubtfulField> doubtfulFields;
         float finalConfidence;
-        bool checks = false;
         try
         {
-            associations = associator->extractAssociations(ocrResponse.resultDetails[i].fields, ocrResponse.resultDetails[i].fieldsSize);
-            doubtfulFields = associations.second;
-            finalConfidence = associator->computeConfFinal(doubtfulFields, associations.first);
-            //checks = associator->checkDigitsMrz();
+            doubtfulFields = associator->extractDoubtfulFields(document_fields[i].fields, document_fields[i].fieldsSize);
+            finalConfidence = associator->computeConfFinal(doubtfulFields);
         }
         catch (Exception &ex)
         {
-            res.resultDetails[i].doubdtfulFieldSize = 0;
+            res.resultDetails[i].doubdtfulFieldsSize = 0;
             res.resultDetails[i].error = ex.getCode();
             res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr(ex.getMessage());
             continue;
         }
         res.resultDetails[i].confidence = finalConfidence;
-        res.resultDetails[i].checkDigistsMrz = checks;
-        res.resultDetails[i].doubdtfulFieldSize = doubtfulFields.size();
-        res.resultDetails[i].doubtfulFields = new DoubtfulFields[res.resultDetails[i].doubdtfulFieldSize];
+        res.resultDetails[i].doubdtfulFieldsSize = doubtfulFields.size();
+        res.resultDetails[i].doubtfulFields = new DoubtfulField[res.resultDetails[i].doubdtfulFieldsSize];
         for (std::size_t j = 0; j < doubtfulFields.size(); j++)
         {
             res.resultDetails[i].doubtfulFields[j].fieldType = doubtfulFields[j].fieldType;
@@ -76,35 +67,18 @@ AntitamperingMrzResponse associateFields(ClusteringResponse ocrResponse, float *
             res.resultDetails[i].doubtfulFields[j].mrzDataField = doubtfulFields[j].mrzDataField;
             res.resultDetails[i].doubtfulFields[j].confidenceField = doubtfulFields[j].confidenceField;
         }
-        
-        if(res.resultDetails[i].confidence < res.resultDetails[i].confidenceThresholdAntitampering)
-        {
-            res.resultDetails[i].result = false;
-            res.result = false;
-        }
-        /*
-        if(doubtfulFields.size() > 0)
-        {
-            res.resultDetails[i].result = false;
-            res.result = false;
-        }
-        */
     }
     return res;
 }
 
-AntitamperingMrzResponse buildGlobalErrorResponse(const Exception &exception)
+AntitamperingMrzResponse buildGlobalErrorResponseAntitampMrz(const Exception &exception)
 {
     AntitamperingMrzResponse res;
-    res.result = false;
     res.resultDetailsSize = 1;
     res.resultDetails = new AntitamperingMrzResultDetail[res.resultDetailsSize];
     res.resultDetails[0].image = utils::convertStringtoCharPtr("");
-    res.resultDetails[0].result = false;
-    res.resultDetails[0].confidenceThresholdOcr = -1;
     res.resultDetails[0].confidence = -1;
-    res.resultDetails[0].checkDigistsMrz = false;
-    res.resultDetails[0].doubdtfulFieldSize = 0;
+    res.resultDetails[0].doubdtfulFieldsSize = 0;
     res.resultDetails[0].error = exception.getCode();
     res.resultDetails[0].errorMessage = utils::convertStringtoCharPtr(exception.getMessage());
     return res;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "AntitamperingMrz/WER/Associations.hpp"
-#include "AntitamperingMrz/AntitamperingMrz.hpp"
+#include "../AntitamperingMrz/WER/Associations.hpp"
+#include "../AntitamperingMrz/AntitamperingMrz.hpp"
 #include "common/exceptions/Exceptions.hpp"
 
 #include <spdlog/spdlog.h>

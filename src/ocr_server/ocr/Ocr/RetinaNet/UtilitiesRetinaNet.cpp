@@ -1,6 +1,6 @@
 #include "UtilitiesRetinaNet.hpp"
 
-matrix2D CVMatToMatrix2D(cv::Mat cvMat)
+matrix2D utilsRetinaNet::CVMatToMatrix2D(cv::Mat cvMat)
 {
     matrix2D matrix;
     std::vector<float> pred;
@@ -26,7 +26,7 @@ matrix2D CVMatToMatrix2D(cv::Mat cvMat)
     return matrix;
 }
 
-matrix2D multVariance(matrix2D box, std::vector<float> variance)
+matrix2D utilsRetinaNet::multVariance(matrix2D box, std::vector<float> variance)
 {
     for(size_t i = 0; i < box.size(); ++i)
         for(size_t j = 0; j < box[i].size(); ++j)
@@ -34,7 +34,7 @@ matrix2D multVariance(matrix2D box, std::vector<float> variance)
     return box;
 }
 
-matrix2D applySigmoid(matrix2D A)
+matrix2D utilsRetinaNet::applySigmoid(matrix2D A)
 {
     for(size_t i = 0; i < A.size(); ++i)
         for(size_t j = 0; j < A[i].size(); ++j)
@@ -42,7 +42,7 @@ matrix2D applySigmoid(matrix2D A)
     return A;
 }
 
-Coordinates reshapeBox(std::vector<float> box, float xAlter, float yAlter)
+Coordinates utilsRetinaNet::reshapeBox(std::vector<float> box, float xAlter, float yAlter)
 {
     box[0] = box[0] / xAlter;
     box[1] = box[1] / yAlter;
@@ -58,7 +58,7 @@ Coordinates reshapeBox(std::vector<float> box, float xAlter, float yAlter)
     return boxNew;
 }
 
-matrix2D convertToConers(matrix2D boxes)
+matrix2D utilsRetinaNet::convertToConers(matrix2D boxes)
 {
     matrix2D newBoxes = boxes;
     for(size_t i = 0; i < boxes.size(); ++i)
@@ -71,14 +71,14 @@ matrix2D convertToConers(matrix2D boxes)
     return newBoxes;
 }
 
-void printPredictions(matrix2D pred)
+void utilsRetinaNet::printPredictions(matrix2D pred)
 {
     for(size_t i = 0; i < pred.size(); ++i)
     {
         for(size_t j = 0; j < pred.begin()->size(); ++j)
             if(i < 5)
-                std::cout << pred[i][j] << " ";
+                SPDLOG_DEBUG("{}", pred[i][j]);
         if(i < 5)
-            std::cout << " " << std::endl;
+            SPDLOG_DEBUG(" ");
     }
 }

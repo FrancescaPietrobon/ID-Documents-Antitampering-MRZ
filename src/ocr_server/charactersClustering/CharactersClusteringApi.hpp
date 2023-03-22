@@ -1,15 +1,14 @@
 #pragma once
 
 #include "CharactersClustering/CharactersClustering.hpp"
-#include "CharactersClusteringFactory.hpp"
+#include "factory/CharactersClusteringFactory.hpp"
 
 // RESPONSE
 struct ClusteringResultDetail
 {
     char *image;
-    Fields *fields;
+    Field *fields;
     size_t fieldsSize;
-    float confidenceThreshold;
     float confidence;
     size_t error;
     char *errorMessage;

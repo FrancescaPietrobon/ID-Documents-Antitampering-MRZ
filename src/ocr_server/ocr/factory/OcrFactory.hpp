@@ -1,7 +1,6 @@
-#ifndef _OCR_FACTORY_HPP_
-#define _OCR_FACTORY_HPP_
+#pragma once
 
-#include "Ocr/RetinaNet/OcrRetinaNet.hpp"
+#include "../Ocr/RetinaNet/OcrRetinaNet.hpp"
 #include "common/exceptions/Exceptions.hpp"
 
 #include <spdlog/spdlog.h>
@@ -19,5 +18,3 @@ class OcrFactory {
     public: 
         static std::shared_ptr<Ocr> createOCR(const std::string& algorithmType);
 };
-
-#endif

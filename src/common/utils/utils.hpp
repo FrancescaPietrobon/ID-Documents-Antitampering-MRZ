@@ -15,6 +15,17 @@ struct Coordinates
     float bottomRightY;
 };
 
+struct Field {
+    char* label;
+    size_t labelSize;
+    Coordinates position;
+    float confidence;
+
+    bool operator==(Field const & rhs) const {
+        return (this->label == rhs.label && this->labelSize == rhs.labelSize && this->confidence == rhs.confidence);
+    }
+};
+
 namespace utils
 {
     inline cv::Mat fromBase64toCvMat(const char *imageBase64)

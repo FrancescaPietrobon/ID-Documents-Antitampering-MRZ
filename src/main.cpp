@@ -1,5 +1,5 @@
-#include "ocr_server/OcrApi.hpp"
-#include "charactersClustering/CharactersClusteringApi.hpp"
+#include "ocr_server/ocr/OcrApi.hpp"
+#include "ocr_server/charactersClustering/CharactersClusteringApi.hpp"
 #include "antitampering/mrz/AntitamperingMrzApi.hpp"
 #include "base64/base64.h"
 
@@ -22,8 +22,6 @@ int main(int argc, char *argv[])
 
     char **images = new char *[1];
     images[0] = utils::convertStringtoCharPtr("images0");
-    char **contentType = new char *[1];
-    contentType[0] = utils::convertStringtoCharPtr("image/jpeg");
     char **contentBase64 = new char *[1];
     contentBase64[0] = utils::convertStringtoCharPtr(getBase64(cv::imread(imagePath)));
     Coordinates *coordinates = new Coordinates[1];
@@ -33,7 +31,11 @@ int main(int argc, char *argv[])
     char *algoTypeOcr = new char;
     algoTypeOcr = utils::convertStringtoCharPtr("RetinaNet");
 
-    OcrResponse ocrResponse = process(images, contentType, contentBase64, coordinates, thresholdsOcr, 1, algoTypeOcr);
+    OcrResponse ocrResponse = process(images, contentBase64, coordinates, thresholdsOcr, 1, algoTypeOcr);
+    delete[] contentBase64;
+    delete[] coordinates;
+    delete[] thresholdsOcr;
+    delete algoTypeOcr;
 
     saveImgOcrResponse(cv::imread(imagePath), ocrResponse.resultDetails->characters, ocrResponse.resultDetails->charactersSize);
 
@@ -41,16 +43,20 @@ int main(int argc, char *argv[])
     algoTypeClustering = utils::convertStringtoCharPtr("Dbscan");
 
     ClusteringResponse clusteringResponse = cluster(ocrResponse, algoTypeClustering);
+    delete algoTypeClustering;
 
     printDbscanResponse(clusteringResponse);
     saveImgDbscanResponse(cv::imread(imagePath), clusteringResponse.resultDetails->fields, clusteringResponse.resultDetails->fieldsSize);
-    
-    float *thresholdsAntitampering = new float[1];
-    thresholdsAntitampering[0] = 0.7;
+
+    DocumentFields *documentFields = new DocumentFields[1];
+    documentFields[0].fields = clusteringResponse.resultDetails->fields;
+    documentFields[0].fieldsSize = clusteringResponse.resultDetails->fieldsSize;
+
     char *algoTypeAntitamperingMrz = new char;
     algoTypeAntitamperingMrz = utils::convertStringtoCharPtr("wer");
 
-    AntitamperingMrzResponse antitamperingMrzResponse = associate(clusteringResponse, thresholdsAntitampering, algoTypeAntitamperingMrz);
+    AntitamperingMrzResponse antitamperingMrzResponse = associate(images, documentFields, 1, algoTypeAntitamperingMrz);
+    delete algoTypeAntitamperingMrz;
 
     printAntitamperingMrzResponse(antitamperingMrzResponse);
     

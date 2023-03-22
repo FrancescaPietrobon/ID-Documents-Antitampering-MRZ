@@ -2,7 +2,7 @@
 
 float WER::computeConfidence(const std::string& s1, const std::string& s2)
 {
-    int error = computeWER(s1, s2);
+    int error = this->computeWER(s1, s2);
     int maxLenght = std::max(s1.size(), s2.size());
     return 1 - static_cast<float>(error)/static_cast<float>(maxLenght);
 }
@@ -28,7 +28,7 @@ float WER::computeWER(const std::string& s1, const std::string& s2)
             if (s1[i - 1] == s2[j - 1]) {
                 d(i, j) = d(i-1, j-1);
             } else {
-                d(i, j) = min3(d(i-1, j), d(i, j-1), d(i-1, j-1)) + 1;
+                d(i, j) = this->min3(d(i-1, j), d(i, j-1), d(i-1, j-1)) + 1;
             }
         }
     }

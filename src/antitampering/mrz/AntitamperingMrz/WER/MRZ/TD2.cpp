@@ -1,23 +1,59 @@
 #include "TD2.hpp"
 
-std::vector<MrzFields> TD2::extractMrzFields(std::vector<Fields> mrz)
+std::vector<MrzField> TD2::extractMrzFields(std::vector<Field> mrz)
 {
-    std::vector<MrzFields> mrzFields;
-    MrzFields field;
+    std::vector<MrzField> mrzFields;
 
     // First line
-    
+    mrzFields = this->extractDocType(mrz, mrzFields);
+    mrzFields = this->extractState(mrz, mrzFields);
+    mrzFields = this->extractSurnameAndName(mrz, mrzFields);
+
+    // Second line
+    mrzFields = this->extractDocNumber(mrz, mrzFields);
+    this->checkDocNum = mrz[1].label[9];
+    mrzFields = this->extractNationality(mrz, mrzFields);
+    this->checkDateBirth = mrz[1].label[19];
+    mrzFields = this->extractSex(mrz, mrzFields);
+    mrzFields = this->extractDateBirth(mrz, mrzFields);
+    mrzFields = this->extractDateExpireDoc(mrz, mrzFields);
+    this->checkDateExpireDoc = mrz[1].label[27];
+    if(mrz[1].label[28] != '<')
+    {
+        for(size_t i = 28; i < 34 && mrz[1].label[i] != '<'; ++i)
+            this->optionalData += mrz[1].label[i];
+
+        this->checkOptionalData += mrz[1].label[34];
+    }
+    this->checkOverallDigit += mrz[1].label[35];
+
+    return mrzFields;
+}
+
+std::vector<MrzField> TD2::extractDocType(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
     field.fieldType = "docType";
     field.mrzDataField = mrz[0].label[0];
     if(mrz[0].label[1] != '<')
         field.mrzDataField += mrz[0].label[1];
     mrzFields.push_back(field);
+    return mrzFields;
+}
 
+std::vector<MrzField> TD2::extractState(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
     field.fieldType = "state";
     field.mrzDataField = "";
     field.mrzDataField = field.mrzDataField + mrz[0].label[2] + mrz[0].label[3] + mrz[0].label[4];
     mrzFields.push_back(field);
+    return mrzFields;
+}
 
+std::vector<MrzField> TD2::extractSurnameAndName(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
     field.fieldType = "surname";
     field.mrzDataField = "";
     int i = 5;
@@ -47,100 +83,104 @@ std::vector<MrzFields> TD2::extractMrzFields(std::vector<Fields> mrz)
             field.mrzDataField += mrz[0].label[j];
     }
     mrzFields.push_back(field);
+    return mrzFields;
+}
 
-    // Second line
-
+std::vector<MrzField> TD2::extractDocNumber(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
     field.fieldType = "docNumber";
     field.mrzDataField = "";
     for(size_t i = 0; i < 9 && mrz[1].label[i] != '<'; ++i)
         field.mrzDataField += mrz[1].label[i];
     mrzFields.push_back(field);
+    return mrzFields;
+}
 
-    checkDocNum = mrz[1].label[9];
-    
+std::vector<MrzField> TD2::extractNationality(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
     field.fieldType = "nationality";
     field.mrzDataField = "";
     field.mrzDataField = field.mrzDataField + mrz[1].label[10] + mrz[1].label[11] + mrz[1].label[12];
     mrzFields.push_back(field);
+    return mrzFields;
+}
 
+std::vector<MrzField> TD2::extractSex(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
+    field.fieldType = "sex";
+    field.mrzDataField = mrz[1].label[20];
+    mrzFields.push_back(field);
+    return mrzFields;
+}
+
+std::vector<MrzField> TD2::extractDateBirth(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
     field.fieldType = "dateBirth";
     field.mrzDataField = "";
     for(size_t i = 13; i < 19; ++i)
         field.mrzDataField += mrz[1].label[i];
     mrzFields.push_back(field);
+    return mrzFields;
+}
 
-    checkDateBirth = mrz[1].label[19];
-
-    field.fieldType = "sex";
-    field.mrzDataField = mrz[1].label[20];
-    mrzFields.push_back(field);
-
+std::vector<MrzField> TD2::extractDateExpireDoc(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
     field.fieldType = "dateExpireDoc";
     field.mrzDataField = "";
     for(size_t i = 21; i < 27; ++i)
         field.mrzDataField += mrz[1].label[i];
     mrzFields.push_back(field);
-
-    checkDateExpireDoc = mrz[1].label[27];
-
-    if(mrz[1].label[28] != '<')
-    {
-        for(size_t i = 28; i < 34 && mrz[1].label[i] != '<'; ++i)
-            optionalData += mrz[1].label[i];
-
-        checkOptionalData += mrz[1].label[34];
-    }
-
-    checkOverallDigit += mrz[1].label[35];
-
-    checkDigitsResult = checkDigits(mrz, mrzFields);
-
     return mrzFields;
 }
 
-bool TD2::checkDigits(std::vector<Fields> mrz, std::vector<MrzFields> mrzFields)
+bool TD2::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
 {
     bool result = true;
 
-    if(!check(mrzFields.at(4).mrzDataField, checkDocNum))
+    if(!this->check(mrzFields.at(4).mrzDataField, this->checkDocNum))
     {
-        std::cout << "Check in document number faild." << std::endl;
+        SPDLOG_DEBUG("Check in document number faild.");
         result = false;
     }  
     else
-        std::cout << "Check in document number OK." << std::endl;
+        SPDLOG_DEBUG("Check in document number OK.");
 
-    if(!check(mrzFields.at(6).mrzDataField, checkDateBirth))
+    if(!this->check(mrzFields.at(6).mrzDataField, this->checkDateBirth))
     {
-        std::cout << "Check in date of birth faild." << std::endl;
+        SPDLOG_DEBUG("Check in date of birth faild.");
         result = false;
     }
     else
-        std::cout << "Check in date of birth OK." << std::endl;
+        SPDLOG_DEBUG("Check in date of birth OK.");
 
-    if(!check(mrzFields.at(8).mrzDataField, checkDateExpireDoc))
+    if(!this->check(mrzFields.at(8).mrzDataField, this->checkDateExpireDoc))
     {
-        std::cout << "Check in date of expire faild." << std::endl;
+        SPDLOG_DEBUG("Check in date of expire faild.");
         result = false;
     }
     else
-        std::cout << "Check in date of expire OK." << std::endl;
+        SPDLOG_DEBUG("Check in date of expire OK.");
 
-    if(!check(optionalData, checkOptionalData))
+    if(!this->check(optionalData, this->checkOptionalData))
     {
-        std::cout << "Check in optional data faild." << std::endl;
+        SPDLOG_DEBUG("Check in optional data faild.");
         result = false;
     }
     else
-        std::cout << "Check in optional data OK." << std::endl;
+        SPDLOG_DEBUG("Check in optional data OK.");
 
-    if(!checkOverall(mrz, checkOverallDigit))
+    if(!this->checkOverall(mrz, checkOverallDigit))
     {
-        std::cout << "Check overall faild." << std::endl;
+        SPDLOG_DEBUG("Check overall faild.");
         result = false;
     }
     else
-        std::cout << "Check overall OK." << std::endl;
+        SPDLOG_DEBUG("Check overall OK.");
 
     return result;
 }

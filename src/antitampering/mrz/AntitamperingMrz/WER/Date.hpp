@@ -3,12 +3,11 @@
 #include <iostream>
 #include <string>
 #include <map>
-
+#include <spdlog/spdlog.h>
 
 class Date
 {
     private:
-        std::string data;
         bool dayOk(std::string day);
         bool monthOk(std::string month);
         bool isNumber(const std::string& str);
