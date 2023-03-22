@@ -17,7 +17,7 @@ void saveImgOcrResponse(cv::Mat img, Characters *characters, size_t charactersSi
                       thickness, cv::LINE_8);
 
         std::string label, conf;
-        label.append(1, characters[i].label);
+        label = characters[i].label;
         conf = fmt::format("{:.1f}", characters[i].confidence);
 
         // Print labels

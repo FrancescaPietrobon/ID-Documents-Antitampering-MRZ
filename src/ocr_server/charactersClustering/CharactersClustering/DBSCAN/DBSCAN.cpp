@@ -128,7 +128,7 @@ std::string DBSCAN::extractLabel(std::vector<Characters> orderedCharacters)
 {
     std::string label;
     for(size_t i = 0; i < orderedCharacters.size(); ++i)
-        label.push_back(orderedCharacters[i].label);
+        label.append(1, orderedCharacters[i].label[0]);
     return label;
 }
 

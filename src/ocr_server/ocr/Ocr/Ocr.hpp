@@ -6,7 +6,7 @@
 #include <opencv2/opencv.hpp>
 
 struct Characters {
-    char label;
+    char *label;
     size_t labelIndex;
     Coordinates position;
     float confidence;

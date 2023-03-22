@@ -137,7 +137,8 @@ TEST_F(OcrTestFixture, CheckPredictionUnitTest)
 
     float threshold = 0.001;
     ASSERT_TRUE(result.resultDetails[0].charactersSize == 185) << TestHelper::PrintTo();
-    ASSERT_TRUE(result.resultDetails[0].characters[0].label == '<') << TestHelper::PrintTo();
+    std::string label = "<";
+    ASSERT_TRUE(result.resultDetails[0].characters[0].label == label) << TestHelper::PrintTo();
     ASSERT_TRUE(result.resultDetails[0].characters[0].labelIndex == 62) << TestHelper::PrintTo();
     ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.topLeftX - 382.914) < threshold) << TestHelper::PrintTo();
     ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.topLeftY - 381.942) < threshold) << TestHelper::PrintTo();
