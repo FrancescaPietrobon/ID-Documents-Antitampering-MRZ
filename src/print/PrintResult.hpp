@@ -7,7 +7,7 @@
 #include "ocr_server/charactersClustering/CharactersClusteringApi.hpp"
 #include "antitampering/mrz/AntitamperingMrzApi.hpp"
 
-void saveImgOcrResponse(cv::Mat img, Characters *characters, size_t charactersSize);
+void saveImgOcrResponse(cv::Mat img, Character *characters, size_t charactersSize);
 void saveImgDbscanResponse(cv::Mat img, Field* fields, size_t fieldsSize);
 
 void printDbscanResponse(ClusteringResponse clusteringResult);

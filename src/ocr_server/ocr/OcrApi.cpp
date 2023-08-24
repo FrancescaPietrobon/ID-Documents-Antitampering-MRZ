@@ -49,7 +49,7 @@ OcrResponse processImage(char **arr_image, char **arr_content_base64, Coordinate
         res.resultDetails[i].confidenceThreshold = arr_confidence_threshold[i] != -1.0 ? arr_confidence_threshold[i] : DEFAULT_CONFIDENCE_THRESHOLD_OCR;
         res.resultDetails[i].error = 0;
         res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr("");
-        std::vector<Characters> ocrResults;
+        std::vector<Character> ocrResults;
         try
         {
             cv::Mat image = utils::fromBase64toCvMat(arr_content_base64[i]);
@@ -66,13 +66,13 @@ OcrResponse processImage(char **arr_image, char **arr_content_base64, Coordinate
             continue;
         }
         res.resultDetails[i].charactersSize = ocrResults.size();
-        res.resultDetails[i].characters = new Characters[res.resultDetails[i].charactersSize];
+        res.resultDetails[i].character = new Character[res.resultDetails[i].charactersSize];
         for (std::size_t j = 0; j < ocrResults.size(); j++)
         {
-            res.resultDetails[i].characters[j].label = ocrResults[j].label;
-            res.resultDetails[i].characters[j].labelIndex = ocrResults[j].labelIndex;
-            res.resultDetails[i].characters[j].position = ocrResults[j].position;
-            res.resultDetails[i].characters[j].confidence = ocrResults[j].confidence;
+            res.resultDetails[i].character[j].label = ocrResults[j].label;
+            res.resultDetails[i].character[j].labelIndex = ocrResults[j].labelIndex;
+            res.resultDetails[i].character[j].position = ocrResults[j].position;
+            res.resultDetails[i].character[j].confidence = ocrResults[j].confidence;
         }
     }
     return res;

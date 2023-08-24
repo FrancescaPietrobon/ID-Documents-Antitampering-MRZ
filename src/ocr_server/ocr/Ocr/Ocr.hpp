@@ -5,7 +5,7 @@
 #include <spdlog/spdlog.h>
 #include <opencv2/opencv.hpp>
 
-struct Characters {
+struct Character {
     char *label;
     size_t labelIndex;
     Coordinates position;
@@ -16,5 +16,5 @@ class Ocr {
     public:
         Ocr(){};
         virtual ~Ocr(){};
-        virtual std::vector<Characters> detect(const cv::Mat image, const float confidenceThreshold) = 0;
+        virtual std::vector<Character> detect(const cv::Mat image, const float confidenceThreshold) = 0;
 };

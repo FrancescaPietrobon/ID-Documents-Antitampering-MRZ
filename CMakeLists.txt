@@ -209,6 +209,7 @@ target_include_directories(print PUBLIC
 
 target_link_libraries(print
     opencv::opencv
+    spdlog::spdlog
 )
 
 # ###################

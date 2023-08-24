@@ -1,17 +1,17 @@
 #pragma once
 
-#include "../AntitamperingMrz/WER/Associations.hpp"
+#include "../AntitamperingMrz/Levenshtein/Associations.hpp"
 #include "../AntitamperingMrz/AntitamperingMrz.hpp"
 #include "common/exceptions/Exceptions.hpp"
 
 #include <spdlog/spdlog.h>
 #include <map>
 
-#define CONF_THRESHOLD_WER 0.7
+#define CONF_THRESHOLD_LEVENSHTEIN 0.7
 
 enum AssociatorType
 {
-    wer = 1,
+    levenshtein = 1,
     //boh
 };
 

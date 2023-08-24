@@ -1,13 +1,13 @@
-#include "WER.hpp"
+#include "Levenshtein.hpp"
 
-float WER::computeConfidence(const std::string& s1, const std::string& s2)
+float Levenshtein::computeConfidence(const std::string& s1, const std::string& s2)
 {
-    int error = this->computeWER(s1, s2);
+    int error = this->computeLevenshtein(s1, s2);
     int maxLenght = std::max(s1.size(), s2.size());
     return 1 - static_cast<float>(error)/static_cast<float>(maxLenght);
 }
 
-float WER::computeWER(const std::string& s1, const std::string& s2)
+float Levenshtein::computeLevenshtein(const std::string& s1, const std::string& s2)
 {
     unsigned m = s1.size();
     unsigned n = s2.size();
@@ -38,7 +38,7 @@ float WER::computeWER(const std::string& s1, const std::string& s2)
     return dist;
 }
 
-int WER::min3(int a, int b, int c)
+int Levenshtein::min3(int a, int b, int c)
 {
     return std::min(std::min(a,b), c);
 }

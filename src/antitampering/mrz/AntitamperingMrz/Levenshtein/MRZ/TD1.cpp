@@ -6,7 +6,7 @@ std::vector<MrzField> TD1::extractMrzFields(std::vector<Field> mrz)
 
     // First line
     mrzFields = this->extractDocType(mrz, mrzFields);
-    mrzFields = this->extractState(mrz, mrzFields);
+    mrzFields = this->extractCountry(mrz, mrzFields);
     mrzFields = this->extractDocNumber(mrz, mrzFields);
     this->checkDocNum = mrz[0].label[14];
     if(mrz[0].label[15] != '<')
@@ -48,10 +48,10 @@ std::vector<MrzField> TD1::extractDocType(std::vector<Field> mrz, std::vector<Mr
     return mrzFields;
 }
 
-std::vector<MrzField> TD1::extractState(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+std::vector<MrzField> TD1::extractCountry(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
 {
     MrzField field;
-    field.fieldType = "state";
+    field.fieldType = "country";
     field.mrzDataField = "";
     field.mrzDataField = field.mrzDataField + mrz[0].label[2] + mrz[0].label[3] + mrz[0].label[4];
     mrzFields.push_back(field);

@@ -56,9 +56,9 @@ std::pair<matrix2D, matrix2D> OcrRetinaNet::adjustModelPredictions(cv::Mat predi
 
     std::vector<float> variance = {VARIANCE_X, VARIANCE_X, VARIANCE_Y, VARIANCE_Y};
     boxesPred =  utilsRetinaNet::multVariance(boxesPred, variance);
-    //printPred(boxPred);
+    //utilsRetinaNet::printPredictions(boxesPred);
     classesPred = utilsRetinaNet::applySigmoid(classesPred);
-    //printPred(classPred);
+    //utilsRetinaNet::printPredictions(classesPred);
 
     return std::make_pair(boxesPred, classesPred);
 }
@@ -74,10 +74,12 @@ cv::Mat OcrRetinaNet::imagePreprocessing(const cv::Mat& inputImage)
     cv::fastNlMeansDenoising(inputImage, imagePreprocessed, DENOISE_PARAM);
     cv::resize(imagePreprocessed, imagePreprocessed, modelInputSize, 0, 0, cv::INTER_CUBIC);
 
+    cv::imwrite("../../printResults/preprocessed.JPG", imagePreprocessed);
+
     return imagePreprocessed;
 }
 
-std::vector<Characters> OcrRetinaNet::detect(const cv::Mat image, const float confidenceThreshold)
+std::vector<Character> OcrRetinaNet::detect(const cv::Mat image, const float confidenceThreshold)
 {
     if(image.empty())
         throw Exception(ErrorCode::BAD_COORDINATES, "Not able to find compliant image with provided metadata");
@@ -99,12 +101,12 @@ std::vector<Characters> OcrRetinaNet::detect(const cv::Mat image, const float co
     matrix2D boxes = this->computeBoxes(modelBoxes, anchorBoxes);
 
     SPDLOG_INFO("Apply NMS");
-    std::vector<Characters> characters = this->nonMaximaSuppression(boxes, modelClasses, confidenceThreshold);
+    std::vector<Character> characters = this->nonMaximaSuppression(boxes, modelClasses, confidenceThreshold);
 
     return characters;
 }
 
-std::vector<Characters> OcrRetinaNet::nonMaximaSuppression(matrix2D boxesPreNMS, matrix2D classPred, float confidenceThreshold)
+std::vector<Character> OcrRetinaNet::nonMaximaSuppression(matrix2D boxesPreNMS, matrix2D classPred, float confidenceThreshold)
 {
     std::vector<float> maxIndices, maxAll;
     std::vector<float>::iterator maxIt;
@@ -127,10 +129,10 @@ std::vector<Characters> OcrRetinaNet::nonMaximaSuppression(matrix2D boxesPreNMS,
     SPDLOG_INFO("{} Characters Detected pre NMS", boxesRect.size());
     std::vector<int> nmsIndices;
     cv::dnn::NMSBoxes(boxesRect, maxAll, confidenceThreshold, THRESHOLD_NMS, nmsIndices);
-    std::vector<Characters> characters;
+    std::vector<Character> characters;
     for(unsigned idx : nmsIndices)
     {
-        Characters currCharacter;
+        Character currCharacter;
         currCharacter.labelIndex = maxIndices[idx];
         currCharacter.position = utilsRetinaNet::reshapeBox(boxesNew[idx], xAlter, yAlter);
         currCharacter.confidence = maxAll[idx];

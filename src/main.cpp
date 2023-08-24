@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     delete[] thresholdsOcr;
     delete algoTypeOcr;
 
-    saveImgOcrResponse(cv::imread(imagePath), ocrResponse.resultDetails->characters, ocrResponse.resultDetails->charactersSize);
+    saveImgOcrResponse(cv::imread(imagePath), ocrResponse.resultDetails->character, ocrResponse.resultDetails->charactersSize);
 
     char *algoTypeClustering = new char;
     algoTypeClustering = utils::convertStringtoCharPtr("Dbscan");
@@ -46,14 +46,14 @@ int main(int argc, char *argv[])
     delete algoTypeClustering;
 
     printDbscanResponse(clusteringResponse);
-    saveImgDbscanResponse(cv::imread(imagePath), clusteringResponse.resultDetails->fields, clusteringResponse.resultDetails->fieldsSize);
+    saveImgDbscanResponse(cv::imread(imagePath), clusteringResponse.resultDetails->field, clusteringResponse.resultDetails->fieldsSize);
 
     DocumentFields *documentFields = new DocumentFields[1];
-    documentFields[0].fields = clusteringResponse.resultDetails->fields;
+    documentFields[0].fields = clusteringResponse.resultDetails->field;
     documentFields[0].fieldsSize = clusteringResponse.resultDetails->fieldsSize;
 
     char *algoTypeAntitamperingMrz = new char;
-    algoTypeAntitamperingMrz = utils::convertStringtoCharPtr("wer");
+    algoTypeAntitamperingMrz = utils::convertStringtoCharPtr("levenshtein");
 
     AntitamperingMrzResponse antitamperingMrzResponse = associate(images, documentFields, 1, algoTypeAntitamperingMrz);
     delete algoTypeAntitamperingMrz;

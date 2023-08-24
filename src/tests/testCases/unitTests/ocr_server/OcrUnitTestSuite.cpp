@@ -16,7 +16,7 @@ class MockOcr : public Ocr
 {
     public:
         //MOCK_METHOD(OcrResponse, process, (char **arr_image, char **arr_content_type, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size), (override));
-        MOCK_METHOD(std::vector<Characters>, detect, (const cv::Mat image, const float confidenceThreshold), (override));
+        MOCK_METHOD(std::vector<Character>, detect, (const cv::Mat image, const float confidenceThreshold), (override));
 };
 */
 
@@ -138,13 +138,13 @@ TEST_F(OcrTestFixture, CheckPredictionUnitTest)
     float threshold = 0.001;
     ASSERT_TRUE(result.resultDetails[0].charactersSize == 185) << TestHelper::PrintTo();
     std::string label = "<";
-    ASSERT_TRUE(result.resultDetails[0].characters[0].label == label) << TestHelper::PrintTo();
-    ASSERT_TRUE(result.resultDetails[0].characters[0].labelIndex == 62) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.topLeftX - 382.914) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.topLeftY - 381.942) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.bottomRightX - 394.38) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].position.bottomRightY - 394.204) < threshold) << TestHelper::PrintTo();
-    ASSERT_TRUE(abs(result.resultDetails[0].characters[0].confidence - 0.999999) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(result.resultDetails[0].character[0].label == label) << TestHelper::PrintTo();
+    ASSERT_TRUE(result.resultDetails[0].character[0].labelIndex == 62) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].character[0].position.topLeftX - 382.914) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].character[0].position.topLeftY - 381.942) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].character[0].position.bottomRightX - 394.38) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].character[0].position.bottomRightY - 394.204) < threshold) << TestHelper::PrintTo();
+    ASSERT_TRUE(abs(result.resultDetails[0].character[0].confidence - 0.999999) < threshold) << TestHelper::PrintTo();
 }
 
 TEST_F(OcrTestFixture, BadCoordinatesUnitTest)

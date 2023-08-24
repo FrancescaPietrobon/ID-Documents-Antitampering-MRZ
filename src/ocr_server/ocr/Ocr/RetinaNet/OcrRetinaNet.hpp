@@ -22,7 +22,7 @@ class OcrRetinaNet : public Ocr
     public:
         OcrRetinaNet(const cv::dnn::Net model, cv::Size modelInputSize);
         virtual ~OcrRetinaNet(){};
-        std::vector<Characters> detect(const cv::Mat image, const float confidenceThreshold) override;
+        std::vector<Character> detect(const cv::Mat image, const float confidenceThreshold) override;
     
     protected:
         cv::dnn::Net model;
@@ -33,7 +33,7 @@ class OcrRetinaNet : public Ocr
     private:
         cv::Mat inference(const cv::Mat& image);
         cv::Mat imagePreprocessing(const cv::Mat& image);
-        std::vector<Characters> nonMaximaSuppression(matrix2D boxesPreNMS, matrix2D classPred, float confidenceThreshold);
+        std::vector<Character> nonMaximaSuppression(matrix2D boxesPreNMS, matrix2D classPred, float confidenceThreshold);
         std::pair<matrix2D, matrix2D> adjustModelPredictions(cv::Mat prediction);
         matrix2D computeBoxes(matrix2D modelBoxes, matrix2D anchorBoxes);
 };

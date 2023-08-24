@@ -5,12 +5,12 @@
 #include <string>
 #include "../Mrz.hpp"
 
-class MRVB: public Mrz
+class MRVA: public Mrz
 {
     private:
         bool checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields);
         std::vector<MrzField> extractDocType(std::vector<Field> mrz, std::vector<MrzField> &mrzFields);
-        std::vector<MrzField> extractState(std::vector<Field> mrz, std::vector<MrzField> &mrzFields);
+        std::vector<MrzField> extractCountry(std::vector<Field> mrz, std::vector<MrzField> &mrzFields);
         std::vector<MrzField> extractSurnameAndName(std::vector<Field> mrz, std::vector<MrzField> &mrzFields);
         std::vector<MrzField> extractDocNumber(std::vector<Field> mrz, std::vector<MrzField> &mrzFields);
         std::vector<MrzField> extractNationality(std::vector<Field> mrz, std::vector<MrzField> &mrzFields);

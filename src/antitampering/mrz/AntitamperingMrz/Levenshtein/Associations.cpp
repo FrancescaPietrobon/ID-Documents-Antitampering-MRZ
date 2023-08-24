@@ -21,7 +21,7 @@ Associations::computeAssociations(std::vector<Field> fields, std::vector<MrzFiel
 {
     float currentConf = 0, maxConf = 0;
     std::string bestTypeField, bestField;
-    WER wer;
+    Levenshtein levenshtein;
 
     SPDLOG_DEBUG("Compare fields:");
     for(auto & field: fields)
@@ -32,7 +32,7 @@ Associations::computeAssociations(std::vector<Field> fields, std::vector<MrzFiel
         maxConf = 0;
         for(size_t itFields = 0; itFields < mrzFields.size(); ++itFields)
         {
-            currentConf = wer.computeConfidence(field.label, mrzFields[itFields].mrzDataField);
+            currentConf = levenshtein.computeConfidence(field.label, mrzFields[itFields].mrzDataField);
             SPDLOG_DEBUG("Mrz field: {}\t Type: {}\t Confidence: {}", field.label, mrzFields[itFields].mrzDataField, currentConf);
             if(currentConf > maxConf)
             {
@@ -83,8 +83,6 @@ Field Associations::convertIfDate(Field field)
     }
     return field;
 }
-
-
 
 std::vector<AssociatedField>
 Associations::addFinalAssociation(Field dataField, std::string mrzDataField, std::string fieldType,

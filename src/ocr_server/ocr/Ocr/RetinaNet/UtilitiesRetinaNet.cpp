@@ -77,8 +77,8 @@ void utilsRetinaNet::printPredictions(matrix2D pred)
     {
         for(size_t j = 0; j < pred.begin()->size(); ++j)
             if(i < 5)
-                SPDLOG_DEBUG("{}", pred[i][j]);
+                SPDLOG_INFO("{}", pred[i][j]);
         if(i < 5)
-            SPDLOG_DEBUG(" ");
+            SPDLOG_INFO(" ");
     }
 }

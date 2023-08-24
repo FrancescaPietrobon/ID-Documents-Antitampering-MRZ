@@ -5,14 +5,14 @@
 #include <string>
 #include "../Mrz.hpp"
 
-class TD3: public Mrz
+class TD2: public Mrz
 {
     private:
         std::string checkOptionalData = "";
         std::string checkOverallDigit = "";
         bool checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields);
         std::vector<MrzField> extractDocType(std::vector<Field> mrz, std::vector<MrzField> &mrzFields);
-        std::vector<MrzField> extractState(std::vector<Field> mrz, std::vector<MrzField> &mrzFields);
+        std::vector<MrzField> extractCountry(std::vector<Field> mrz, std::vector<MrzField> &mrzFields);
         std::vector<MrzField> extractSurnameAndName(std::vector<Field> mrz, std::vector<MrzField> &mrzFields);
         std::vector<MrzField> extractDocNumber(std::vector<Field> mrz, std::vector<MrzField> &mrzFields);
         std::vector<MrzField> extractNationality(std::vector<Field> mrz, std::vector<MrzField> &mrzFields);
@@ -21,5 +21,5 @@ class TD3: public Mrz
         std::vector<MrzField> extractDateExpireDoc(std::vector<Field> mrz, std::vector<MrzField> &mrzFields);
 
     public:
-        std::vector<MrzField> extractMrzFields(std::vector<Field> mrz);  
+        std::vector<MrzField> extractMrzFields(std::vector<Field> mrz);
 };
