@@ -55,34 +55,7 @@ matrix2D Anchors::anchorsGenerator()
         //print_anchors(areaExp, grid);
 
         matrix3D concatenation = this->concatenate(areaExp, grid);
-
-        /*
-        //matrix3D input1 = {{9, 7}, {4, 1}, {8, 3}};
-        //matrix3D input2 = {{3, 2}, {1, 7}, {0, 6}};
-
-        std::vector<std::vector<std::vector<float>>> input1 = {{{8., 9.}, {7., 2.}},
-                                                           {{5., 4.}, {1., 7.}}};
-        std::vector<std::vector<std::vector<float>>> input2 = {{{7., 3.}, {2., 2.}},
-                                                           {{1., 4.}, {7., 3.}}};
-
-        matrix3D res = this->concatenate(input1, input2);
-        std::cout << res.size() << std::endl;
-        std::cout << res[0].size() << std::endl;
-        std::cout << res[0][0][0] << std::endl;
-        std::cout << res[1][0][1] << std::endl;
-        */
-
         matrix2D resizedAnchors = this->resizeAnchors(concatenation);
-
-        matrix3D input1 = {{{8., 9.}, {7., 2.}},
-                           {{5., 4.}, {1., 7.}}};
-        matrix2D res = this->resizeAnchors(input1);
-        /*
-        std::cout << res.size() << std::endl;
-        std::cout << res[0].size() << std::endl;
-        std::cout << res[0][0] << std::endl;
-        std::cout << res[1][0] << std::endl;
-        */
 
         for(size_t i = 0; i < resizedAnchors.size(); ++i)
             allAnchors.push_back(resizedAnchors[i]);
@@ -135,11 +108,6 @@ matrix2D Anchors::resizeAnchors(matrix3D A)
     for(size_t i = 0; i < A.size(); ++i)
         for(size_t j = 0; j < A[i].size(); ++j)
             A_resized.push_back(A[i][j]);
-    
-    //std::cout << A.size() << std::endl;
-    //std::cout << A[0].size() << std::endl;
-    //std::cout << A_resized[0][0] << std::endl;
-    //std::cout << A_resized[1][50] << std::endl;
     return A_resized;
 }
 

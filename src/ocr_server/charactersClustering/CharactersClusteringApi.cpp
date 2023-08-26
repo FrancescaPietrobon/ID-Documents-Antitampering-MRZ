@@ -18,6 +18,7 @@ extern "C"
 {
     ClusteringResponse cluster(OcrResponse ocrResponse, char *algorithmType)
     {
+        SPDLOG_INFO("Start Characters Clustering API");
         ClusteringResponse res;
         std::shared_ptr<CharactersClustering> cluster = nullptr;
         try
@@ -32,6 +33,7 @@ extern "C"
         }
 
         res = clusterChar(ocrResponse, cluster);
+        SPDLOG_INFO("End Characters Clustering API");
         return res;
     }
 }

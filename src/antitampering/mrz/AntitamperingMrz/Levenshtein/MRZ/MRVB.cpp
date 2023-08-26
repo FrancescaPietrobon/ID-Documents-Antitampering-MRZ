@@ -146,27 +146,27 @@ bool MRVB::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
 
     if(!this->check(mrzFields.at(4).mrzDataField, this->checkDocNum))
     {
-        SPDLOG_DEBUG("Check in document number faild.");
+        SPDLOG_INFO("Check in document number faild.");
         result = false;
     }  
     else
-        SPDLOG_DEBUG("Check in document number OK.");
+        SPDLOG_INFO("Check in document number OK.");
 
     if(!this->check(mrzFields.at(6).mrzDataField, this->checkDateBirth))
     {
-        SPDLOG_DEBUG("Check in date of birth faild.");
+        SPDLOG_INFO("Check in date of birth faild.");
         result = false;
     }
     else
-        SPDLOG_DEBUG("Check in date of birth OK.");
+        SPDLOG_INFO("Check in date of birth OK.");
 
     if(!this->check(mrzFields.at(8).mrzDataField, this->checkDateExpireDoc))
     {
-        SPDLOG_DEBUG("Check in date of expire faild.");
+        SPDLOG_INFO("Check in date of expire faild.");
         result = false;
     }
     else
-        SPDLOG_DEBUG("Check in date of expire OK.");
+        SPDLOG_INFO("Check in date of expire OK.");
 
     return result;
 }

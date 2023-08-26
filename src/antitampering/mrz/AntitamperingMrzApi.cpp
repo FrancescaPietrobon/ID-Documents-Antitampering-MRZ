@@ -16,6 +16,7 @@ AntitamperingMrzResponse buildGlobalErrorResponseAntitampMrz(const Exception& ex
 extern "C" {
     AntitamperingMrzResponse associate(char **arr_image, DocumentFields *document_fields, size_t arr_size, char *algorithm_type)
     {
+        SPDLOG_INFO("Start Antitampering MRZ API");
         AntitamperingMrzResponse res;
         std::shared_ptr<AntitamperingMrz> associator = nullptr;
         try
@@ -29,6 +30,7 @@ extern "C" {
             return res;
         }
         res = associateFields(arr_image, document_fields, arr_size, associator);
+        SPDLOG_INFO("End Antitampering MRZ API");
         return res;
     }
 }

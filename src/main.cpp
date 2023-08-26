@@ -2,6 +2,7 @@
 #include "ocr_server/charactersClustering/CharactersClusteringApi.hpp"
 #include "antitampering/mrz/AntitamperingMrzApi.hpp"
 #include "base64/base64.h"
+#include <spdlog/spdlog.h>
 
 #include "print/PrintResult.hpp"
 

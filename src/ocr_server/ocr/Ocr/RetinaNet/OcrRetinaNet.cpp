@@ -74,7 +74,7 @@ cv::Mat OcrRetinaNet::imagePreprocessing(const cv::Mat& inputImage)
     cv::fastNlMeansDenoising(inputImage, imagePreprocessed, DENOISE_PARAM);
     cv::resize(imagePreprocessed, imagePreprocessed, modelInputSize, 0, 0, cv::INTER_CUBIC);
 
-    cv::imwrite("../../printResults/preprocessed.JPG", imagePreprocessed);
+    //cv::imwrite("../../printResults/preprocessed.JPG", imagePreprocessed);
 
     return imagePreprocessed;
 }
@@ -83,7 +83,7 @@ std::vector<Character> OcrRetinaNet::detect(const cv::Mat image, const float con
 {
     if(image.empty())
         throw Exception(ErrorCode::BAD_COORDINATES, "Not able to find compliant image with provided metadata");
-    cv::imwrite("../../printResults/post_cut.jpg", image);
+    //cv::imwrite("../../printResults/post_cut.jpg", image);
 
     SPDLOG_INFO("Preprocessing input image");
     cv::Mat imagePreprocessed = this->imagePreprocessing(image);

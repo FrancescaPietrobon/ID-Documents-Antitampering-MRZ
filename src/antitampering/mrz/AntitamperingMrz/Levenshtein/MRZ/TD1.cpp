@@ -150,43 +150,43 @@ bool TD1::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
 
     if(!this->check(mrzFields.at(2).mrzDataField, this->checkDocNum))
     {
-        SPDLOG_DEBUG("Check in document number faild.");
+        SPDLOG_INFO("Check in document number faild.");
         result = false;
     }  
     else
-        SPDLOG_DEBUG("Check in document number OK.");
+        SPDLOG_INFO("Check in document number OK.");
 
     if(!this->check(optionalData, this->checkOptionalData))
     {
-        SPDLOG_DEBUG("Check in optional data faild.");
+        SPDLOG_INFO("Check in optional data faild.");
         result = false;
     }
     else
-        SPDLOG_DEBUG("Check in optional data OK.");
+        SPDLOG_INFO("Check in optional data OK.");
 
     if(!this->check(mrzFields.at(3).mrzDataField, this->checkDateBirth))
     {
-        SPDLOG_DEBUG("Check in date of birth faild.");
+        SPDLOG_INFO("Check in date of birth faild.");
         result = false;
     }
     else
-        SPDLOG_DEBUG("Check in date of birth OK.");
+        SPDLOG_INFO("Check in date of birth OK.");
 
     if(!this->check(mrzFields.at(5).mrzDataField, this->checkDateExpireDoc))
     {
-        SPDLOG_DEBUG("Check in date of expire faild.");
+        SPDLOG_INFO("Check in date of expire faild.");
         result = false;
     }
     else
-        SPDLOG_DEBUG("Check in date of expire OK.");
+        SPDLOG_INFO("Check in date of expire OK.");
 
     if(!this->checkTwoLines(mrz, this->checkFirstTwoLines))
     {
-        SPDLOG_DEBUG("Check of first two lines faild.");
+        SPDLOG_INFO("Check of first two lines faild.");
         result = false;
     }
     else
-        SPDLOG_DEBUG("Check of first two lines OK.");
+        SPDLOG_INFO("Check of first two lines OK.");
 
     return result;
 }

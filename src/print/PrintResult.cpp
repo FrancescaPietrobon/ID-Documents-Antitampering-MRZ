@@ -30,7 +30,7 @@ void saveImgOcrResponse(cv::Mat img, Character *characters, size_t charactersSiz
         cv::Point confOrg(characters[i].position.topLeftX, characters[i].position.bottomRightY + confSize.height);
         cv::putText(new_image, conf, confOrg, fontFace, fontScale*0.6, cv::Scalar(0,0,0), thickness, lineType);
     }
-    cv::imwrite("../../printResults/OCR.jpg", new_image);
+    //cv::imwrite("../../printResults/OCR.jpg", new_image);
 }
 
 void saveImgDbscanResponse(cv::Mat img, Field* fields, size_t fieldsSize)
@@ -65,7 +65,7 @@ void saveImgDbscanResponse(cv::Mat img, Field* fields, size_t fieldsSize)
         cv::Point confOrg(fields[i].position.topLeftX, fields[i].position.bottomRightY + confSize.height);
         cv::putText(new_image, conf, confOrg, fontFace, fontScale*0.6, cv::Scalar(0,0,0), thickness, lineType);
     }
-    cv::imwrite("../../printResults/DBSCAN.jpg", new_image);
+    //cv::imwrite("../../printResults/DBSCAN.jpg", new_image);
 }
 
 void printDbscanResponse(ClusteringResponse clusteringResponse)

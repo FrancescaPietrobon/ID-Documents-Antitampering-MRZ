@@ -32,7 +32,7 @@ message(STATUS "Headers installation path: ${CMAKE_INSTALL_INCLUDEDIR}")
 # ################
 # Find packages #
 # ################
-find_package(OpenCV)
+find_package(OpenCV  REQUIRED COMPONENTS core)
 find_package(spdlog)
 find_package(jsoncpp)
 find_package(nlohmann_json)
@@ -224,6 +224,7 @@ target_link_libraries(application
     document_validator_ocr_server
     #document_validator_characters_clustering
     document_validator_antitampering
+    spdlog::spdlog
 )
 
 # #######

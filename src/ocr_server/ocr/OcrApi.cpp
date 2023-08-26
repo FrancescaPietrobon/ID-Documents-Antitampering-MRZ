@@ -20,6 +20,7 @@ extern "C"
 {
     OcrResponse process(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size, char *algorithm_type)
     {
+        SPDLOG_INFO("Start OCR API");
         OcrResponse res;
         std::shared_ptr<Ocr> detector = nullptr;
         try
@@ -34,6 +35,7 @@ extern "C"
         }
 
         res = processImage(arr_image, arr_content_base64, arr_coordinates, arr_confidence_threshold, arr_size, detector);
+        SPDLOG_INFO("End OCR API");
         return res;
     }
 }
@@ -53,7 +55,7 @@ OcrResponse processImage(char **arr_image, char **arr_content_base64, Coordinate
         try
         {
             cv::Mat image = utils::fromBase64toCvMat(arr_content_base64[i]);
-            cv::imwrite("../../printResults/pre_cut.jpg", image);
+            //cv::imwrite("../../printResults/pre_cut.jpg", image);
             Coordinates characterRect = arr_coordinates[i];
             image = utils::prepareImage(characterRect, image);
             ocrResults = detector->detect(image, res.resultDetails[i].confidenceThreshold);
