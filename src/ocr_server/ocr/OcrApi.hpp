@@ -7,7 +7,7 @@ struct OcrResultDetail
 {
     char *image;
     float confidenceThreshold;
-    Characters *characters;
+    Character *character;
     size_t charactersSize;
     size_t error;
     char *errorMessage;

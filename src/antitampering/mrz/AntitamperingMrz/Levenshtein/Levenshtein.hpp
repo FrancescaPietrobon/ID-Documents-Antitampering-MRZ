@@ -6,13 +6,13 @@
 
 #include <vector>
 
-class WER
+class Levenshtein
 {
     public:
-        WER(){};
+        Levenshtein(){};
         float computeConfidence(const std::string& s1, const std::string& s2);
 
     private:
-        float computeWER(const std::string& s1, const std::string& s2);
+        float computeLevenshtein(const std::string& s1, const std::string& s2);
         int min3(int a, int b, int c);
 };

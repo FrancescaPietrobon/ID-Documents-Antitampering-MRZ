@@ -36,6 +36,7 @@ void Anchors::computeDims()
         this->anchorDimsAll.push_back(anchorDims);
         this->anchorDims.clear(); 
     }
+
     SPDLOG_DEBUG("Size anchorDimsAll: {} x {} x {}", anchorDimsAll.size(), anchorDimsAll[0].size(), anchorDimsAll[0][0].size());
 }
 

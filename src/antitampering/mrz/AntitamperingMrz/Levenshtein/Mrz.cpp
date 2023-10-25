@@ -46,7 +46,7 @@ bool Mrz::checkOverall(std::vector<Field> mrz, std::string overallDigit)
 
 void Mrz::printMrzFields(std::vector<MrzField> mrzFields)
 {
-    SPDLOG_DEBUG("MRZ fields detected:");
+    SPDLOG_INFO("MRZ fields detected:");
     for(MrzField field: mrzFields)
-        SPDLOG_DEBUG("{}: {}", field.fieldType, field.mrzDataField);
+        SPDLOG_INFO("{}: {}", field.fieldType, field.mrzDataField);
 }

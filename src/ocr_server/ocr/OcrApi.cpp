@@ -20,6 +20,7 @@ extern "C"
 {
     OcrResponse process(char **arr_image, char **arr_content_base64, Coordinates *arr_coordinates, float *arr_confidence_threshold, size_t arr_size, char *algorithm_type)
     {
+        SPDLOG_INFO("Start OCR API");
         OcrResponse res;
         std::shared_ptr<Ocr> detector = nullptr;
         try
@@ -34,6 +35,7 @@ extern "C"
         }
 
         res = processImage(arr_image, arr_content_base64, arr_coordinates, arr_confidence_threshold, arr_size, detector);
+        SPDLOG_INFO("End OCR API");
         return res;
     }
 }
@@ -49,11 +51,11 @@ OcrResponse processImage(char **arr_image, char **arr_content_base64, Coordinate
         res.resultDetails[i].confidenceThreshold = arr_confidence_threshold[i] != -1.0 ? arr_confidence_threshold[i] : DEFAULT_CONFIDENCE_THRESHOLD_OCR;
         res.resultDetails[i].error = 0;
         res.resultDetails[i].errorMessage = utils::convertStringtoCharPtr("");
-        std::vector<Characters> ocrResults;
+        std::vector<Character> ocrResults;
         try
         {
             cv::Mat image = utils::fromBase64toCvMat(arr_content_base64[i]);
-            cv::imwrite("../../printResults/pre_cut.jpg", image);
+            //cv::imwrite("../../printResults/pre_cut.jpg", image);
             Coordinates characterRect = arr_coordinates[i];
             image = utils::prepareImage(characterRect, image);
             ocrResults = detector->detect(image, res.resultDetails[i].confidenceThreshold);
@@ -66,13 +68,13 @@ OcrResponse processImage(char **arr_image, char **arr_content_base64, Coordinate
             continue;
         }
         res.resultDetails[i].charactersSize = ocrResults.size();
-        res.resultDetails[i].characters = new Characters[res.resultDetails[i].charactersSize];
+        res.resultDetails[i].character = new Character[res.resultDetails[i].charactersSize];
         for (std::size_t j = 0; j < ocrResults.size(); j++)
         {
-            res.resultDetails[i].characters[j].label = ocrResults[j].label;
-            res.resultDetails[i].characters[j].labelIndex = ocrResults[j].labelIndex;
-            res.resultDetails[i].characters[j].position = ocrResults[j].position;
-            res.resultDetails[i].characters[j].confidence = ocrResults[j].confidence;
+            res.resultDetails[i].character[j].label = ocrResults[j].label;
+            res.resultDetails[i].character[j].labelIndex = ocrResults[j].labelIndex;
+            res.resultDetails[i].character[j].position = ocrResults[j].position;
+            res.resultDetails[i].character[j].confidence = ocrResults[j].confidence;
         }
     }
     return res;

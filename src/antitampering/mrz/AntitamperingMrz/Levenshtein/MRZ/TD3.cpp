@@ -6,7 +6,7 @@ std::vector<MrzField> TD3::extractMrzFields(std::vector<Field> mrz)
 
     // First line
     mrzFields = this->extractDocType(mrz, mrzFields);
-    mrzFields = this->extractState(mrz, mrzFields);
+    mrzFields = this->extractCountry(mrz, mrzFields);
     mrzFields = this->extractSurnameAndName(mrz, mrzFields);
 
     // Second line
@@ -40,10 +40,10 @@ std::vector<MrzField> TD3::extractDocType(std::vector<Field> mrz, std::vector<Mr
     return mrzFields;
 }
 
-std::vector<MrzField> TD3::extractState(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+std::vector<MrzField> TD3::extractCountry(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
 {
     MrzField field;
-    field.fieldType = "state";
+    field.fieldType = "country";
     field.mrzDataField = "";
     field.mrzDataField = field.mrzDataField + mrz[0].label[2] + mrz[0].label[3] + mrz[0].label[4];
     mrzFields.push_back(field);
@@ -146,43 +146,43 @@ bool TD3::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
 
     if(!this->check(mrzFields.at(4).mrzDataField, this->checkDocNum))
     {
-        SPDLOG_DEBUG("Check in document number faild.");
+        SPDLOG_INFO("Check in document number faild.");
         result = false;
     }  
     else
-        SPDLOG_DEBUG("Check in document number OK.");
+        SPDLOG_INFO("Check in document number OK.");
 
     if(!this->check(mrzFields.at(6).mrzDataField, this->checkDateBirth))
     {
-        SPDLOG_DEBUG("Check in date of birth faild.");
+        SPDLOG_INFO("Check in date of birth faild.");
         result = false;
     }
     else
-        SPDLOG_DEBUG("Check in date of birth OK.");
+        SPDLOG_INFO("Check in date of birth OK.");
 
     if(!this->check(mrzFields.at(8).mrzDataField, this->checkDateExpireDoc))
     {
-        SPDLOG_DEBUG("Check in date of expire faild.");
+        SPDLOG_INFO("Check in date of expire faild.");
         result = false;
     }
     else
-        SPDLOG_DEBUG("Check in date of expire OK.");
+        SPDLOG_INFO("Check in date of expire OK.");
 
     if(!this->check(optionalData, this->checkOptionalData))
     {
-        SPDLOG_DEBUG("Check in optional data faild.");
+        SPDLOG_INFO("Check in optional data faild.");
         result = false;
     }
     else
-        SPDLOG_DEBUG("Check in optional data OK.");
+        SPDLOG_INFO("Check in optional data OK.");
 
     if(!this->checkOverall(mrz, this->checkOverallDigit))
     {
-        SPDLOG_DEBUG("Check overall faild.");
+        SPDLOG_INFO("Check overall faild.");
         result = false;
     }
     else
-        SPDLOG_DEBUG("Check overall OK.");
+        SPDLOG_INFO("Check overall OK.");
 
     return result;
 }

@@ -1,39 +1,36 @@
-#include "MRVB.hpp"
+#include "TD2.hpp"
 
-std::vector<MrzField> MRVB::extractMrzFields(std::vector<Field> mrz)
+std::vector<MrzField> TD2::extractMrzFields(std::vector<Field> mrz)
 {
     std::vector<MrzField> mrzFields;
 
     // First line
     mrzFields = this->extractDocType(mrz, mrzFields);
-    mrzFields = this->extractState(mrz, mrzFields);
+    mrzFields = this->extractCountry(mrz, mrzFields);
     mrzFields = this->extractSurnameAndName(mrz, mrzFields);
-    
+
     // Second line
     mrzFields = this->extractDocNumber(mrz, mrzFields);
     this->checkDocNum = mrz[1].label[9];
     mrzFields = this->extractNationality(mrz, mrzFields);
-    mrzFields = this->extractDateBirth(mrz, mrzFields);
     this->checkDateBirth = mrz[1].label[19];
     mrzFields = this->extractSex(mrz, mrzFields);
+    mrzFields = this->extractDateBirth(mrz, mrzFields);
     mrzFields = this->extractDateExpireDoc(mrz, mrzFields);
     this->checkDateExpireDoc = mrz[1].label[27];
     if(mrz[1].label[28] != '<')
     {
-        for(size_t i = 28; i < 36; ++i)
-        {
-            if(mrz[1].label[i] == '<' && mrz[1].label[i-1] == '<')
-                break;
-            else if(mrz[1].label[i] == '<')
-                this->optionalData += " ";
-            else
-                this->optionalData += mrz[1].label[i];
-        }
+        for(size_t i = 28; i < 34 && mrz[1].label[i] != '<'; ++i)
+            this->optionalData += mrz[1].label[i];
+
+        this->checkOptionalData += mrz[1].label[34];
     }
+    this->checkOverallDigit += mrz[1].label[35];
+
     return mrzFields;
 }
 
-std::vector<MrzField> MRVB::extractDocType(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+std::vector<MrzField> TD2::extractDocType(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
 {
     MrzField field;
     field.fieldType = "docType";
@@ -44,17 +41,17 @@ std::vector<MrzField> MRVB::extractDocType(std::vector<Field> mrz, std::vector<M
     return mrzFields;
 }
 
-std::vector<MrzField> MRVB::extractState(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+std::vector<MrzField> TD2::extractCountry(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
 {
     MrzField field;
-    field.fieldType = "state";
+    field.fieldType = "country";
     field.mrzDataField = "";
     field.mrzDataField = field.mrzDataField + mrz[0].label[2] + mrz[0].label[3] + mrz[0].label[4];
     mrzFields.push_back(field);
     return mrzFields;
 }
 
-std::vector<MrzField> MRVB::extractSurnameAndName(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+std::vector<MrzField> TD2::extractSurnameAndName(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
 {
     MrzField field;
     field.fieldType = "surname";
@@ -73,6 +70,7 @@ std::vector<MrzField> MRVB::extractSurnameAndName(std::vector<Field> mrz, std::v
             field.mrzDataField += mrz[0].label[j];
     }
     mrzFields.push_back(field);
+
     field.fieldType = "name";
     field.mrzDataField = "";
     for(size_t j = i; j < 36; ++j)
@@ -88,7 +86,7 @@ std::vector<MrzField> MRVB::extractSurnameAndName(std::vector<Field> mrz, std::v
     return mrzFields;
 }
 
-std::vector<MrzField> MRVB::extractDocNumber(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+std::vector<MrzField> TD2::extractDocNumber(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
 {
     MrzField field;
     field.fieldType = "docNumber";
@@ -99,7 +97,7 @@ std::vector<MrzField> MRVB::extractDocNumber(std::vector<Field> mrz, std::vector
     return mrzFields;
 }
 
-std::vector<MrzField> MRVB::extractNationality(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+std::vector<MrzField> TD2::extractNationality(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
 {
     MrzField field;
     field.fieldType = "nationality";
@@ -109,7 +107,16 @@ std::vector<MrzField> MRVB::extractNationality(std::vector<Field> mrz, std::vect
     return mrzFields;
 }
 
-std::vector<MrzField> MRVB::extractDateBirth(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+std::vector<MrzField> TD2::extractSex(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+{
+    MrzField field;
+    field.fieldType = "sex";
+    field.mrzDataField = mrz[1].label[20];
+    mrzFields.push_back(field);
+    return mrzFields;
+}
+
+std::vector<MrzField> TD2::extractDateBirth(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
 {
     MrzField field;
     field.fieldType = "dateBirth";
@@ -120,16 +127,7 @@ std::vector<MrzField> MRVB::extractDateBirth(std::vector<Field> mrz, std::vector
     return mrzFields;
 }
 
-std::vector<MrzField> MRVB::extractSex(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
-{
-    MrzField field;
-    field.fieldType = "sex";
-    field.mrzDataField = mrz[1].label[20];
-    mrzFields.push_back(field);
-    return mrzFields;
-}
-
-std::vector<MrzField> MRVB::extractDateExpireDoc(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
+std::vector<MrzField> TD2::extractDateExpireDoc(std::vector<Field> mrz, std::vector<MrzField> &mrzFields)
 {
     MrzField field;
     field.fieldType = "dateExpireDoc";
@@ -140,33 +138,49 @@ std::vector<MrzField> MRVB::extractDateExpireDoc(std::vector<Field> mrz, std::ve
     return mrzFields;
 }
 
-bool MRVB::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
+bool TD2::checkDigits(std::vector<Field> mrz, std::vector<MrzField> mrzFields)
 {
     bool result = true;
 
     if(!this->check(mrzFields.at(4).mrzDataField, this->checkDocNum))
     {
-        SPDLOG_DEBUG("Check in document number faild.");
+        SPDLOG_INFO("Check in document number faild.");
         result = false;
     }  
     else
-        SPDLOG_DEBUG("Check in document number OK.");
+        SPDLOG_INFO("Check in document number OK.");
 
     if(!this->check(mrzFields.at(6).mrzDataField, this->checkDateBirth))
     {
-        SPDLOG_DEBUG("Check in date of birth faild.");
+        SPDLOG_INFO("Check in date of birth faild.");
         result = false;
     }
     else
-        SPDLOG_DEBUG("Check in date of birth OK.");
+        SPDLOG_INFO("Check in date of birth OK.");
 
     if(!this->check(mrzFields.at(8).mrzDataField, this->checkDateExpireDoc))
     {
-        SPDLOG_DEBUG("Check in date of expire faild.");
+        SPDLOG_INFO("Check in date of expire faild.");
         result = false;
     }
     else
-        SPDLOG_DEBUG("Check in date of expire OK.");
+        SPDLOG_INFO("Check in date of expire OK.");
+
+    if(!this->check(optionalData, this->checkOptionalData))
+    {
+        SPDLOG_INFO("Check in optional data faild.");
+        result = false;
+    }
+    else
+        SPDLOG_INFO("Check in optional data OK.");
+
+    if(!this->checkOverall(mrz, checkOverallDigit))
+    {
+        SPDLOG_INFO("Check overall faild.");
+        result = false;
+    }
+    else
+        SPDLOG_INFO("Check overall OK.");
 
     return result;
 }

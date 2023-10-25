@@ -8,9 +8,9 @@ const size_t NOT_ASSIGNED = -1;
 
 typedef std::vector<std::vector<float>> matrix2D;
 
-struct CharactersClustered
+struct CharacterClustered
 {
-    Characters character;
+    Character character;
     size_t cluster;
 };
 
@@ -19,17 +19,18 @@ class DBSCAN : public CharactersClustering
     public:
         DBSCAN(const float e);
         virtual ~DBSCAN(){};
-        std::vector<Field> clusterCharacters(const Characters *characters, const size_t charactersSize) override;
+        std::vector<Field> clusterCharacters(const Character *character, const size_t charactersSize) override;
         
     private:
         const float eps;
-        std::vector<CharactersClustered> fillCharactersClustered(const Characters *characters, const size_t charactersSize);
-        std::vector<std::vector<size_t>> findNearCharacters(std::vector<CharactersClustered> characters, std::vector<std::vector<size_t>> nearCharacters);
-        float computeDistance(Characters char1, Characters char2);
-        std::vector<CharactersClustered> dfs(size_t now, size_t cluster, std::vector<CharactersClustered> characters, std::vector<std::vector<size_t>> nearCharacters);
-        std::vector<Field> computeFields(std::vector<CharactersClustered> charactersClustered, size_t numClusters);
-        std::vector<Characters> orderCharacters(std::multimap<float, Characters> cluster);
-        Field fillField(float confidence, size_t labelSize, std::vector<Characters> orderedCharacters);
-        std::string extractLabel(std::vector<Characters> orderedCharacters);
-        Coordinates extractPosition(std::vector<Characters> orderedCharacters);
+        std::vector<CharacterClustered> fillCharactersClustered(const Character *character, const size_t charactersSize);
+        std::vector<std::vector<size_t>> findNearCharacters(std::vector<CharacterClustered> character, std::vector<std::vector<size_t>> nearCharacters);
+        float computeDistance(Character char1, Character char2);
+        std::vector<CharacterClustered> dfs(size_t now, size_t cluster, std::vector<CharacterClustered> character, std::vector<std::vector<size_t>> nearCharacters);
+        
+        std::vector<Field> computeFields(std::vector<CharacterClustered> charactersClustered, size_t numClusters);
+        std::vector<Character> orderCharacters(std::multimap<float, Character> cluster);
+        Field fillField(float confidence, size_t labelSize, std::vector<Character> orderedCharacters);
+        std::string extractLabel(std::vector<Character> orderedCharacters);
+        Coordinates extractPosition(std::vector<Character> orderedCharacters);
 };

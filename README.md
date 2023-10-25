@@ -10,7 +10,7 @@ conan build .
 
 Conan generated the executables for the application and for the tests in the folder *build\Release*, so move into this folder with:
 ```
-cd build\Release
+cd build/Release
 ```
 
 Then to extract the prediction run:

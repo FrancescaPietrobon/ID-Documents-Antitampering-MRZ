@@ -82,7 +82,7 @@ std::string Date::extractAlphanumericDate(std::string data, std::string month, s
         return newDate;
 
     newDate = year + month + day;
-    SPDLOG_DEBUG("Date {} converted in {}", data, newDate);
+    SPDLOG_INFO("Date {} converted in {}", data, newDate);
     return newDate;
 }
 
@@ -105,7 +105,7 @@ std::string Date::extractNumericDate(std::string data)
     year += data[data.size()-1];
 
     newDate = year + month + day;
-    SPDLOG_DEBUG("Date {} converted in {}", data, newDate);
+    SPDLOG_INFO("Date {} converted in {}", data, newDate);
     return newDate;
 }
 

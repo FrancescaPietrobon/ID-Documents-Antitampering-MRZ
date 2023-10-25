@@ -3,7 +3,7 @@
 #include "../AntitamperingMrz.hpp"
 #include "SplitFields.hpp"
 #include "Date.hpp"
-#include "WER.hpp"
+#include "Levenshtein.hpp"
 
 #include <vector>
 #include <iomanip>

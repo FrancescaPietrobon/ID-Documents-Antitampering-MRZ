@@ -18,6 +18,7 @@ extern "C"
 {
     ClusteringResponse cluster(OcrResponse ocrResponse, char *algorithmType)
     {
+        SPDLOG_INFO("Start Characters Clustering API");
         ClusteringResponse res;
         std::shared_ptr<CharactersClustering> cluster = nullptr;
         try
@@ -32,6 +33,7 @@ extern "C"
         }
 
         res = clusterChar(ocrResponse, cluster);
+        SPDLOG_INFO("End Characters Clustering API");
         return res;
     }
 }
@@ -51,7 +53,7 @@ ClusteringResponse clusterChar(OcrResponse ocrResponse, std::shared_ptr<Characte
         std::vector<Field> clusteringResults;
         try
         {
-            clusteringResults = cluster->clusterCharacters(ocrResponse.resultDetails[i].characters, ocrResponse.resultDetails[i].charactersSize);
+            clusteringResults = cluster->clusterCharacters(ocrResponse.resultDetails[i].character, ocrResponse.resultDetails[i].charactersSize);
         }
         catch (Exception &ex)
         {
@@ -61,13 +63,13 @@ ClusteringResponse clusterChar(OcrResponse ocrResponse, std::shared_ptr<Characte
             continue;
         }
         res.resultDetails[i].fieldsSize = clusteringResults.size();
-        res.resultDetails[i].fields = new Field[res.resultDetails[i].fieldsSize];
+        res.resultDetails[i].field = new Field[res.resultDetails[i].fieldsSize];
         for (std::size_t j = 0; j < clusteringResults.size(); j++)
         {
-            res.resultDetails[i].fields[j].label = clusteringResults[j].label;
-            res.resultDetails[i].fields[j].labelSize = clusteringResults[j].labelSize;
-            res.resultDetails[i].fields[j].position = clusteringResults[j].position;
-            res.resultDetails[i].fields[j].confidence = clusteringResults[j].confidence;
+            res.resultDetails[i].field[j].label = clusteringResults[j].label;
+            res.resultDetails[i].field[j].labelSize = clusteringResults[j].labelSize;
+            res.resultDetails[i].field[j].position = clusteringResults[j].position;
+            res.resultDetails[i].field[j].confidence = clusteringResults[j].confidence;
             sumConf += clusteringResults[j].confidence;
         }
         res.resultDetails[i].confidence = sumConf / res.resultDetails[i].fieldsSize;

@@ -1,6 +1,6 @@
 #include "PrintResult.hpp"
 
-void saveImgOcrResponse(cv::Mat img, Characters *characters, size_t charactersSize)
+void saveImgOcrResponse(cv::Mat img, Character *characters, size_t charactersSize)
 {
     cv::Mat new_image = img;
     int lineType = cv::LINE_AA;
@@ -30,7 +30,7 @@ void saveImgOcrResponse(cv::Mat img, Characters *characters, size_t charactersSi
         cv::Point confOrg(characters[i].position.topLeftX, characters[i].position.bottomRightY + confSize.height);
         cv::putText(new_image, conf, confOrg, fontFace, fontScale*0.6, cv::Scalar(0,0,0), thickness, lineType);
     }
-    cv::imwrite("../../printResults/OCR.jpg", new_image);
+    //cv::imwrite("../../printResults/OCR.jpg", new_image);
 }
 
 void saveImgDbscanResponse(cv::Mat img, Field* fields, size_t fieldsSize)
@@ -65,7 +65,7 @@ void saveImgDbscanResponse(cv::Mat img, Field* fields, size_t fieldsSize)
         cv::Point confOrg(fields[i].position.topLeftX, fields[i].position.bottomRightY + confSize.height);
         cv::putText(new_image, conf, confOrg, fontFace, fontScale*0.6, cv::Scalar(0,0,0), thickness, lineType);
     }
-    cv::imwrite("../../printResults/DBSCAN.jpg", new_image);
+    //cv::imwrite("../../printResults/DBSCAN.jpg", new_image);
 }
 
 void printDbscanResponse(ClusteringResponse clusteringResponse)
@@ -76,8 +76,8 @@ void printDbscanResponse(ClusteringResponse clusteringResponse)
         std::cout << "Image: " << clusteringResponse.resultDetails[i].image << "\n" << std::endl;
         for(size_t j = 0; j < clusteringResponse.resultDetails[i].fieldsSize; ++j)
         {
-            std::cout << "Label: " << clusteringResponse.resultDetails[i].fields[j].label << std::endl;
-            std::cout << "Confidence: " << clusteringResponse.resultDetails[i].fields[j].confidence << "\n" << std::endl;
+            std::cout << "Label: " << clusteringResponse.resultDetails[i].field[j].label << std::endl;
+            std::cout << "Confidence: " << clusteringResponse.resultDetails[i].field[j].confidence << "\n" << std::endl;
         }
         std::cout << "Final confidence: " << clusteringResponse.resultDetails[i].confidence << "\n" << std::endl;
     }

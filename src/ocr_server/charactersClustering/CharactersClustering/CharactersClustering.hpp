@@ -10,5 +10,5 @@ class CharactersClustering {
     public:
         CharactersClustering(){};
         virtual ~CharactersClustering(){};
-        virtual std::vector<Field> clusterCharacters(const Characters *characters, const size_t charactersSize) = 0;
+        virtual std::vector<Field> clusterCharacters(const Character *character, const size_t charactersSize) = 0;
 };

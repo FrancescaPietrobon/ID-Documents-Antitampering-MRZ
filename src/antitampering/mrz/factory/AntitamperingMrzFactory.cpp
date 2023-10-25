@@ -2,7 +2,7 @@
 
 
 std::map<std::string, AssociatorType> mapAssociatorType = {
-    {"wer", wer},
+    {"levenshtein", levenshtein},
     //{"boh", boh}
 };
 
@@ -12,8 +12,8 @@ std::shared_ptr<AntitamperingMrz> AntitamperingMrzFactory::createAntitamperingMr
     AssociatorType type = mapAssociatorType.find(algorithmType)->second;
     switch (type)
     {
-        case wer:
-            return std::shared_ptr<AntitamperingMrz>(std::make_shared<Associations>(CONF_THRESHOLD_WER));
+        case levenshtein:
+            return std::shared_ptr<AntitamperingMrz>(std::make_shared<Associations>(CONF_THRESHOLD_LEVENSHTEIN));
         default:
         {
             SPDLOG_ERROR("FATAL: Algorithm Type NOT FOUND,  {}", algorithmType);
