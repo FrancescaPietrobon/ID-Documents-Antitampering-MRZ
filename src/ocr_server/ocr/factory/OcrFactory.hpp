@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Ocr/RetinaNet/OcrRetinaNet.hpp"
+#include "../Ocr/YoloV8/OcrYolov8.hpp"
 #include "common/exceptions/Exceptions.hpp"
 
 #include <spdlog/spdlog.h>
@@ -11,7 +12,7 @@
 enum AlgorithmType
 {
     RetinaNet = 1,
-    //Yolov7
+    YoloV8
 };
 
 class OcrFactory {

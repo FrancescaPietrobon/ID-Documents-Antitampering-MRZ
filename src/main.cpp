@@ -30,7 +30,8 @@ int main(int argc, char *argv[])
     float *thresholdsOcr = new float[1];
     thresholdsOcr[0] = 0.3;
     char *algoTypeOcr = new char;
-    algoTypeOcr = utils::convertStringtoCharPtr("RetinaNet");
+    // algoTypeOcr = utils::convertStringtoCharPtr("RetinaNet");
+    algoTypeOcr = utils::convertStringtoCharPtr("YoloV8");
 
     OcrResponse ocrResponse = process(images, contentBase64, coordinates, thresholdsOcr, 1, algoTypeOcr);
     delete[] contentBase64;
