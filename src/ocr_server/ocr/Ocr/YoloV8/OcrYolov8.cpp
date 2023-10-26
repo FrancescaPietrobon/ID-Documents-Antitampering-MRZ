@@ -1,9 +1,9 @@
 #include "OcrYolov8.hpp"
 #include "common/utils/utils.hpp"
 
-OcrYolov8::OcrYolov8(std::string& modelPath, const cv::Size modelInputSize, const cv::Scalar meanValue, double confThreshold, double iouThreshold)
+OcrYolov8::OcrYolov8(std::string& modelPath, const cv::Size modelInputSize, const cv::Scalar meanValue, double confThreshold, double iouThreshold, bool binaryImg)
     : session(Ort::Session(env, modelPath.c_str(), Ort::SessionOptions {})), modelInputSize(modelInputSize), meanValue(meanValue), confThreshold(confThreshold),
-      iouThreshold(iouThreshold) {}
+      iouThreshold(iouThreshold), binaryImg(binaryImg) {}
 
 cv::Rect2f OcrYolov8::scaleCoords(const cv::Size& imageShape, cv::Rect2f coords, const cv::Size& imageOriginalShape, bool p_Clip = false)
 {
@@ -89,7 +89,7 @@ std::vector<Character> OcrYolov8::postprocessing(const cv::Size& resizedImageSha
     for (int row = 0; row < matT.rows; row++)
     {
         cv::Mat matRow = matT.row(row);
-        std::tuple<int, float> confResults = getBestClassInfo(matRow, numClasses);
+        std::tuple<int, float> confResults = this->getBestClassInfo(matRow, numClasses);
         int classId = std::get<0>(confResults);
         float objConf = std::get<1>(confResults);
         if (objConf > confThreshold)
@@ -101,7 +101,7 @@ std::vector<Character> OcrYolov8::postprocessing(const cv::Size& resizedImageSha
             float left = centerX - width / 2;
             float top = centerY - height / 2;
             float confidence = objConf;
-            cv::Rect2f scaled = scaleCoords(resizedImageShape, cv::Rect2f(left, top, width, height), originalImageShape, true);
+            cv::Rect2f scaled = this->scaleCoords(resizedImageShape, cv::Rect2f(left, top, width, height), originalImageShape, true);
             cv::Rect rectangle = cv::Rect((int)std::round(scaled.x), (int)std::round(scaled.y), (int)std::round(scaled.width), (int)std::round(scaled.height));
             Character detection;
             detection.position = utils::fromCvRectToCoordinates(rectangle);
@@ -157,9 +157,12 @@ cv::Mat OcrYolov8::letterbox(const cv::Mat image, const cv::Size& modelInputSize
 
 std::vector<float> OcrYolov8::blobImage(cv::Mat image)
 {
-    cv::Mat resizedImage, floatImage;
-    cv::cvtColor(image, resizedImage, cv::COLOR_BGR2RGB);
-    cv::Mat preprocessedImage = letterbox(resizedImage, modelInputSize, meanValue, false, false, true, 32);
+    cv::Mat fixedColImg, floatImage;
+    if (this->binaryImg)
+        fixedColImg = this->binarization(image);
+    else
+        cv::cvtColor(image, fixedColImg, cv::COLOR_BGR2RGB);
+    cv::Mat preprocessedImage = this->letterbox(fixedColImg, modelInputSize, meanValue, false, false, true, 32);
     preprocessedImage.convertTo(floatImage, CV_32FC3, 1 / 255.0);
 
     cv::Size floatImageSize {floatImage.cols, floatImage.rows};
@@ -188,7 +191,7 @@ std::vector<Character> OcrYolov8::resultImage(const cv::Mat frame)
     std::vector<const char*> outputNames = {"output0"};
     std::vector<Ort::Value> output_tensors = session.Run(Ort::RunOptions {nullptr}, inputNames.data(), &inputTensors, 1, outputNames.data(), 1);
 
-    std::vector<Character> detections = postprocessing(modelInputSize, frame.size(), output_tensors, confThreshold, iouThreshold);
+    std::vector<Character> detections = this->postprocessing(modelInputSize, frame.size(), output_tensors, confThreshold, iouThreshold);
 
     SPDLOG_INFO("Boxes extracted from OcrYolov8 model");
     return detections;
@@ -196,7 +199,7 @@ std::vector<Character> OcrYolov8::resultImage(const cv::Mat frame)
 
 std::vector<Character> OcrYolov8::detect(const cv::Mat image, const float confidenceThreshold)
 {
-    std::vector<Character> detections = resultImage(image);
-    std::vector<Character> characters = nonMaximaSuppression(detections, confidenceThreshold, iouThreshold);
+    std::vector<Character> detections = this->resultImage(image);
+    std::vector<Character> characters = this->nonMaximaSuppression(detections, confidenceThreshold, iouThreshold);
     return characters;
 }

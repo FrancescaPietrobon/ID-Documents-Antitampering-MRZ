@@ -2,11 +2,12 @@
 #include <iostream>
 #include <vector>
 
-OcrRetinaNet::OcrRetinaNet(const cv::dnn::Net model, cv::Size modelInputSize): Ocr()
+OcrRetinaNet::OcrRetinaNet(const cv::dnn::Net model, cv::Size modelInputSize, bool binaryImg): Ocr()
 {
     SPDLOG_INFO("Creating RetinaNet Model");
     this->model = model;
     this->modelInputSize = modelInputSize;
+    this->binaryImg = binaryImg;
     SPDLOG_INFO("RetinaNet Model Created");
 }
 
@@ -53,7 +54,7 @@ std::pair<matrix2D, matrix2D> OcrRetinaNet::adjustModelPredictions(cv::Mat predi
     return std::make_pair(boxesPred, classesPred);
 }
 
-cv::Mat OcrRetinaNet::imagePreprocessing(const cv::Mat& inputImage)
+cv::Mat OcrRetinaNet::imagePreprocessing(const cv::Mat& inputImage, bool binaryImg)
 {
     float imgWidth = inputImage.size[1];
     float imgHeight = inputImage.size[0];
@@ -61,9 +62,13 @@ cv::Mat OcrRetinaNet::imagePreprocessing(const cv::Mat& inputImage)
     this->yAlter = modelInputSize.height / imgHeight;
 
     cv::Mat imagePreprocessed;
-    cv::fastNlMeansDenoising(inputImage, imagePreprocessed, DENOISE_PARAM);
-    cv::resize(imagePreprocessed, imagePreprocessed, modelInputSize, 0, 0, cv::INTER_CUBIC);
+    if (this->binaryImg)
+        imagePreprocessed = this->binarization(inputImage);
+    else
+        cv::fastNlMeansDenoising(inputImage, imagePreprocessed, DENOISE_PARAM);
 
+    cv::resize(imagePreprocessed, imagePreprocessed, modelInputSize, 0, 0, cv::INTER_CUBIC);
+    
     //cv::imwrite("../../printResults/preprocessed.JPG", imagePreprocessed);
 
     return imagePreprocessed;
@@ -76,7 +81,7 @@ std::vector<Character> OcrRetinaNet::detect(const cv::Mat image, const float con
     //cv::imwrite("../../printResults/post_cut.jpg", image);
 
     SPDLOG_INFO("Preprocessing input image");
-    cv::Mat imagePreprocessed = this->imagePreprocessing(image);
+    cv::Mat imagePreprocessed = this->imagePreprocessing(image, binaryImg);
 
     SPDLOG_INFO("Extracting predictions");
     cv::Mat predictions = this->inference(imagePreprocessed);

@@ -16,7 +16,7 @@ T clip(const T& n, const T& lower, const T& upper)
 class OcrYolov8: public Ocr
 {
     public:
-        OcrYolov8(std::string& modelPath, const cv::Size modelInputSize, const cv::Scalar meanValue, double confThreshold, double iouThreshold);
+        OcrYolov8(std::string& modelPath, const cv::Size modelInputSize, const cv::Scalar meanValue, double confThreshold, double iouThreshold, bool binaryImg);
         ~OcrYolov8() = default;
         std::vector<Character> detect(const cv::Mat image, const float confidenceThreshold) override;
         std::vector<Character> resultImage(const cv::Mat frame);
@@ -30,6 +30,7 @@ class OcrYolov8: public Ocr
         const cv::Scalar meanValue;
         double confThreshold;
         double iouThreshold;
+        bool binaryImg;
 
         cv::Rect2f scaleCoords(const cv::Size& imageShape, cv::Rect2f coords, const cv::Size& imageOriginalShape, bool p_Clip);
         std::tuple<int, float> getBestClassInfo(const cv::Mat& p_Mat, const int& numClasses);

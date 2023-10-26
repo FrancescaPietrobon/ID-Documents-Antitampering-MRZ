@@ -12,7 +12,9 @@
 enum AlgorithmType
 {
     RetinaNet = 1,
-    YoloV8
+    RetinaNetBinary,
+    YoloV8,
+    YoloV8Binary
 };
 
 class OcrFactory {
