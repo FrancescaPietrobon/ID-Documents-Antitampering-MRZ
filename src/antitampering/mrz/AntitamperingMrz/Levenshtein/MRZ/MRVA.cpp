@@ -68,7 +68,7 @@ std::vector<MrzField> MRVA::extractSurnameAndName(std::vector<Field> mrz, std::v
             break;
         }
         else if(mrz[0].label[j] == '<')
-            field.mrzDataField += " ";
+            field.mrzDataField += "";
         else
             field.mrzDataField += mrz[0].label[j];
     }
@@ -81,7 +81,7 @@ std::vector<MrzField> MRVA::extractSurnameAndName(std::vector<Field> mrz, std::v
         if(mrz[0].label[j] == '<' && mrz[0].label[j-1] == '<')
             break;
         else if(mrz[0].label[j] == '<')
-            field.mrzDataField += " ";
+            field.mrzDataField += "";
         else
             field.mrzDataField += mrz[0].label[j];
     }
