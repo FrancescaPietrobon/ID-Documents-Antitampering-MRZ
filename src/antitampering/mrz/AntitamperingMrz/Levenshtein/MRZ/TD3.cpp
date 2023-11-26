@@ -64,7 +64,7 @@ std::vector<MrzField> TD3::extractSurnameAndName(std::vector<Field> mrz, std::ve
             break;
         }
         else if(mrz[0].label[j] == '<')
-            field.mrzDataField += "";
+            field.mrzDataField += " ";
         else
             field.mrzDataField += mrz[0].label[j];
     }
@@ -78,7 +78,7 @@ std::vector<MrzField> TD3::extractSurnameAndName(std::vector<Field> mrz, std::ve
         if(mrz[0].label[j] == '<' && mrz[0].label[j-1] == '<')
             break;
         else if(mrz[0].label[j] == '<')
-            field.mrzDataField += "";
+            field.mrzDataField += " ";
         else
             field.mrzDataField += mrz[0].label[j];
     }

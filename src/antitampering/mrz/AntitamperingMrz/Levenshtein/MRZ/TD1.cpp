@@ -124,7 +124,7 @@ std::vector<MrzField> TD1::extractSurnameAndName(std::vector<Field> mrz, std::ve
             break;
         }
         else if(mrz[2].label[j] == '<')
-            field.mrzDataField += "";
+            field.mrzDataField += " ";
         else
             field.mrzDataField += mrz[2].label[j];
     }
@@ -136,7 +136,7 @@ std::vector<MrzField> TD1::extractSurnameAndName(std::vector<Field> mrz, std::ve
         if(mrz[2].label[j] == '<' && mrz[2].label[j-1] == '<')
             break;
         else if(mrz[2].label[j] == '<')
-            field.mrzDataField += "";
+            field.mrzDataField += " ";
         else
             field.mrzDataField += mrz[2].label[j];
     }
