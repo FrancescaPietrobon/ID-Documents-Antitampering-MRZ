@@ -16,9 +16,6 @@ std::string getBase64(cv::Mat image)
 
 int main(int argc, char *argv[])
 {
-    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/JPN_AO_02003_FRONT.jpg"; //TD3 eps = 27  IOU = 0.06  NMS = 0.005 NP
-    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/DNK_AO_04002_FRONT_2.jpeg";
-    //std::string imagePath = "/home/f_pietrobon/thesis/MRZ_Antitampering/data/IMG-20220930-WA0002.jpg"; //TD3 eps = 30  IOU = 0.05  NMS = 0.01 NF
     std::string imagePath = "testData/images/ocr/AFG_AO_01001_FRONT.JPG";
 
     char **images = new char *[1];
@@ -28,9 +25,12 @@ int main(int argc, char *argv[])
     Coordinates *coordinates = new Coordinates[1];
     coordinates[0] = Coordinates{0, 0, 2000, 2000};
     float *thresholdsOcr = new float[1];
-    thresholdsOcr[0] = 0.3;
+    thresholdsOcr[0] = 0.25;
     char *algoTypeOcr = new char;
     algoTypeOcr = utils::convertStringtoCharPtr("RetinaNet");
+    // algoTypeOcr = utils::convertStringtoCharPtr("RetinaNetBinary");
+    // algoTypeOcr = utils::convertStringtoCharPtr("YoloV8");
+    // algoTypeOcr = utils::convertStringtoCharPtr("YoloV8Binary");
 
     OcrResponse ocrResponse = process(images, contentBase64, coordinates, thresholdsOcr, 1, algoTypeOcr);
     delete[] contentBase64;

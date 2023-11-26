@@ -38,6 +38,7 @@ find_package(jsoncpp)
 find_package(nlohmann_json)
 find_package(GTest REQUIRED)
 find_package(Protobuf REQUIRED)
+find_package(onnxruntime REQUIRED)
 
 # Common
 set(COMMON_PATH "src/common" CACHE STRING "Common folder")
@@ -81,6 +82,8 @@ target_include_directories(document_validator_ocr_server PUBLIC
 target_link_libraries(document_validator_ocr_server
     spdlog::spdlog
     opencv::opencv
+    protobuf::protobuf
+    onnxruntime
 )
 
 install(TARGETS document_validator_ocr_server

@@ -2,21 +2,12 @@
 #include <iostream>
 #include <vector>
 
-static std::unordered_map<unsigned, std::string> dictionary = {
-    {0, "0",}, {1, "1",}, {2, "2",}, {3, "3",}, {4, "4",}, {5, "5",}, {6, "6",}, {7, "7",}, {8, "8",}, {9, "9",},
-    {10, "A",}, {11, "a",}, {12, "B",}, {13, "b",}, {14, "C",}, {15, "c",}, {16, "D",}, {17, "d",}, {18, "E",}, {19, "e",},
-    {20, "F",}, {21, "f",}, {22, "G",}, {23, "g",}, {24, "H",}, {25, "h",}, {26, "I",}, {27, "i",}, {28, "J",}, {29, "j",},
-    {30, "K",}, {31, "k",}, {32, "L",}, {33, "l",}, {34, "M",}, {35, "m",}, {36, "N",}, {37, "n",}, {38, "O",}, {39, "o",},
-    {40, "P",}, {41, "p",}, {42, "Q",}, {43, "q",}, {44, "R",}, {45, "r",}, {46, "S",}, {47, "s",}, {48, "T",}, {49, "t",},
-    {50, "U",}, {51, "u",}, {52, "V",}, {53, "v",}, {54, "W",}, {55, "w",}, {56, "X",}, {57, "x",}, {58, "Y",}, {59, "y",},
-    {60, "Z",}, {61, "z",}, {62, "<",}
-};
-
-OcrRetinaNet::OcrRetinaNet(const cv::dnn::Net model, cv::Size modelInputSize): Ocr()
+OcrRetinaNet::OcrRetinaNet(const cv::dnn::Net model, cv::Size modelInputSize, bool binaryImg): Ocr()
 {
     SPDLOG_INFO("Creating RetinaNet Model");
     this->model = model;
     this->modelInputSize = modelInputSize;
+    this->binaryImg = binaryImg;
     SPDLOG_INFO("RetinaNet Model Created");
 }
 
@@ -63,7 +54,7 @@ std::pair<matrix2D, matrix2D> OcrRetinaNet::adjustModelPredictions(cv::Mat predi
     return std::make_pair(boxesPred, classesPred);
 }
 
-cv::Mat OcrRetinaNet::imagePreprocessing(const cv::Mat& inputImage)
+cv::Mat OcrRetinaNet::imagePreprocessing(const cv::Mat& inputImage, bool binaryImg)
 {
     float imgWidth = inputImage.size[1];
     float imgHeight = inputImage.size[0];
@@ -71,9 +62,13 @@ cv::Mat OcrRetinaNet::imagePreprocessing(const cv::Mat& inputImage)
     this->yAlter = modelInputSize.height / imgHeight;
 
     cv::Mat imagePreprocessed;
-    cv::fastNlMeansDenoising(inputImage, imagePreprocessed, DENOISE_PARAM);
-    cv::resize(imagePreprocessed, imagePreprocessed, modelInputSize, 0, 0, cv::INTER_CUBIC);
+    if (this->binaryImg)
+        imagePreprocessed = this->binarization(inputImage);
+    else
+        cv::fastNlMeansDenoising(inputImage, imagePreprocessed, DENOISE_PARAM);
 
+    cv::resize(imagePreprocessed, imagePreprocessed, modelInputSize, 0, 0, cv::INTER_CUBIC);
+    
     //cv::imwrite("../../printResults/preprocessed.JPG", imagePreprocessed);
 
     return imagePreprocessed;
@@ -86,7 +81,7 @@ std::vector<Character> OcrRetinaNet::detect(const cv::Mat image, const float con
     //cv::imwrite("../../printResults/post_cut.jpg", image);
 
     SPDLOG_INFO("Preprocessing input image");
-    cv::Mat imagePreprocessed = this->imagePreprocessing(image);
+    cv::Mat imagePreprocessed = this->imagePreprocessing(image, binaryImg);
 
     SPDLOG_INFO("Extracting predictions");
     cv::Mat predictions = this->inference(imagePreprocessed);
@@ -136,7 +131,7 @@ std::vector<Character> OcrRetinaNet::nonMaximaSuppression(matrix2D boxesPreNMS, 
         currCharacter.labelIndex = maxIndices[idx];
         currCharacter.position = utilsRetinaNet::reshapeBox(boxesNew[idx], xAlter, yAlter);
         currCharacter.confidence = maxAll[idx];
-        currCharacter.label = utils::convertStringtoCharPtr(dictionary[int(maxIndices[idx])]);
+        currCharacter.label = utils::convertStringtoCharPtr(utils::dictionary[int(maxIndices[idx])]);
         characters.push_back(currCharacter);
     }
     SPDLOG_INFO("{} Characters Detected post NMS", nmsIndices.size());

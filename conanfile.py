@@ -39,12 +39,13 @@ class MrzAntitamperingConan(ConanFile):
     # Dependencies
     requires = [
         ("spdlog/1.10.0@#5881717ce085871b1a2921361eb79986",),
-        ("boost/1.78.0@#662597c4e834b1f6e67b4ee6d7d634bd",),
+        ("boost/1.81.0@#9bd7ae86a881631b6cc76590621e470b",),
         ("nlohmann_json/3.10.5@#24f8709158b89f1396614ee07e0827d2",),
         ("jsoncpp/1.9.5@#2b8f5f13685f844b4b74beac3a796e8d",),
         ("opencv/4.5.3@#ab0498fa9f6e6ac35c06fa7100f49dcb",),
         ("zlib/1.2.13@#13c96f538b52e1600c40b88994de240f", "override"),
-        ("gtest/1.11.0@#d99d2af6a53ab52d3c2dd88cdbc1e0fd")
+        ("gtest/1.11.0@#d99d2af6a53ab52d3c2dd88cdbc1e0fd"),
+        ("protobuf/3.17.1@#e64fa06824a80ebce90de3e3e2460033"),
     ]
 
     tool_requires = "pkgconf/1.7.4"
@@ -61,7 +62,7 @@ class MrzAntitamperingConan(ConanFile):
         "with_statx": False,
         "fPIC": True,
 
-        "opencv:shared": False,
+        "opencv:shared": True,
         "opencv:with_gtk": False,
         "opencv:with_ffmpeg": False,
         "opencv:with_v4l": True,
@@ -76,6 +77,8 @@ class MrzAntitamperingConan(ConanFile):
         
         "gtest:build_gmock": True,
         "gtest:no_main":True,
+
+        "protobuf:shared": True,
     }
     
     '''

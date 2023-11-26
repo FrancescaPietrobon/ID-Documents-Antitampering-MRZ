@@ -17,4 +17,6 @@ class Ocr {
         Ocr(){};
         virtual ~Ocr(){};
         virtual std::vector<Character> detect(const cv::Mat image, const float confidenceThreshold) = 0;
+    protected:
+        cv::Mat binarization(cv::Mat img);
 };
